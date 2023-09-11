@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { Router, Route } from "svelte-navigator";
+  import { Router, Route } from "svelte-routing";
   import { demolist } from "./lib/PackingList/demolist";
   import PackingList from "./lib/PackingList/PackingList.svelte";
   import Navbar from "./lib/ui/Navbar.svelte";
-  import UIPreview from "./lib/ui/Preview.svelte";
   import ThemeProvider from "./ThemeProvider.svelte";
+  import Footer from "./lib/ui/Footer.svelte";
 </script>
 
 <ThemeProvider>
@@ -15,10 +15,7 @@
       <Route path="/">
         <PackingList packingList={demolist} />
       </Route>
-
-      <Route path="/components">
-        <UIPreview />
-      </Route>
     </main>
   </Router>
+  <Footer />
 </ThemeProvider>

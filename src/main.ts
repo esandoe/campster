@@ -1,3 +1,4 @@
+import "./app.postcss";
 import "./css_reset.css";
 import App from "./App.svelte";
 

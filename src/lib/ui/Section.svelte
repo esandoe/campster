@@ -16,7 +16,7 @@
   }
 
   section.light-scheme {
-    background-color: var(--light);
+    background-color: white;
     color: var(--dark);
   }
 

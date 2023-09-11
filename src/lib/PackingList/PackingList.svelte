@@ -2,6 +2,7 @@
   import Heading from "../ui/Heading.svelte";
   import Section from "../ui/Section.svelte";
   import type { ItemModel, MemberModel, PackingListModel } from "./models";
+  import { Avatar, Checkbox } from "flowbite-svelte";
 
   export let packingList: PackingListModel;
 
@@ -72,19 +73,19 @@
       <Heading size="sm">{category}</Heading>
       {#each [...itemMap] as [itemName, memberList], index}
         <div class="item" class:first={index === 0}>
-          <label>
-            <input type="checkbox" />
+          <Checkbox>
             {itemName}
-          </label>
+          </Checkbox>
           <span style:flex="1" />
 
           {#each memberList as [member, item]}
-            <div
+            <Avatar class="bg-red">{getInitials(member.name)}</Avatar>
+            <!-- <div
               class="avatar"
               style:background-color={avatarColor.get(member.name)}
             >
               {getInitials(member.name)}
-            </div>
+            </div> -->
           {/each}
         </div>
       {/each}
@@ -105,7 +106,7 @@
   .item.first {
     border-top: 1px solid var(--dark-accent);
   }
-
+  /* 
   .avatar {
     display: inline-block;
 
@@ -126,5 +127,5 @@
   .avatar.dot {
     --size: 7px;
     content-visibility: hidden;
-  }
+  } */
 </style>

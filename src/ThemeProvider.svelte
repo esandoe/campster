@@ -29,6 +29,6 @@
   }
 
   :global(body) {
-    background-color: var(--light);
+    background-color: white;
   }
 </style>
