@@ -14,7 +14,7 @@
   <FooterLinkGroup
     ulClass="flex flex-wrap items-center mt-3 mr-4 text-sm text-gray-500 dark:text-gray-400 sm:mt-0"
   >
-    <FooterLink href="https://github.com/esandoe/tur">
+    <FooterLink href="https://github.com/esandoe/campster">
       <GithubSolid />
       <Tooltip placement="bottom">Check out the GitHub</Tooltip>
     </FooterLink>

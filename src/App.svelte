@@ -1,4 +1,5 @@
-<script lang="ts">
+<script async script lang="ts">
+  import { onMount } from "svelte";
   import { Router, Route } from "svelte-routing";
   import { demolist } from "./lib/PackingList/demolist";
   import PackingList from "./lib/PackingList/PackingList.svelte";
