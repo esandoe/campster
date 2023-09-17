@@ -12,7 +12,7 @@
       name: "Erik",
     });
     const response = await (
-      await fetch("/api/trips", { method: "POST", body: body })
+      await fetch("/api/hikes", { method: "POST", body: body })
     ).text();
     console.log(response);
   });
