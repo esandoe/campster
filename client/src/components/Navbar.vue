@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 
 <template>
   <nav class="bg-[#f08939] border-gray-200">
-    <div class="max-w-screen-md flex flex-wrap items-center justify-between mx-auto p-4">
+    <div class="max-w-screen-lg flex flex-wrap items-center justify-between mx-auto p-4">
       <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="@/assets/logo_sm.png" class="h-8 invert" alt="Campster Logo" />
         <span class="self-center text-2xl whitespace-nowrap text-white">Campster</span>
