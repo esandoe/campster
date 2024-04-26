@@ -17,23 +17,10 @@
               <button
                 class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
                 type="button"
+                @click="item.quantity--"
               >
                 <span class="sr-only">Quantity button</span>
-                <svg
-                  class="w-3 h-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 18 2"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M1 1h16"
-                  />
-                </svg>
+                <minus-icon />
               </button>
               <div>
                 <input
@@ -48,23 +35,10 @@
               <button
                 class="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
                 type="button"
+                @click="item.quantity++"
               >
                 <span class="sr-only">Quantity button</span>
-                <svg
-                  class="w-3 h-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 18 18"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 1v16M1 9h16"
-                  />
-                </svg>
+                <plus-icon />
               </button>
             </div>
           </td>
@@ -85,10 +59,31 @@
   </div>
 </template>
 
-<script setup>
-const items = [
+<script>
+import { reactive } from 'vue'
+import MinusIcon from '../components/icons/MinusIcon.vue'
+import PlusIcon from '../components/icons/PlusIcon.vue'
+
+const items = reactive([
   { product: '12 personers glamping lavvo', quantity: 1, packed: false },
   { product: 'Grytesett, 2L + 1L gryter, 2x tallerken', quantity: 1, packed: false },
-  { product: 'Zenbivy sovesystem', quantity: 1, packed: false }
-]
+  { product: 'Zenbivy sovesystem', quantity: 1, packed: false },
+  { product: 'Retro Campingvogn', quantity: 1, packed: false },
+  { product: 'Fargerik Hengekøye', quantity: 1, packed: false },
+  { product: 'Bærbar Grill', quantity: 1, packed: false },
+  { product: 'Utendørs Projektor og Lerret', quantity: 1, packed: false },
+  { product: 'Stjernetittende Teleskop', quantity: 1, packed: false },
+  { product: 'Sammenleggbar Campingstol', quantity: 1, packed: false },
+  { product: 'Varmt Kakaosett', quantity: 1, packed: false },
+  { product: 'Vandrestaver', quantity: 1, packed: false },
+  { product: 'Vanntett Kart og Kompass', quantity: 1, packed: false },
+  { product: 'Fotovennlig Kamera', quantity: 1, packed: false }
+])
+
+export default {
+  setup() {
+    return { items }
+  },
+  components: { MinusIcon, PlusIcon }
+}
 </script>
