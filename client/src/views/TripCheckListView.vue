@@ -1,6 +1,7 @@
 <template>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="table-auto text-sm text-left text-gray-500 rounded-md">
+    <p v-if="!items"><ListSkeleton /></p>
+    <table v-else class="table-auto text-sm text-left text-gray-500 rounded-md">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
         <tr>
           <th scope="col" class="px-6 py-3">Product</th>
@@ -51,7 +52,36 @@
             </label>
           </td>
           <td class="px-6 py-4">
-            <a href="#" class="font-medium text-red-600 hover:underline">Remove</a>
+            <button
+              @click="removeItem(item.product)"
+              class="font-medium text-red-600 hover:underline"
+            >
+              Fjern
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td class="w-full px-6 py-4 font-semibold text-gray-400">
+            <label
+              for="add-item"
+              class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+              >Legg til ny</label
+            >
+            <div class="relative">
+              <input
+                type="text"
+                id="add-item"
+                class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Legg til ny"
+                v-model="newItemName"
+              />
+              <button
+                @click="addItem(newItemName)"
+                class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
+              >
+                <PlusIcon class="h-4 w-4" />
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -59,31 +89,31 @@
   </div>
 </template>
 
-<script>
-import { reactive } from 'vue'
+<script setup>
+import { ref, onMounted } from 'vue'
 import MinusIcon from '../components/icons/MinusIcon.vue'
 import PlusIcon from '../components/icons/PlusIcon.vue'
+import ListSkeleton from '../components/ListSkeleton.vue'
 
-const items = reactive([
-  { product: '12 personers glamping lavvo', quantity: 1, packed: false },
-  { product: 'Grytesett, 2L + 1L gryter, 2x tallerken', quantity: 1, packed: false },
-  { product: 'Zenbivy sovesystem', quantity: 1, packed: false },
-  { product: 'Retro Campingvogn', quantity: 1, packed: false },
-  { product: 'Fargerik Hengekøye', quantity: 1, packed: false },
-  { product: 'Bærbar Grill', quantity: 1, packed: false },
-  { product: 'Utendørs Projektor og Lerret', quantity: 1, packed: false },
-  { product: 'Stjernetittende Teleskop', quantity: 1, packed: false },
-  { product: 'Sammenleggbar Campingstol', quantity: 1, packed: false },
-  { product: 'Varmt Kakaosett', quantity: 1, packed: false },
-  { product: 'Vandrestaver', quantity: 1, packed: false },
-  { product: 'Vanntett Kart og Kompass', quantity: 1, packed: false },
-  { product: 'Fotovennlig Kamera', quantity: 1, packed: false }
-])
+const items = ref(null)
+const newItemName = ref('')
 
-export default {
-  setup() {
-    return { items }
-  },
-  components: { MinusIcon, PlusIcon }
+function removeItem(item) {
+  items.value = items.value.filter((i) => i.product != item)
 }
+
+function addItem(productName) {
+  items.value.push({ product: productName, quantity: 1, packed: false })
+  newItemName.value = ''
+}
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/trip')
+    items.value = await response.json()
+    console.log(items.value)
+  } catch (err) {
+    return err
+  }
+})
 </script>
