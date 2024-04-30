@@ -10,8 +10,12 @@
           <th scope="col" class="px-6 py-3">Action</th>
         </tr>
       </thead>
-      <tbody>
-        <tr v-for="item in items" :key="item.product" class="bg-white border-b hover:bg-gray-50">
+      <TransitionGroup name="checklist" tag="tbody">
+        <tr
+          v-for="item in items"
+          :key="item.product"
+          class="bg-white border-b hover:bg-gray-50 checklist-item"
+        >
           <td class="w-full px-6 py-4 font-semibold text-gray-900">{{ item.product }}</td>
           <td class="px-6 py-4">
             <div class="flex items-center">
@@ -60,37 +64,34 @@
             </button>
           </td>
         </tr>
-        <tr>
-          <td class="w-full px-6 py-4 font-semibold text-gray-400">
-            <label
-              for="add-item"
-              class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-              >Legg til ny</label
-            >
-            <div class="relative">
-              <input
-                type="text"
-                id="add-item"
-                class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Legg til ny"
-                v-model="newItemName"
-              />
-              <button
-                @click="addItem(newItemName)"
-                class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
-              >
-                <PlusIcon class="h-4 w-4" />
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
+      </TransitionGroup>
     </table>
+
+    <div class="w-full px-6 py-4 font-semibold text-gray-400">
+      <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+        >Legg til ny</label
+      >
+      <div class="relative">
+        <input
+          type="text"
+          id="add-item"
+          class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Legg til ny"
+          v-model="newItemName"
+        />
+        <button
+          @click="addItem(newItemName)"
+          class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
+        >
+          <PlusIcon class="h-4 w-4" />
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, TransitionGroup } from 'vue'
 import MinusIcon from '../components/icons/MinusIcon.vue'
 import PlusIcon from '../components/icons/PlusIcon.vue'
 import ListSkeleton from '../components/ListSkeleton.vue'
@@ -117,3 +118,15 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.checklist-item {
+  transition: all 0.5s;
+}
+.checklist-enter, .checklist-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+.checklist-leave-active {
+  position: absolute;
+}
+</style>
