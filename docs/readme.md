@@ -9,10 +9,13 @@ This is an agile project which means the project will iterate and evolve along w
 ### Prerequisites
 
 Required:
+
 - node (currently 22.0.0)
 - npm (currently 10.6.0)
 - python (currently 3.11.6)
+
 Recommended:
+
 - [VSCode](https://code.visualstudio.com/)
   - [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur)
 
@@ -38,7 +41,7 @@ flask run --reload
 
 ### Running the client 🌐📱
 
-You might want to open a new terminal for this? idk. 
+You might want to open a new terminal for this? idk.
 
 Anyway, assuming you're at the project root again,
 navigate to the frontend
