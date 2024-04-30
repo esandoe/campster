@@ -123,7 +123,8 @@ onMounted(async () => {
 .checklist-item {
   transition: all 0.5s;
 }
-.checklist-enter, .checklist-leave-to /* .list-leave-active below version 2.1.8 */ {
+.checklist-enter,
+.checklist-leave-to {
   opacity: 0;
 }
 .checklist-leave-active {
