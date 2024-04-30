@@ -8,11 +8,15 @@ This is an agile project which means the project will iterate and evolve along w
 
 ### Prerequisites
 
+Required:
 - node (currently 22.0.0)
 - npm (currently 10.6.0)
 - python (currently 3.11.6)
+Recommended:
+- [VSCode](https://code.visualstudio.com/)
+  - [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur)
 
-### Running the backend
+### Running the backend 🐍🖥
 
 Navigate to the backend,
 create a python venv,
@@ -30,4 +34,22 @@ If it completes successfully, you can now run the server!
 
 ```powershell
 flask run --reload
+```
+
+### Running the client 🌐📱
+
+You might want to open a new terminal for this? idk. 
+
+Anyway, assuming you're at the project root again,
+navigate to the frontend
+and install the project dependencies
+
+```sh
+npm install
+```
+
+If it completes successfully, you can now run the client!
+
+```sh
+npm run dev
 ```
