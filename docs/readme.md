@@ -18,6 +18,7 @@ Recommended:
 
 - [VSCode](https://code.visualstudio.com/)
   - [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur)
+- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
 
 ### Running the backend 🐍🖥
 
