@@ -3,7 +3,7 @@
     <div class="flex items-start gap-2.5">
       <img
         src="https://cdn.myanimelist.net/r/42x62/images/characters/10/358813.webp?s=6e486ee37e8bc8f6ac8143b96142831f"
-        class="rounded-full h-10 w-10 my-3"
+        class="object-cover rounded-full h-10 w-10 my-3"
       />
       <div
         class="flex flex-col w-full my-3 mr-5 leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl"
@@ -31,7 +31,7 @@
     <div class="flex items-start gap-2.5">
       <img
         src="https://cdn.myanimelist.net/r/42x62/images/characters/2/366169.webp?s=afe9005b70cf1d0193fcd769e020a317"
-        class="rounded-full h-10 w-10 my-3"
+        class="object-cover rounded-full h-10 w-10 my-3"
       />
       <div
         class="flex flex-col w-full my-3 mr-5 leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl"
@@ -64,7 +64,7 @@
     <div class="flex items-start gap-2.5">
       <img
         src="https://cdn.myanimelist.net/r/42x62/images/characters/2/337013.webp?s=e53af3011799a7448ad1804a79bade68"
-        class="rounded-full h-10 w-10 my-3"
+        class="object-cover rounded-full h-10 w-10 my-3"
       />
       <div
         class="flex flex-col w-full my-3 mr-5 leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl"
