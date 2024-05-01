@@ -84,7 +84,7 @@
       </TransitionGroup>
     </table>
 
-    <div class="w-full px-6 py-4 font-semibold text-gray-400">
+    <div class="w-full px-6 py-4 font-semibold text-gray-400" ref="addNewRef">
       <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
         >Legg til ny</label
       >
@@ -95,6 +95,7 @@
           class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Legg til ny"
           v-model="newItemName"
+          @keydown.enter="addItem(newItemName)"
         />
         <button
           @click="addItem(newItemName)"
@@ -108,13 +109,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, TransitionGroup } from 'vue'
+import { ref, onMounted } from 'vue'
 import MinusIcon from '../components/icons/MinusIcon.vue'
 import PlusIcon from '../components/icons/PlusIcon.vue'
 import ListSkeleton from '../components/ListSkeleton.vue'
+import { scrollIntoView } from '../components/utils'
 
 const items = ref(null)
 const newItemName = ref('')
+const addNewRef = ref(null)
 
 function removeItem(item) {
   items.value = items.value.filter((i) => i.product != item)
@@ -123,6 +126,8 @@ function removeItem(item) {
 function addItem(productName) {
   items.value.push({ product: productName, quantity: 1, packed: false })
   newItemName.value = ''
+
+  scrollIntoView(addNewRef.value)
 }
 
 function editItemName(item, newName) {

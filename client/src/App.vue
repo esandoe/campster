@@ -8,7 +8,7 @@ import Navbar from './components/Navbar.vue'
     <header>
       <Navbar></Navbar>
     </header>
-    <div class="bg-[#d6f0f8] h-screen">
+    <div class="bg-[#d6f0f8] min-h-screen">
       <RouterView />
     </div>
   </div>
