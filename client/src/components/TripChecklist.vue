@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
-        <tr v-for="item in items" :key="item.product" class="border-b checklist-item bg-gray-100">
+        <tr v-for="item in items" :key="item.name" class="border-b checklist-item bg-gray-100">
           <td class="w-full px-2 py-1 font-semibold text-gray-900">
             <input
               class="w-full block px-4 py-2 rounded-md outline-none"
@@ -19,7 +19,7 @@
                 'bg-transparent hover:bg-white cursor-pointer': !item._status?.editing,
                 'bg-white': item._status?.editing
               }"
-              v-bind:value="item.product"
+              v-bind:value="item.name"
               @click="item._status.editing = true"
               @focus="item._status.editing = true"
               @keydown.enter="(event) => editItemName(item, event.target.value)"
@@ -111,10 +111,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import ListSkeleton from '../components/ListSkeleton.vue'
 import MinusIcon from '../components/icons/MinusIcon.vue'
 import PlusIcon from '../components/icons/PlusIcon.vue'
-import ListSkeleton from '../components/ListSkeleton.vue'
 import { scrollIntoView } from '../components/utils'
 
 const items = ref(null)
@@ -160,7 +161,10 @@ function editItemName(item, newName) {
 
 onMounted(async () => {
   try {
-    const response = await fetch('/api/trip')
+    
+    const params = useRoute().params
+
+    const response = await fetch(`/api/trip/${params.tripId}/participant/${params.listId}/items`)
     const itemList = await response.json()
     items.value = itemList.map((item) => ({
       ...item,

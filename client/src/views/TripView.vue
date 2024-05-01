@@ -66,7 +66,7 @@
         </ul>
       </nav>
 
-      <RouterView />
+      <RouterView :key="$route.fullPath" />
     </main>
   </div>
 </template>
