@@ -5,9 +5,9 @@
       <thead class="text-xs text-gray-700 uppercase bg-gray-200">
         <tr>
           <th class="px-6 py-3 w-full">Product</th>
-          <th class="px-6 py-3 whitespace-nowrap">Qty</th>
-          <th class="px-6 py-3 whitespace-nowrap">Packed</th>
-          <th class="px-6 py-3 whitespace-nowrap">Action</th>
+          <th class="px-1 md:px-6 py-3 whitespace-nowrap">Qty</th>
+          <th class="px-2 md:px-6 py-3 whitespace-nowrap">Packed</th>
+          <th class="px-1 md:px-6 py-3 whitespace-nowrap">Action</th>
         </tr>
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
@@ -26,7 +26,7 @@
               @blur="(event) => editItemName(item, event.target.value)"
             />
           </td>
-          <td class="px-6 py-3 whitespace-nowrap">
+          <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <div class="flex items-center">
               <button
                 class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
@@ -56,15 +56,15 @@
               </button>
             </div>
           </td>
-          <td class="px-6 py-3 whitespace-nowrap">
+          <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <label class="inline-flex items-center cursor-pointer">
               <input type="checkbox" value="" class="sr-only peer" v-bind:checked="item.packed" />
               <div
-                class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                class="relative w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
               ></div>
             </label>
           </td>
-          <td class="px-6 py-3 whitespace-nowrap">
+          <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <button
               @click="removeItem(item.product)"
               class="font-medium text-red-600 hover:underline"
