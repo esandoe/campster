@@ -18,24 +18,14 @@ const routes = [
     component: () => import('../views/TripView.vue'),
     children: [
       {
-        path: 'discussion',
-        name: 'trip-discussion',
-        component: () => import('../views/TripDiscussionView.vue')
+        path: 'overview',
+        name: 'trip-overview',
+        component: () => import('../views/TripHomeView.vue')
       },
       {
-        path: 'check-list',
-        name: 'trip-check-list',
+        path: 'checklist/:listId',
+        name: 'trip-checklist',
         component: () => import('../views/TripCheckListView.vue')
-      },
-      {
-        path: 'settings',
-        name: 'trip-settings',
-        component: () => import('../views/TripSettingsView.vue')
-      },
-      {
-        path: 'members',
-        name: 'trip-members',
-        component: () => import('../views/TripMembersView.vue')
       }
     ]
   }

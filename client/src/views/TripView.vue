@@ -6,7 +6,7 @@
       <nav class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 mb-4">
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
-            <RouterLink :to="{ name: 'trip-discussion' }" v-slot="{ isActive }">
+            <RouterLink :to="{ name: 'trip-overview' }" v-slot="{ isActive }">
               <a
                 role="tab"
                 :class="
@@ -14,12 +14,14 @@
                     ? 'inline-block p-4 border-b-2 text-blue-600 border-blue-600 rounded-t-lg'
                     : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
                 "
-                >Diskusjon</a
+                >Oversikt</a
               ></RouterLink
             >
           </li>
           <li class="me-2">
-            <RouterLink :to="{ name: 'trip-check-list' }" v-slot="{ isActive }"
+            <RouterLink
+              :to="{ name: 'trip-checklist', params: { listId: 1 } }"
+              v-slot="{ isActive }"
               ><a
                 role="tab"
                 :class="
@@ -28,12 +30,14 @@
                     : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
                 "
                 aria-current="page"
-                >Pakkelister</a
+                >Shimashimarin's liste</a
               ></RouterLink
             >
           </li>
           <li class="me-2">
-            <RouterLink :to="{ name: 'trip-settings' }" v-slot="{ isActive }"
+            <RouterLink
+              :to="{ name: 'trip-checklist', params: { listId: 2 } }"
+              v-slot="{ isActive }"
               ><a
                 role="tab"
                 :class="
@@ -42,23 +46,22 @@
                     : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
                 "
                 aria-current="page"
-                >Innstillinger</a
+                >Nadeshiko 's liste</a
               ></RouterLink
             >
           </li>
           <li class="me-2">
-            <RouterLink :to="{ name: 'trip-members' }" v-slot="{ isActive }"
-              ><a
-                role="tab"
-                :class="
-                  isActive
-                    ? 'inline-block p-4 border-b-2 text-blue-600 border-blue-600 rounded-t-lg'
-                    : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
-                "
-                aria-current="page"
-                >Deltakere</a
-              ></RouterLink
-            >
+            <a
+              role="tab"
+              class="p-4 border-b-2 rounded-t-lg inline-flex items-center justify-center cursor-pointer"
+              :class="
+                isActive
+                  ? 'text-blue-600 border-blue-600 '
+                  : 'border-transparent hover:text-gray-600 hover:border-gray-300'
+              "
+              aria-current="page"
+              ><PlusIcon class="mr-1" /><span>Opprett liste</span>
+            </a>
           </li>
         </ul>
       </nav>
@@ -69,7 +72,7 @@
 </template>
 
 <script setup>
-import { RouterView, RouterLink } from 'vue-router'
+import PlusIcon from '@/components/icons/PlusIcon.vue'
 </script>
 
 <style></style>
