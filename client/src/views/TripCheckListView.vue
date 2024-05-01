@@ -2,7 +2,7 @@
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <p v-if="!items"><ListSkeleton /></p>
     <table v-else class="table-fixed text-sm text-left text-gray-500 rounded-md">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-200">
         <tr>
           <th class="px-6 py-3 w-full">Product</th>
           <th class="px-6 py-3 whitespace-nowrap">Qty</th>
@@ -11,15 +11,7 @@
         </tr>
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
-        <tr
-          v-for="item in items"
-          :key="item.product"
-          class="border-b checklist-item"
-          :class="{
-            'bg-white hover:bg-gray-50': !item._status?.editing,
-            'bg-gray-100': item._status?.editing
-          }"
-        >
+        <tr v-for="item in items" :key="item.product" class="border-b checklist-item bg-gray-100">
           <td class="w-full px-2 py-1 font-semibold text-gray-900">
             <input
               class="w-full block px-4 py-2 rounded-md outline-none"
@@ -84,7 +76,7 @@
       </TransitionGroup>
     </table>
 
-    <div class="w-full px-6 py-4 font-semibold text-gray-400" ref="addNewRef">
+    <div class="w-full px-6 py-4 font-semibold bg-gray-100 text-gray-400" ref="addNewRef">
       <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
         >Legg til ny</label
       >
@@ -158,6 +150,7 @@ onMounted(async () => {
 .checklist-enter,
 .checklist-leave-to {
   opacity: 0;
+  transform: translateX(300px);
 }
 .checklist-leave-active {
   position: absolute;
