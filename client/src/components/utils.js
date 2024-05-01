@@ -9,11 +9,14 @@ export function isElementInViewport(el) {
   )
 }
 
-export function scrollIntoView(el) {
+export function scrollIntoView(el, offsetY = 0) {
   if (isElementInViewport(el)) return
 
   const { bottom } = el.getBoundingClientRect()
   const newScrollPos =
-    window.scrollY + bottom - (window.innerHeight || document.documentElement.clientHeight) + 50
+    window.scrollY +
+    bottom -
+    (window.innerHeight || document.documentElement.clientHeight) +
+    offsetY
   scrollTo(0, newScrollPos)
 }

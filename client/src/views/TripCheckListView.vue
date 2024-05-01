@@ -84,10 +84,17 @@
         <input
           type="text"
           id="add-item"
-          class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+          class="block w-full p-4 text-sm border rounded-lg"
+          :class="{
+            'text-gray-900  border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500':
+              !errorMsg,
+            'bg-red-50 border-red-500 text-red-900 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500':
+              !!errorMsg
+          }"
           placeholder="Legg til ny"
           v-model="newItemName"
           @keydown.enter="addItem(newItemName)"
+          @keydown.esc="errorMsg = null"
         />
         <button
           @click="addItem(newItemName)"
@@ -96,6 +103,9 @@
           <PlusIcon class="h-4 w-4" />
         </button>
       </div>
+      <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <span class="font-medium">{{ errorMsg }}</span>
+      </p>
     </div>
   </div>
 </template>
@@ -110,16 +120,37 @@ import { scrollIntoView } from '../components/utils'
 const items = ref(null)
 const newItemName = ref('')
 const addNewRef = ref(null)
+const errorMsg = ref(null)
 
 function removeItem(item) {
   items.value = items.value.filter((i) => i.product != item)
 }
 
 function addItem(productName) {
+  productName = productName.trim()
+
+  if (productName === '') {
+    errorMsg.value = 'Kan ikke legge til ingenting!'
+    return
+  }
+
+  const matchingElement = items.value.find(
+    (i) =>
+      i.product.localeCompare(productName, undefined, {
+        usage: 'search',
+        sensitivity: 'base'
+      }) == 0
+  )
+  if (matchingElement) {
+    errorMsg.value = 'Dette er allerede i listen!'
+    return
+  }
+
+  errorMsg.value = null
   items.value.push({ product: productName, quantity: 1, packed: false })
   newItemName.value = ''
 
-  scrollIntoView(addNewRef.value)
+  scrollIntoView(addNewRef.value, 50)
 }
 
 function editItemName(item, newName) {
