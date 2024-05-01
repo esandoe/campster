@@ -25,7 +25,7 @@
           <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">Deltakere: 5 personer</p>
         </div>
         <router-link
-          :to="{ name: 'trip-overview' }"
+          :to="{ name: 'trip-overview', params: { tripId: 1 } }"
           class="inline-flex items-center px-3 py-2 mt-2 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
         >
           Gå til side

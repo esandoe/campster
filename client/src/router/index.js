@@ -13,7 +13,7 @@ const routes = [
     component: () => import('../views/AboutView.vue')
   },
   {
-    path: '/trip',
+    path: '/trip/:tripId',
     name: 'trip',
     component: () => import('../views/TripView.vue'),
     children: [
