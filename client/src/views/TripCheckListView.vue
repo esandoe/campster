@@ -12,12 +12,12 @@
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
         <tr
-          v-for="item in items"
+          v-for="(item, index) in items"
           :key="item.product"
           class="border-b checklist-item"
           :class="{
-            'bg-white hover:bg-gray-50': !item._status?.editing,
-            'bg-gray-100': item._status?.editing
+            'bg-gray-200': !item._status?.editing && index % 2 === 0,
+            'bg-gray-300': !item._status?.editing && index % 2 !== 0
           }"
         >
           <td class="w-full px-2 py-1 font-semibold text-gray-900">
