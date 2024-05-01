@@ -1,23 +1,40 @@
 <template>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <p v-if="!items"><ListSkeleton /></p>
-    <table v-else class="table-auto text-sm text-left text-gray-500 rounded-md">
+    <table v-else class="table-fixed text-sm text-left text-gray-500 rounded-md">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
         <tr>
-          <th scope="col" class="px-6 py-3">Product</th>
-          <th scope="col" class="px-6 py-3">Qty</th>
-          <th scope="col" class="px-6 py-3">Packed</th>
-          <th scope="col" class="px-6 py-3">Action</th>
+          <th class="px-6 py-3 w-full">Product</th>
+          <th class="px-6 py-3 whitespace-nowrap">Qty</th>
+          <th class="px-6 py-3 whitespace-nowrap">Packed</th>
+          <th class="px-6 py-3 whitespace-nowrap">Action</th>
         </tr>
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
         <tr
           v-for="item in items"
           :key="item.product"
-          class="bg-white border-b hover:bg-gray-50 checklist-item"
+          class="border-b checklist-item"
+          :class="{
+            'bg-white hover:bg-gray-50': !item._status?.editing,
+            'bg-gray-100': item._status?.editing
+          }"
         >
-          <td class="w-full px-6 py-4 font-semibold text-gray-900">{{ item.product }}</td>
-          <td class="px-6 py-4">
+          <td class="w-full px-2 py-1 font-semibold text-gray-900">
+            <input
+              class="w-full block px-4 py-2 rounded-md outline-none"
+              :class="{
+                'bg-transparent hover:bg-white cursor-pointer': !item._status?.editing,
+                'bg-white': item._status?.editing
+              }"
+              v-bind:value="item.product"
+              @click="item._status.editing = true"
+              @focus="item._status.editing = true"
+              @keydown.enter="(event) => editItemName(item, event.target.value)"
+              @blur="(event) => editItemName(item, event.target.value)"
+            />
+          </td>
+          <td class="px-6 py-3 whitespace-nowrap">
             <div class="flex items-center">
               <button
                 class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
@@ -47,7 +64,7 @@
               </button>
             </div>
           </td>
-          <td class="px-6 py-4">
+          <td class="px-6 py-3 whitespace-nowrap">
             <label class="inline-flex items-center cursor-pointer">
               <input type="checkbox" value="" class="sr-only peer" v-bind:checked="item.packed" />
               <div
@@ -55,7 +72,7 @@
               ></div>
             </label>
           </td>
-          <td class="px-6 py-4">
+          <td class="px-6 py-3 whitespace-nowrap">
             <button
               @click="removeItem(item.product)"
               class="font-medium text-red-600 hover:underline"
@@ -108,11 +125,21 @@ function addItem(productName) {
   newItemName.value = ''
 }
 
+function editItemName(item, newName) {
+  item.product = newName
+  item._status.editing = false
+}
+
 onMounted(async () => {
   try {
     const response = await fetch('/api/trip')
-    items.value = await response.json()
-    console.log(items.value)
+    const itemList = await response.json()
+    items.value = itemList.map((item) => ({
+      ...item,
+      _status: {
+        editing: false
+      }
+    }))
   } catch (err) {
     return err
   }
