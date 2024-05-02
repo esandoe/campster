@@ -57,7 +57,6 @@ class Trip(db.Model):
 @dataclass
 class SupplyTarget(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    trip: Mapped[Trip] = relationship(Trip)
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     name: Mapped[str] = mapped_column(unique=True)
     target_quantity: Mapped[int] = mapped_column(default=0)
