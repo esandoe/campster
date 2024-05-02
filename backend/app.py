@@ -25,6 +25,8 @@ db = SQLAlchemy(model_class=Base)
 class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(unique=True)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
 
 @dataclass
@@ -38,6 +40,8 @@ class ParticipantItem(db.Model):
     name: Mapped[str] = mapped_column(unique=True)
     quantity: Mapped[int] = mapped_column(default=0)
     packed: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
 
 @dataclass
@@ -47,6 +51,8 @@ class TripParticipant(db.Model):
     user: Mapped[User] = relationship(User)
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     items: Mapped[list[ParticipantItem]] = relationship("ParticipantItem")
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
 
 @dataclass
@@ -54,6 +60,8 @@ class Trip(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     participants: Mapped[list[TripParticipant]] = relationship(TripParticipant)
     name: Mapped[str] = mapped_column(unique=True)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
 
 @dataclass
@@ -63,6 +71,8 @@ class SupplyTarget(db.Model):
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     name: Mapped[str] = mapped_column(unique=True)
     target_quantity: Mapped[int] = mapped_column(default=0)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
 
 # instantiate the app
