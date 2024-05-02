@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from database import db, Trip, TripParticipant, ParticipantItem, User, SupplyTarget
 
@@ -51,6 +51,9 @@ def get_participant_items(trip_id, participant_id):
 
     return jsonify(items)
 
+@app.route("/avatars/<filename>", methods=["GET"])
+def get_avatar(filename):
+    return send_from_directory("avatars", filename)
 
 if __name__ == "__main__":
     app.run()

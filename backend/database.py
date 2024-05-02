@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
@@ -11,10 +12,18 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 
+class avatar_path(str, Enum):
+    FNIBS = "fnibs.png"
+    GRETP = "gretp.png"
+    KLERB = "klerb.png"
+    RTYNM = "rtynm.png"
+
+
 @dataclass
 class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(unique=True)
+    avatar: Mapped[avatar_path] = mapped_column(default=avatar_path.FNIBS)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
