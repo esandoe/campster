@@ -31,8 +31,13 @@ def get_trips():
 
 @app.route("/api/trip/<trip_id>/participants", methods=["GET"])
 def get_trip_participants(trip_id):
-    participants = TripParticipant.query.filter_by(trip_id=trip_id).all()
-    return jsonify(participants)
+    participants = (
+        TripParticipant.query.filter_by(trip_id=trip_id)
+        .join(TripParticipant.user)
+        .all()
+    )
+    users = [participant.user for participant in participants]
+    return jsonify(users)
 
 
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
@@ -51,9 +56,11 @@ def get_participant_items(trip_id, participant_id):
 
     return jsonify(items)
 
+
 @app.route("/avatars/<filename>", methods=["GET"])
 def get_avatar(filename):
     return send_from_directory("avatars", filename)
+
 
 if __name__ == "__main__":
     app.run()

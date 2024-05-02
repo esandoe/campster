@@ -2,28 +2,12 @@
   <div>
     <h2 class="py-5 text-lg font-semibold text-gray-900">Deltakere:</h2>
     <ul class="space-y-1 text-gray-500 list-inside">
-      <li class="flex items-center ps-2">
+      <li v-for="participant in participants" :key="participant.id" class="flex items-center ps-2">
         <img
-          src="https://cdn.myanimelist.net/r/42x62/images/characters/10/358813.webp?s=6e486ee37e8bc8f6ac8143b96142831f"
+          :src="'/avatars/' + participant.avatar"
           class="object-cover rounded-full h-5 w-5 my-1 me-1"
         />
-        Rin Shima
-      </li>
-      <li class="flex items-center ps-2">
-        <img
-          src="https://cdn.myanimelist.net/r/42x62/images/characters/2/366169.webp?s=afe9005b70cf1d0193fcd769e020a317"
-          class="object-cover rounded-full h-5 w-5 my-1 me-1"
-        />Nadeshiko Kagamihara
-      </li>
-      <li class="flex items-center ps-2">
-        <AnonymousUserIcon class="object-cover rounded-full h-5 w-5 my-1 me-1" />
-        Aoi Inuyama
-      </li>
-      <li class="flex items-center ps-2">
-        <img
-          src="https://cdn.myanimelist.net/r/42x62/images/characters/2/337013.webp?s=e53af3011799a7448ad1804a79bade68"
-          class="object-cover rounded-full h-5 w-5 my-1 me-1"
-        />Chiaki Oogaki
+        {{ participant.name }}
       </li>
     </ul>
 
@@ -112,6 +96,17 @@
 
 <script setup>
 import AnonymousUserIcon from '@/components/icons/AnonymousUserIcon.vue'
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+const tripId = useRoute().params.tripId
+
+const participants = ref(null)
+
+onMounted(async () => {
+  const response = await fetch(`/api/trip/${tripId}/participants`)
+  participants.value = await response.json()
+})
 </script>
 
 <style></style>

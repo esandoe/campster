@@ -47,7 +47,7 @@ sample_trips = [
         name="Glamping i Lofoten",
         participants=[
             TripParticipant(
-                user_id=user.id,
+                user=user,
                 trip_id=1,
                 items=[
                     ParticipantItem(supply_target=target, name=name, quantity=quantity)
