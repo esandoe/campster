@@ -31,7 +31,7 @@ def get_trips():
 
 @app.route("/api/trip/<trip_id>/participants", methods=["GET"])
 def get_trip_participants(trip_id):
-    participants = TripParticipant.query.filter_by(trip_id=trip_id).first()
+    participants = TripParticipant.query.filter_by(trip_id=trip_id).all()
     return jsonify(participants)
 
 
