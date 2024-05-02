@@ -2,11 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from database import db, Trip, TripParticipant, ParticipantItem, User
 
-from sample_data import (
-    sample_trip_item_data,
-    sample_trips,
-    sample_users,
-)
+from sample_data import sample_trips
 
 
 # instantiate the app
@@ -18,28 +14,8 @@ with app.app_context():
     db.drop_all()
     db.create_all()
 
-    for user in sample_users:
-        db.session.add(User(name=user["name"]))
-    db.session.commit()
-
     for trip in sample_trips:
-        db.session.add(
-            Trip(
-                name=trip["name"],
-                participants=[
-                    TripParticipant(user_id=user_id) for user_id in trip["participants"]
-                ],
-            )
-        )
-    db.session.commit()
-
-    for item in sample_trip_item_data:
-        trip_item = ParticipantItem(
-            participant_id=item["participant_id"],
-            name=item["name"],
-            quantity=item.get("target_quantity", 0),
-        )
-        db.session.add(trip_item)
+        db.session.add(trip)
     db.session.commit()
 
 
