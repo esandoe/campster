@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
-from random import sample
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy import ForeignKey
 from sample_data import (
     sample_trip_item_data,
     sample_trips,
