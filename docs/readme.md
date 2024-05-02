@@ -18,7 +18,8 @@ Recommended:
 
 - [VSCode](https://code.visualstudio.com/)
   - [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur)
-- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+  - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+  - [SQLite](https://marketplace.visualstudio.com/items?itemName=alexcvzz.vscode-sqlite)
 
 ### Running the backend 🐍🖥
 
@@ -27,10 +28,19 @@ create a python venv,
 activate the venv,
 install dependencies in said venv
 
+Windows
 ```powershell
 cd backend &&
 python -m venv .campsterenv &&
 .campsterenv/Scripts/Activate.ps1 &&
+pip install -r requirements.txt
+```
+
+Mac/Linux
+```bash
+cd backend &&
+python3.12 -m venv .campsterenv &&
+source .campsterenv/bin/activate &&
 pip install -r requirements.txt
 ```
 
