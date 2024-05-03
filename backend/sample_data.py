@@ -1,13 +1,36 @@
 import random
-from database import SupplyTarget, Trip, TripParticipant, ParticipantItem, User
+from database import (
+    SupplyTarget,
+    Trip,
+    TripParticipant,
+    ParticipantItem,
+    User,
+    avatar_path,
+)
 
 ids = list(range(1, 5))
 
 sample_users = [
-    User(id=ids.pop(random.randint(0, len(ids) - 1)), name="Rin Shima"),
-    User(id=ids.pop(random.randint(0, len(ids) - 1)), name="Nadeshiko Kagamihara"),
-    User(id=ids.pop(random.randint(0, len(ids) - 1)), name="Aoi Inuyama"),
-    User(id=ids.pop(random.randint(0, len(ids) - 1)), name="Chiaki Oogaki"),
+    User(
+        id=ids.pop(random.randint(0, len(ids) - 1)),
+        name="Rin Shima",
+        avatar=avatar_path.FNIBS,
+    ),
+    User(
+        id=ids.pop(random.randint(0, len(ids) - 1)),
+        name="Nadeshiko Kagamihara",
+        avatar=avatar_path.GRETP,
+    ),
+    User(
+        id=ids.pop(random.randint(0, len(ids) - 1)),
+        name="Aoi Inuyama",
+        avatar=avatar_path.KLERB,
+    ),
+    User(
+        id=ids.pop(random.randint(0, len(ids) - 1)),
+        name="Chiaki Oogaki",
+        avatar=avatar_path.RTYNM,
+    ),
 ]
 
 tent_target = SupplyTarget(trip_id=1, name="Soveplass i telt", target_quantity=3)
@@ -56,7 +79,7 @@ sample_trips = [
                     )
                 ],
             )
-            for user in random.sample(sample_users, 3)
+            for user in random.sample(sample_users, 4)
         ],
     )
 ]
