@@ -18,9 +18,9 @@
               ></RouterLink
             >
           </li>
-          <li class="me-2">
+          <li v-for="participant in participants" :key="participant.id" class="me-2">
             <RouterLink
-              :to="{ name: 'trip-checklist', params: { listId: 1 } }"
+              :to="{ name: 'trip-checklist', params: { listId: participant.id } }"
               v-slot="{ isActive }"
               ><a
                 role="tab"
@@ -30,38 +30,9 @@
                     : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
                 "
                 aria-current="page"
-                >Shimashimarin's liste</a
+                >{{ participant.name }}'s liste</a
               ></RouterLink
             >
-          </li>
-          <li class="me-2">
-            <RouterLink
-              :to="{ name: 'trip-checklist', params: { listId: 2 } }"
-              v-slot="{ isActive }"
-              ><a
-                role="tab"
-                :class="
-                  isActive
-                    ? 'inline-block p-4 border-b-2 text-blue-600 border-blue-600 rounded-t-lg'
-                    : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
-                "
-                aria-current="page"
-                >Nadeshiko 's liste</a
-              ></RouterLink
-            >
-          </li>
-          <li class="me-2">
-            <a
-              role="tab"
-              class="p-4 border-b-2 rounded-t-lg inline-flex items-center justify-center cursor-pointer"
-              :class="
-                isActive
-                  ? 'text-blue-600 border-blue-600 '
-                  : 'border-transparent hover:text-gray-600 hover:border-gray-300'
-              "
-              aria-current="page"
-              ><PlusIcon class="mr-1" /><span>Opprett liste</span>
-            </a>
           </li>
         </ul>
       </nav>
@@ -72,7 +43,17 @@
 </template>
 
 <script setup>
-import PlusIcon from '@/components/icons/PlusIcon.vue'
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+const participants = ref(null)
+
+const tripId = useRoute().params.tripId
+
+onMounted(async () => {
+  const response = await fetch(`/api/trip/${tripId}/participants`)
+  participants.value = await response.json()
+})
 </script>
 
 <style></style>

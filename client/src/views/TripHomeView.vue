@@ -99,9 +99,9 @@ import AnonymousUserIcon from '@/components/icons/AnonymousUserIcon.vue'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-const tripId = useRoute().params.tripId
-
 const participants = ref(null)
+
+const tripId = useRoute().params.tripId
 
 onMounted(async () => {
   const response = await fetch(`/api/trip/${tripId}/participants`)
