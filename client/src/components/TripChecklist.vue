@@ -4,15 +4,31 @@
     <table v-else class="table-fixed text-sm text-left text-gray-500 rounded-md">
       <thead class="text-xs text-gray-700 uppercase bg-gray-200">
         <tr>
-          <th class="px-6 py-3 w-full">Product</th>
+          <th class="pr-0"></th>
+          <th class="px-0 py-3 w-full">Product</th>
           <th class="px-1 md:px-6 py-3 whitespace-nowrap">Qty</th>
           <th class="px-2 md:px-6 py-3 whitespace-nowrap">Packed</th>
           <th class="px-1 md:px-6 py-3 whitespace-nowrap">Action</th>
         </tr>
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
-        <tr v-for="item in items" :key="item.name" class="border-b checklist-item bg-gray-100">
-          <td class="w-full px-2 py-1 font-semibold text-gray-900">
+        <tr
+          v-for="(item, pos) in items"
+          :key="item.name"
+          class="border-b checklist-item"
+          :class="{
+            'cursor-move bg-gray-200': dragHoverPosition === pos,
+            'bg-gray-100': dragHoverPosition !== pos
+          }"
+          @dragstart="(e) => dragstart_handler(e, pos)"
+          @drop="(e) => drop_handler(e, pos)"
+          @dragenter.prevent="dragHoverPosition = pos"
+          @dragover.prevent
+        >
+          <td draggable="true" class="cursor-pointer pr-0">
+            <DraggableItemIcon />
+          </td>
+          <td class="w-full px-0 py-1 font-semibold text-gray-900">
             <input
               class="w-full block px-4 py-2 rounded-md outline-none"
               :class="{
@@ -67,10 +83,7 @@
             </label>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
-            <button
-              @click="removeItem(item.product)"
-              class="font-medium text-red-600 hover:underline"
-            >
+            <button @click="removeItem(item.name)" class="font-medium text-red-600 hover:underline">
               Fjern
             </button>
           </td>
@@ -113,20 +126,38 @@
 </template>
 
 <script setup>
+import ListSkeleton from '@/components/ListSkeleton.vue'
+import DraggableItemIcon from '@/components/icons/DraggableItemIcon.vue'
+import MinusIcon from '@/components/icons/MinusIcon.vue'
+import PlusIcon from '@/components/icons/PlusIcon.vue'
+import { scrollIntoView } from '@/components/utils'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import ListSkeleton from '../components/ListSkeleton.vue'
-import MinusIcon from '../components/icons/MinusIcon.vue'
-import PlusIcon from '../components/icons/PlusIcon.vue'
-import { scrollIntoView } from '../components/utils'
 
 const items = ref(null)
 const newItemName = ref('')
 const addNewRef = ref(null)
 const errorMsg = ref(null)
 
+const dragHoverPosition = ref(null)
+
+Array.prototype.move = function (from, to) {
+  this.splice(to, 0, this.splice(from, 1)[0])
+  return this
+}
+
+function dragstart_handler(event, startPos) {
+  event.dataTransfer.setData('startPos', startPos)
+}
+
+function drop_handler(event, dropPos) {
+  event.preventDefault()
+  items.value.move(event.dataTransfer.getData('startPos'), dropPos)
+  dragHoverPosition.value = null
+}
+
 function removeItem(item) {
-  items.value = items.value.filter((i) => i.product != item)
+  items.value = items.value.filter((i) => i.name != item)
 }
 
 function addItem(productName) {
@@ -157,8 +188,10 @@ function addItem(productName) {
 }
 
 function editItemName(item, newName) {
-  item.product = newName
-  item._status.editing = false
+  if (item._status?.editing) {
+    item.product = newName
+    item._status.editing = false
+  }
 }
 
 onMounted(async () => {
@@ -180,10 +213,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.checklist-move,
+.checklist-enter-active,
+.checklist-leave-active,
 .checklist-item {
-  transition: all 0.5s;
+  transition:
+    all 0.5s ease,
+    background-color 0s;
 }
 .checklist-enter,
+.checklist-enter-from,
 .checklist-leave-to {
   opacity: 0;
   transform: translateX(300px);
