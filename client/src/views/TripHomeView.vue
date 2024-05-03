@@ -1,15 +1,37 @@
 <template>
   <div>
-    <h2 class="py-5 text-lg font-semibold text-gray-900">Deltakere:</h2>
-    <ul class="space-y-1 text-gray-500 list-inside">
-      <li v-for="participant in participants" :key="participant.id" class="flex items-center ps-2">
-        <img
-          :src="'/avatars/' + participant.avatar"
-          class="object-cover rounded-full h-5 w-5 my-1 me-1"
-        />
-        {{ participant.name }}
-      </li>
-    </ul>
+    <div aria-labelledby="trip-attributes">
+      <dl class="grid grid-cols-2 gap-3 p-4 mx-auto">
+        <div class="grid grid-cols-1">
+          <div class="flex flex-col items-left">
+            <dt class="text-lg font-semibold text-gray-900">Start-dato</dt>
+            <dd class="mb-2 text-normal">{{ trip?.start_date }}</dd>
+          </div>
+          <div class="flex flex-col items-left">
+            <dt class="text-lg font-semibold text-gray-900">Slutt-dato</dt>
+            <dd class="mb-2 text-normal">{{ trip?.start_date }}</dd>
+          </div>
+          <div class="flex flex-col items-left">
+            <dt class="text-lg font-semibold text-gray-900">Lokasjon:</dt>
+            <dd class="mb-2 text-normal">{{ trip?.location }}</dd>
+          </div>
+        </div>
+        <div class="space-y-1 text-gray-500">
+          <dt class="text-lg font-semibold text-gray-900">Deltakere</dt>
+          <span
+            v-for="participant in participants"
+            :key="participant.id"
+            class="flex items-center text-normal"
+          >
+            <img
+              :src="'/avatars/' + participant.avatar"
+              class="object-cover rounded-full h-5 w-5 my-1 me-2"
+            />
+            {{ participant.name }}
+          </span>
+        </div>
+      </dl>
+    </div>
 
     <h2 class="py-5 text-lg font-semibold text-gray-900">Innlegg</h2>
     <div class="flex items-start gap-2.5">
@@ -100,12 +122,14 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const participants = ref(null)
+const trip = ref(null)
 
 const tripId = useRoute().params.tripId
 
 onMounted(async () => {
-  const response = await fetch(`/api/trip/${tripId}/participants`)
-  participants.value = await response.json()
+  const tripResponse = await fetch(`/api/trips/${tripId}`)
+  trip.value = await tripResponse.json()
+  participants.value = trip.value.participants
 })
 </script>
 

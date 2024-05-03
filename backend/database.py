@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
+
 
 class Base(DeclarativeBase):
     pass
@@ -59,6 +60,9 @@ class Trip(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     participants: Mapped[list[TripParticipant]] = relationship(TripParticipant)
     name: Mapped[str] = mapped_column(unique=True)
+    start_date: Mapped[date] = mapped_column()
+    end_date: Mapped[date] = mapped_column()
+    location: Mapped[str] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
 

@@ -7,6 +7,7 @@ from database import (
     User,
     avatar_path,
 )
+from datetime import date
 
 ids = list(range(1, 5))
 
@@ -68,6 +69,9 @@ sample_participant_items = [
 sample_trips = [
     Trip(
         name="Glamping i Lofoten",
+        start_date=date(2022, 5, 9),
+        end_date=date(2022, 5, 11),
+        location="Lofoten",
         participants=[
             TripParticipant(
                 user=user,

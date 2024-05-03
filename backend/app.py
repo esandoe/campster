@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
-from database import db, Trip, TripParticipant, ParticipantItem, User, SupplyTarget
+from database import db, Trip, TripParticipant, SupplyTarget
 
 from sample_data import sample_trips
 
@@ -27,6 +27,22 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 def get_trips():
     trips = Trip.query.all()
     return jsonify(trips)
+
+
+@app.route("/api/trips/<trip_id>", methods=["GET"])
+def get_trip(trip_id):
+    trip = Trip.query.filter_by(id=trip_id).first_or_404()
+
+    return jsonify(
+        {
+            "id": trip.id,
+            "name": trip.name,
+            "start_date": trip.start_date,
+            "end_date": trip.end_date,
+            "location": trip.location,
+            "participants": [participant.user for participant in trip.participants],
+        }
+    )
 
 
 @app.route("/api/trip/<trip_id>/participants", methods=["GET"])

@@ -47,12 +47,14 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const participants = ref(null)
+const trip = ref(null)
 
 const tripId = useRoute().params.tripId
 
 onMounted(async () => {
-  const response = await fetch(`/api/trip/${tripId}/participants`)
-  participants.value = await response.json()
+  const tripResponse = await fetch(`/api/trips/${tripId}`)
+  trip.value = await tripResponse.json()
+  participants.value = trip.value.participants
 })
 </script>
 
