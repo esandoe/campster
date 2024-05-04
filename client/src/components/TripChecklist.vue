@@ -83,7 +83,7 @@
             </label>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
-            <button @click="removeItem(item.name)" class="font-medium text-red-600 hover:underline">
+            <button @click="removeItem(item)" class="font-medium text-red-600 hover:underline">
               Fjern
             </button>
           </td>
@@ -138,8 +138,9 @@ const items = ref(null)
 const newItemName = ref('')
 const addNewRef = ref(null)
 const errorMsg = ref(null)
-
 const dragHoverPosition = ref(null)
+
+const params = useRoute().params
 
 Array.prototype.move = function (from, to) {
   this.splice(to, 0, this.splice(from, 1)[0])
@@ -158,21 +159,29 @@ function drop_handler(event, dropPos) {
   dragHoverPosition.value = null
 }
 
-function removeItem(item) {
-  items.value = items.value.filter((i) => i.name != item)
+async function removeItem(item) {
+  const response = await fetch(`/api/participant/${params.listId}/items`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: item.id })
+  })
+
+  if (response.ok) items.value = items.value.filter((i) => i.id != item.id)
 }
 
-function addItem(productName) {
-  productName = productName.trim()
+async function addItem(itemName) {
+  itemName = itemName.trim()
 
-  if (productName === '') {
+  if (itemName === '') {
     errorMsg.value = 'Kan ikke legge til ingenting!'
     return
   }
 
   const matchingElement = items.value.find(
     (i) =>
-      i.product.localeCompare(productName, undefined, {
+      i.name.localeCompare(itemName, undefined, {
         usage: 'search',
         sensitivity: 'base'
       }) == 0
@@ -183,7 +192,16 @@ function addItem(productName) {
   }
 
   errorMsg.value = null
-  items.value.push({ product: productName, quantity: 1, packed: false })
+  const response = await fetch(`/api/participant/${params.listId}/items`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: itemName })
+  })
+  const item = await response.json()
+  console.log(item)
+  items.value.push(item)
   newItemName.value = ''
 
   scrollIntoView(addNewRef.value, 50)
@@ -198,8 +216,6 @@ function editItemName(item, newName) {
 
 onMounted(async () => {
   try {
-    const params = useRoute().params
-
     const response = await fetch(`/api/trip/${params.tripId}/participant/${params.listId}/items`)
     const itemList = await response.json()
     items.value = itemList.map((item) => ({
@@ -224,7 +240,6 @@ onMounted(async () => {
     background-color 0s;
 }
 .checklist-enter,
-.checklist-enter-from,
 .checklist-leave-to {
   opacity: 0;
   transform: translateX(300px);

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from database import ParticipantItem, db, Trip, TripParticipant, SupplyTarget
 
@@ -68,7 +68,9 @@ def get_supply_targets(trip_id):
                 "target_quantity": target.target_quantity,
                 "items": [
                     {"id": item.id, "name": item.name, "quantity": item.quantity}
-                    for item in ParticipantItem.query.filter_by(supply_target=target).all()
+                    for item in ParticipantItem.query.filter_by(
+                        supply_target=target
+                    ).all()
                 ],
             }
             for target in targets
@@ -85,6 +87,26 @@ def get_participant_items(trip_id, participant_id):
     )
 
     return jsonify(items)
+
+
+@app.route("/api/participant/<participant_id>/items", methods=["POST"])
+def add_participant_item(participant_id):
+    participant = TripParticipant.query.filter_by(id=participant_id).first_or_404()
+
+    item = ParticipantItem(participant_id=participant_id, name=request.json["name"])
+    participant.items.append(item)
+    db.session.commit()
+    return jsonify(item)
+
+
+@app.route("/api/participant/<participant_id>/items", methods=["DELETE"])
+def delete_participant_item(participant_id):
+    item = ParticipantItem.query.filter_by(
+        participant_id=participant_id, id=request.json["id"]
+    ).first_or_404()
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify(success=True)
 
 
 @app.route("/avatars/<filename>", methods=["GET"])
