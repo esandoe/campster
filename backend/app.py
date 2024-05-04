@@ -99,6 +99,22 @@ def add_participant_item(participant_id):
     return jsonify(item)
 
 
+@app.route("/api/participant/<participant_id>/items/<item_id>", methods=["PUT"])
+def update_participant_item(participant_id, item_id):
+    item = ParticipantItem.query.filter_by(
+        id=item_id, participant_id=participant_id
+    ).first_or_404()
+
+    item.name = request.json["name"]
+    item.quantity = request.json["quantity"]
+    item.packed = request.json["packed"]
+
+    db.session.commit()
+    return jsonify(
+        {"name": item.name, "quantity": item.quantity, "packed": item.packed}
+    )
+
+
 @app.route("/api/participant/<participant_id>/items", methods=["DELETE"])
 def delete_participant_item(participant_id):
     item = ParticipantItem.query.filter_by(

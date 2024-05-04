@@ -14,7 +14,7 @@
       <TransitionGroup name="checklist" tag="tbody">
         <tr
           v-for="(item, pos) in items"
-          :key="item.name"
+          :key="item.id"
           class="border-b checklist-item"
           :class="{
             'cursor-move bg-gray-200': dragHoverPosition === pos,
@@ -35,7 +35,7 @@
                 'bg-transparent hover:bg-white cursor-pointer': !item._status?.editing,
                 'bg-white': item._status?.editing
               }"
-              v-bind:value="item.name"
+              :value="item.name"
               @click="item._status.editing = true"
               @focus="item._status.editing = true"
               @keydown.enter="(event) => editItemName(item, event.target.value)"
@@ -47,7 +47,7 @@
               <button
                 class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
                 type="button"
-                @click="item.quantity--"
+                @click="updateItem(item, 'quantity', --item.quantity)"
               >
                 <span class="sr-only">Quantity button</span>
                 <minus-icon />
@@ -58,14 +58,15 @@
                   id="first_product"
                   class="bg-gray-50 w-14 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2.5 py-1"
                   placeholder="0"
-                  v-model="item.quantity"
+                  :value="item.quantity"
+                  @input="(event) => updateItem(item, 'quantity', event.target.value)"
                   required
                 />
               </div>
               <button
                 class="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
                 type="button"
-                @click="item.quantity++"
+                @click="updateItem(item, 'quantity', ++item.quantity)"
               >
                 <span class="sr-only">Quantity button</span>
                 <plus-icon />
@@ -76,9 +77,9 @@
             <label class="inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                value=""
                 class="w-5 h-5 text-xl text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                v-bind:checked="item.packed"
+                :checked="item.packed"
+                @input="updateItem(item, 'packed', !item.packed)"
               />
             </label>
           </td>
@@ -209,8 +210,27 @@ async function addItem(itemName) {
 
 function editItemName(item, newName) {
   if (item._status?.editing) {
-    item.product = newName
+    updateItem(item, 'name', newName)
     item._status.editing = false
+  }
+}
+
+async function updateItem(item, attr, val) {
+  try {
+    const response = await fetch(`/api/participant/${params.listId}/items/${item.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ...item, [attr]: val })
+    })
+    const savedItem = await response.json()
+
+    item.name = savedItem.name
+    item.quantity = savedItem.quantity
+    item.packed = savedItem.packed
+  } catch (err) {
+    return err
   }
 }
 
