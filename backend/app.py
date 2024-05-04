@@ -46,7 +46,7 @@ def get_trip(trip_id):
 
 
 @app.route("/api/trip/<trip_id>/participants", methods=["GET"])
-def get_trip_participants(trip_id):
+def get_participants(trip_id):
     participants = (
         TripParticipant.query.filter_by(trip_id=trip_id)
         .join(TripParticipant.user)
@@ -76,6 +76,13 @@ def get_supply_targets(trip_id):
             for target in targets
         ]
     )
+
+@app.route("/api/trip/<trip_id>/supply-targets/<supply_target_id>", methods=["DELETE"])
+def delete_supply_target(trip_id, supply_target_id):
+    target = SupplyTarget.query.filter_by(id=supply_target_id, trip_id=trip_id).first_or_404()
+    db.session.delete(target)
+    db.session.commit()
+    return jsonify(success=True)
 
 
 @app.route("/api/trip/<trip_id>/participant/<participant_id>/items", methods=["GET"])

@@ -35,7 +35,9 @@ class User(db.Model):
 class ParticipantItem(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     participant_id: Mapped[int] = mapped_column(ForeignKey("trip_participant.id"))
-    supply_target: Mapped["SupplyTarget"] = relationship("SupplyTarget")
+    supply_target: Mapped["SupplyTarget"] = relationship(
+        "SupplyTarget", backref="participant_items"
+    )
     supply_target_id: Mapped[int] = mapped_column(
         ForeignKey("supply_target.id"), nullable=True
     )
@@ -52,7 +54,7 @@ class ParticipantItem(db.Model):
 class TripParticipant(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    user: Mapped[User] = relationship(User)
+    user: Mapped[User] = relationship(User, backref="trip_participations")
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     items: Mapped[list[ParticipantItem]] = relationship("ParticipantItem")
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
@@ -64,7 +66,9 @@ class TripParticipant(db.Model):
 @dataclass
 class Trip(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    participants: Mapped[list[TripParticipant]] = relationship(TripParticipant)
+    participants: Mapped[list[TripParticipant]] = relationship(
+        TripParticipant, backref="trip"
+    )
     name: Mapped[str] = mapped_column(unique=True)
     start_date: Mapped[date] = mapped_column()
     end_date: Mapped[date] = mapped_column()
