@@ -5,11 +5,11 @@
         <div class="grid grid-cols-1">
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Start-dato</dt>
-            <dd class="mb-2 text-normal">{{ trip?.start_date }}</dd>
+            <dd class="mb-2 text-normal">{{ startDate }}</dd>
           </div>
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Slutt-dato</dt>
-            <dd class="mb-2 text-normal">{{ trip?.start_date }}</dd>
+            <dd class="mb-2 text-normal">{{ endDate }}</dd>
           </div>
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Lokasjon:</dt>
@@ -118,11 +118,26 @@
 
 <script setup>
 import AnonymousUserIcon from '@/components/icons/AnonymousUserIcon.vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const participants = ref(null)
 const trip = ref(null)
+
+const dateOptions = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}
+
+const startDate = computed(() => {
+  return new Date(trip.value?.start_date).toLocaleDateString('NO-no', dateOptions)
+})
+
+const endDate = computed(() => {
+  return new Date(trip.value?.end_date).toLocaleDateString('NO-no', dateOptions)
+})
 
 const tripId = useRoute().params.tripId
 
