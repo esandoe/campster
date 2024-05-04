@@ -2,7 +2,7 @@
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <p v-if="!items"><ListSkeleton /></p>
     <table v-else class="table-fixed text-sm text-left text-gray-500 rounded-md">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+      <thead class="text-lg text-gray-700 bg-gray-200">
         <tr>
           <th class="pr-0"></th>
           <th class="px-0 py-3 w-full">Product</th>
@@ -28,7 +28,7 @@
           <td draggable="true" class="cursor-pointer pr-0">
             <DraggableItemIcon />
           </td>
-          <td class="w-full px-0 py-1 font-semibold text-gray-900">
+          <td class="w-full px-0 py-1 text-lg text-gray-900">
             <input
               class="w-full block px-4 py-2 rounded-md outline-none"
               :class="{
