@@ -26,7 +26,7 @@ class User(db.Model):
     name: Mapped[str] = mapped_column(unique=True)
     avatar: Mapped[avatar_path] = mapped_column(default=avatar_path.FNIBS)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
 
 
 @dataclass
@@ -41,7 +41,7 @@ class ParticipantItem(db.Model):
     quantity: Mapped[int] = mapped_column(default=0)
     packed: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
 
 
 @dataclass
@@ -52,7 +52,7 @@ class TripParticipant(db.Model):
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     items: Mapped[list[ParticipantItem]] = relationship("ParticipantItem")
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
 
 
 @dataclass
@@ -64,7 +64,7 @@ class Trip(db.Model):
     end_date: Mapped[date] = mapped_column()
     location: Mapped[str] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
 
 
 @dataclass
@@ -74,4 +74,4 @@ class SupplyTarget(db.Model):
     name: Mapped[str] = mapped_column(unique=True)
     target_quantity: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
