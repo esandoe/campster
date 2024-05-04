@@ -68,7 +68,7 @@ def get_supply_targets(trip_id):
                 "target_quantity": target.target_quantity,
                 "items": [
                     {"id": item.id, "name": item.name, "quantity": item.quantity}
-                    for item in target.items
+                    for item in ParticipantItem.query.filter_by(supply_target=target).all()
                 ],
             }
             for target in targets
