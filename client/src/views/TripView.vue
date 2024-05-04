@@ -1,7 +1,7 @@
 <template>
   <div class="container max-w-screen-lg mx-auto py-20">
     <main class="bg-white p-10 rounded-lg shadow">
-      <h2 class="text-5xl font-bold text-[#08384e] max-w-prose pb-4">Tur til Rustfjellhei</h2>
+      <h2 class="text-5xl font-bold text-[#08384e] max-w-prose pb-4">{{ trip.name }}</h2>
 
       <nav class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 mb-4">
         <ul class="flex flex-wrap -mb-px">
