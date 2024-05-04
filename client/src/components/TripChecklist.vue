@@ -148,6 +148,8 @@ Array.prototype.move = function (from, to) {
 
 function dragstart_handler(event, startPos) {
   event.dataTransfer.setData('startPos', startPos)
+  const parentRow = event.target.parentElement
+  event.dataTransfer.setDragImage(parentRow, parentRow.width, parentRow.height)
 }
 
 function drop_handler(event, dropPos) {
