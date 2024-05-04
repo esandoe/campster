@@ -23,6 +23,11 @@ const routes = [
         component: () => import('../views/TripHomeView.vue')
       },
       {
+        path: 'supply-list',
+        name: 'trip-supply-list',
+        component: () => import('../views/TripSupplyView.vue')
+      },
+      {
         path: 'checklist/:listId',
         name: 'trip-checklist',
         component: () => import('../views/TripCheckListView.vue')

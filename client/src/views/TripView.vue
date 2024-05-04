@@ -18,6 +18,19 @@
               ></RouterLink
             >
           </li>
+          <li class="me-2">
+            <RouterLink :to="{ name: 'trip-supply-list' }" v-slot="{ isActive }">
+              <a
+                role="tab"
+                :class="
+                  isActive
+                    ? 'inline-block p-4 border-b-2 text-blue-600 border-blue-600 rounded-t-lg'
+                    : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
+                "
+                >Forsyningsmål</a
+              ></RouterLink
+            >
+          </li>
           <li v-for="participant in participants" :key="participant.id" class="me-2">
             <RouterLink
               :to="{ name: 'trip-checklist', params: { listId: participant.id } }"
