@@ -38,7 +38,7 @@ class ParticipantItem(db.Model):
         ForeignKey("supply_target.id"), nullable=True
     )
     name: Mapped[str] = mapped_column()
-    quantity: Mapped[int] = mapped_column(default=0)
+    quantity: Mapped[int] = mapped_column(default=1)
     packed: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
