@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
-from database import db, Trip, TripParticipant, SupplyTarget
+from database import ParticipantItem, db, Trip, TripParticipant, SupplyTarget
 
 from sample_data import sample_trips
 
@@ -59,7 +59,21 @@ def get_trip_participants(trip_id):
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
 def get_supply_targets(trip_id):
     targets = SupplyTarget.query.filter_by(trip_id=trip_id).all()
-    return jsonify(targets)
+
+    return jsonify(
+        [
+            {
+                "id": target.id,
+                "name": target.name,
+                "target_quantity": target.target_quantity,
+                "items": [
+                    {"id": item.id, "name": item.name, "quantity": item.quantity}
+                    for item in target.items
+                ],
+            }
+            for target in targets
+        ]
+    )
 
 
 @app.route("/api/trip/<trip_id>/participant/<participant_id>/items", methods=["GET"])

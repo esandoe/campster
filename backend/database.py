@@ -73,5 +73,6 @@ class SupplyTarget(db.Model):
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     name: Mapped[str] = mapped_column(unique=True)
     target_quantity: Mapped[int] = mapped_column(default=0)
+    items: Mapped[list[ParticipantItem]] = relationship(back_populates="supply_target")
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
