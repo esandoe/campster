@@ -1,23 +1,37 @@
-from flask import Flask, jsonify, send_from_directory, request
+from database import ParticipantItem, SupplyTarget, Trip, TripParticipant, User, db
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from database import ParticipantItem, db, Trip, TripParticipant, SupplyTarget
-
 from sample_data import sample_trips
 
 
 # instantiate the app
-app = Flask(__name__)
-app.config.from_object(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///campster.db"
-db.init_app(app)
-with app.app_context():
-    db.drop_all()
-    db.create_all()
+def create_app():
+    app = Flask(__name__)
 
-    for trip in sample_trips:
-        db.session.add(trip)
-    db.session.commit()
+    app.config.from_object(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///campster.db"
+    app.config["SECRET_KEY"] = "super-secret-key"
 
+    db.init_app(app)
+
+    # blueprint for auth routes in our app
+    from auth import auth as auth_blueprint
+
+    app.register_blueprint(auth_blueprint)
+
+    # Initialize database with dummy data on each restart
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+
+        for trip in sample_trips:
+            db.session.add(trip)
+        db.session.commit()
+
+    return app
+
+
+app = create_app()
 
 # enable CORS
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -77,9 +91,12 @@ def get_supply_targets(trip_id):
         ]
     )
 
+
 @app.route("/api/trip/<trip_id>/supply-targets/<supply_target_id>", methods=["DELETE"])
 def delete_supply_target(trip_id, supply_target_id):
-    target = SupplyTarget.query.filter_by(id=supply_target_id, trip_id=trip_id).first_or_404()
+    target = SupplyTarget.query.filter_by(
+        id=supply_target_id, trip_id=trip_id
+    ).first_or_404()
     db.session.delete(target)
     db.session.commit()
     return jsonify(success=True)

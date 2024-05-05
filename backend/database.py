@@ -23,6 +23,8 @@ class avatar_path(str, Enum):
 @dataclass
 class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    email: Mapped[str] = mapped_column(unique=True)
+    password: Mapped[str] = mapped_column()
     name: Mapped[str] = mapped_column(unique=True)
     avatar: Mapped[avatar_path] = mapped_column(default=avatar_path.FNIBS)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
