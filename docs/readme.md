@@ -1,5 +1,7 @@
 # Campster
 
+Campster is a camping/hike planning tool, currently focused on making packing lists easy, including shared supply targets!
+
 ![Nadeshiko eating cup ramen](https://github.com/Lian-D/Lian-d/raw/master/nadeshiko.gif)
 
 ## Getting started
