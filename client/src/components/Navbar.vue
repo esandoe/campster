@@ -1,7 +1,3 @@
-<script setup>
-import { RouterLink } from 'vue-router'
-</script>
-
 <template>
   <nav class="bg-[#f08939] border-gray-200">
     <div class="max-w-screen-lg flex flex-wrap items-center justify-between mx-auto p-4">
@@ -35,27 +31,57 @@ import { RouterLink } from 'vue-router'
       </button>
       <div class="hidden w-full md:block md:w-auto" id="navbar-default">
         <ul
-          class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 dark:border-gray-700"
+          class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
         >
+          <li v-if="user">
+            <span class="py-0 px-2 flex items-center text-white">
+              <img
+                :src="'/avatars/' + user.avatar"
+                class="object-cover rounded-full h-5 w-5 mx-2"
+              />
+              <span>{{ user.name }}</span>
+            </span>
+          </li>
+          <li v-else>
+            <RouterLink :to="{ name: 'login' }">
+              <a
+                class="block py-2 px-3 text-white rounded hover:text-gray-100 md:bg-transparent md:p-0"
+                aria-current="page"
+                >Logg inn</a
+              >
+            </RouterLink>
+          </li>
           <li>
-            <router-link to="/">
+            <RouterLink to="/">
               <a
                 class="block py-2 px-3 text-white rounded hover:text-gray-100 md:bg-transparent md:p-0"
                 aria-current="page"
                 >Home</a
               >
-            </router-link>
+            </RouterLink>
           </li>
           <li>
-            <router-link to="/about">
+            <RouterLink to="/about">
               <a
                 class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                 >About</a
               >
-            </router-link>
+            </RouterLink>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const user = ref(null)
+
+onMounted(async () => {
+  const response = await fetch('api/profile')
+
+  if (response.ok) user.value = await response.json()
+})
+</script>

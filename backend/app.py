@@ -1,7 +1,7 @@
-from database import ParticipantItem, SupplyTarget, Trip, TripParticipant, User, db
+from database import ParticipantItem, SupplyTarget, Trip, TripParticipant, db
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from flask_login import LoginManager, current_user, login_required
+from flask_login import LoginManager
 from sample_data import sample_trips
 
 
@@ -51,12 +51,6 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 def get_trips():
     trips = Trip.query.all()
     return jsonify(trips)
-
-
-@app.route("/api/profile", methods=["GET"])
-@login_required
-def get_profile():
-    return jsonify(current_user)
 
 
 @app.route("/api/trips/<trip_id>", methods=["GET"])

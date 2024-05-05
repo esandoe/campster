@@ -1,6 +1,6 @@
 from database import User, db
 from flask import Blueprint, jsonify, request
-from flask_login import login_required, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 auth = Blueprint("auth", __name__)
@@ -64,3 +64,16 @@ def signup():
 def logout():
     logout_user()
     return jsonify(Success="Logged out")
+
+
+@auth.route("/api/profile", methods=["GET"])
+@login_required
+def get_profile():
+    return jsonify(
+        {
+            "id": current_user.id,
+            "name": current_user.name,
+            "email": current_user.email,
+            "avatar": current_user.avatar,
+        }
+    )
