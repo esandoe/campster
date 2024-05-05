@@ -1,23 +1,39 @@
-from sre_constants import SUCCESS
-from uu import Error
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Blueprint, jsonify, request
 from database import User, db
+from flask import Blueprint, jsonify, request
+from flask_login import login_required, login_user, logout_user
+from werkzeug.security import check_password_hash, generate_password_hash
 
 auth = Blueprint("auth", __name__)
 
 
-@auth.route("/login")
-def login():
-    return "Login"
+@auth.route("/api/login", methods=["POST"])
+def login_post():
+    email = request.json.get("email")
+    password = request.json.get("password")
+    remember = bool(request.json.get("remember"))
+
+    if email is None or email == "":
+        return jsonify(Error="Email is required")
+
+    if password is None or password == "":
+        return jsonify(Error="Password is required")
+
+    user = User.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
+        return jsonify(Error="Please check your login details and try again.")
+
+    login_user(user, remember=remember)
+    return jsonify(Success="Logged in.")
 
 
 @auth.route("/api/signup", methods=["POST"])
 def signup():
     # code to validate and add user to database goes here
-    email = request.form.get("email")
-    name = request.form.get("name")
-    password = request.form.get("password")
+    email = request.json.get("email")
+    password = request.json.get("password")
+    name = request.json.get("name")
+
+    print(email, password, name)
 
     if email is None or email == "":
         return jsonify(Error="Email is required")
@@ -28,31 +44,23 @@ def signup():
     if password is None or password == "":
         return jsonify(Error="Password is required")
 
-    user = User.query.filter_by(
-        email=email
-    ).first()  # if this returns a user, then the email already exists in database
-
+    user = User.query.filter_by(email=email).first()
     if user:
         return jsonify(Error="User already exists")
 
-    # create a new user with the form data. Hash the password so the plaintext version isn't saved.
     new_user = User(
         email=email,
         name=name,
         password=generate_password_hash(password, method="scrypt"),
     )
 
-    # add the new user to the database
     db.session.add(new_user)
     db.session.commit()
     return jsonify(Success="User created")
 
 
 @auth.route("/logout")
+@login_required
 def logout():
-    return "Logout"
-
-
-@auth.route("/profile")
-def profile():
-    return "Profile"
+    logout_user()
+    return jsonify(Success="Logged out")

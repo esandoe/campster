@@ -4,6 +4,7 @@ from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
+from flask_login import UserMixin
 
 
 class Base(DeclarativeBase):
@@ -21,7 +22,7 @@ class avatar_path(str, Enum):
 
 
 @dataclass
-class User(db.Model):
+class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
