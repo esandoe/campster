@@ -21,7 +21,7 @@
             'bg-gray-100': dragHoverPosition !== pos
           }"
           @dragstart="(e) => dragstart_handler(e, pos)"
-          @drop="(e) => drop_handler(e, pos)"
+          @drop="(e) => dropHandler(e, pos)"
           @dragenter.prevent="dragHoverPosition = pos"
           @dragover.prevent
         >
@@ -154,10 +154,17 @@ function dragstart_handler(event, startPos) {
   event.dataTransfer.setDragImage(parentRow, parentRow.width, parentRow.height)
 }
 
-function drop_handler(event, dropPos) {
+function dropHandler(event, dropPos) {
   event.preventDefault()
   items.value.move(event.dataTransfer.getData('startPos'), dropPos)
   dragHoverPosition.value = null
+
+  const prev = items.value[dropPos - 1]?.index || 0
+  const next = items.value[dropPos + 1]?.index || 1_000_000_000
+
+  const newIndex = Math.floor((prev + next) / 2)
+
+  updateItem(items.value[dropPos], 'index', newIndex)
 }
 
 async function removeItem(item) {
@@ -225,7 +232,7 @@ async function updateItem(item, attr, val) {
       body: JSON.stringify({ ...item, [attr]: val })
     })
     const savedItem = await response.json()
-
+    item.index = savedItem.index
     item.name = savedItem.name
     item.quantity = savedItem.quantity
     item.packed = savedItem.packed
@@ -238,12 +245,14 @@ onMounted(async () => {
   try {
     const response = await fetch(`/api/trip/${params.tripId}/participant/${params.listId}/items`)
     const itemList = await response.json()
-    items.value = itemList.map((item) => ({
-      ...item,
-      _status: {
-        editing: false
-      }
-    }))
+    items.value = itemList
+      .map((item) => ({
+        ...item,
+        _status: {
+          editing: false
+        }
+      }))
+      .sort((a, b) => a.index - b.index)
   } catch (err) {
     return err
   }

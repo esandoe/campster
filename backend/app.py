@@ -139,13 +139,19 @@ def update_participant_item(participant_id, item_id):
         id=item_id, participant_id=participant_id
     ).first_or_404()
 
+    item.index = request.json["index"]
     item.name = request.json["name"]
     item.quantity = request.json["quantity"]
     item.packed = request.json["packed"]
 
     db.session.commit()
     return jsonify(
-        {"name": item.name, "quantity": item.quantity, "packed": item.packed}
+        {
+            "index": item.index,
+            "name": item.name,
+            "quantity": item.quantity,
+            "packed": item.packed,
+        }
     )
 
 

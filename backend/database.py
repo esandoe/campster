@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, date
 from enum import Enum
+import random
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
@@ -37,6 +38,9 @@ class User(UserMixin, db.Model):
 @dataclass
 class ParticipantItem(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    index: Mapped[int] = mapped_column(
+        default=lambda: random.randint(1, 1_000_000) * 1000, nullable=False
+    )
     participant_id: Mapped[int] = mapped_column(ForeignKey("trip_participant.id"))
     supply_target: Mapped["SupplyTarget"] = relationship(
         "SupplyTarget", backref="participant_items"
