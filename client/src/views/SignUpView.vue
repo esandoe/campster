@@ -2,7 +2,6 @@
   <section class="">
     <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:pt-32">
       <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse mb-5">
-        <img src="@/assets/logo_sm.png" class="h-10" alt="Campster Logo" />
         <span class="self-center text-3xl whitespace-nowrap">Campster</span>
       </a>
       <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">

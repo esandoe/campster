@@ -45,7 +45,7 @@
           <li v-else>
             <RouterLink :to="{ name: 'login' }">
               <a
-                class="block py-2 px-3 text-white rounded hover:text-gray-100 md:bg-transparent md:p-0"
+                class="block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
                 aria-current="page"
                 >Logg inn</a
               >
@@ -80,7 +80,7 @@ import { onMounted, ref } from 'vue'
 const user = ref(null)
 
 onMounted(async () => {
-  const response = await fetch('api/profile')
+  const response = await fetch('/api/profile')
 
   if (response.ok) user.value = await response.json()
 })
