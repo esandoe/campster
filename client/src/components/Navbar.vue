@@ -1,14 +1,14 @@
 <template>
-  <nav class="bg-[#f08939] border-gray-200">
+  <nav class="bg-[#ffcfab] border-gray-200 text-gray-700">
     <div class="max-w-screen-lg flex flex-wrap items-center justify-between mx-auto p-4">
       <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <img src="@/assets/logo_sm.png" class="h-8 invert" alt="Campster Logo" />
-        <span class="self-center text-2xl whitespace-nowrap text-white">Campster</span>
+        <img src="@/assets/campster_logo_02.svg" class="h-20 -my-2" alt="Campster Logo" />
+        <span class="self-center text-2xl font-semibold whitespace-nowrap">Campster</span>
       </a>
       <button
         data-collapse-toggle="navbar-default"
         type="button"
-        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
         aria-controls="navbar-default"
         aria-expanded="false"
       >
@@ -54,7 +54,7 @@
           <li>
             <RouterLink to="/">
               <a
-                class="block py-2 px-3 text-white rounded hover:text-gray-100 md:bg-transparent md:p-0"
+                class="block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
                 aria-current="page"
                 >Home</a
               >
@@ -63,7 +63,7 @@
           <li>
             <RouterLink to="/about">
               <a
-                class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                class="block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
                 >About</a
               >
             </RouterLink>

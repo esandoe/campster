@@ -1,5 +1,5 @@
 <template>
-  <div class="container max-w-screen-md mx-auto py-20 shadow-m">
+  <div class="container max-w-screen-lg mx-auto py-20 shadow-m px-4 lg:px-0">
     <section class="py-12">
       <h2 class="text-6xl font-bold text-[#08384e] max-w-prose">Planlegg tur og del pakkelister</h2>
       <p class="my-4 text-lg font-semibold max-w-prose">
