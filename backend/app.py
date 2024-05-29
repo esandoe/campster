@@ -112,6 +112,18 @@ def delete_supply_target(trip_id, supply_target_id):
     return jsonify(success=True)
 
 
+@app.route("/api/trip/<trip_id>/supply-targets", methods=["POST"])
+def add_supply_target(trip_id):
+    target = SupplyTarget(
+        trip_id=trip_id,
+        name=request.json["name"],
+        target_quantity=request.json["target_quantity"],
+    )
+    db.session.add(target)
+    db.session.commit()
+    return jsonify(target)
+
+
 @app.route("/api/trip/<trip_id>/participant/<participant_id>/items", methods=["GET"])
 def get_participant_items(trip_id, participant_id):
     items = (

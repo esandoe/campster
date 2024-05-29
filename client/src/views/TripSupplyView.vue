@@ -38,6 +38,33 @@
           </div>
         </li>
       </div>
+      <div ref="addNewRef" class="w-full px-6 py-4 font-semibold bg-gray-100 text-gray-400">
+        <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+          >Legg til ny</label
+        >
+        <div class="relative">
+          <input
+            type="text"
+            id="add-item-name"
+            class="px-3 py-2 w-2/3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+            placeholder="Legg til ny"
+          />
+          <input
+            type="number"
+            min="1"
+            id="add-item-target"
+            class="px-3 py-2 w-1/6 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+            placeholder="Mål"
+          />
+          <button
+            type="button"
+            @click="addSupplyTarget"
+            class="absolute w-1/6 inset-y-0 right-0 px-4 text-sm font-medium text-gray-700 bg-gray-300 border border-gray-300 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Legg til
+          </button>
+        </div>
+      </div>
     </ul>
   </div>
 </template>
@@ -49,6 +76,24 @@ import { useRoute } from 'vue-router'
 
 const supplyList = ref(null)
 const tripId = useRoute().params.tripId
+
+async function addSupplyTarget() {
+  const response = await fetch(`/api/trip/${tripId}/supply-targets`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: document.getElementById('add-item-name').value,
+      target_quantity: document.getElementById('add-item-target').value
+    })
+  })
+
+  if (response.ok) {
+    const supplyTarget = await response.json()
+    supplyList.value = [...supplyList.value, supplyTarget]
+  }
+}
 
 async function removeSupplyTarget(supplyTarget) {
   const response = await fetch(`/api/trip/${tripId}/supply-targets/${supplyTarget.id}`, {
