@@ -152,6 +152,7 @@ def update_participant_item(participant_id, item_id):
     ).first_or_404()
 
     item.index = request.json["index"]
+    item.supply_target_id = request.json["supply_target_id"]
     item.name = request.json["name"]
     item.quantity = request.json["quantity"]
     item.packed = request.json["packed"]
@@ -160,6 +161,7 @@ def update_participant_item(participant_id, item_id):
     return jsonify(
         {
             "index": item.index,
+            "supply_target_id": item.supply_target_id,
             "name": item.name,
             "quantity": item.quantity,
             "packed": item.packed,

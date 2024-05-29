@@ -6,6 +6,7 @@
         <tr>
           <th class="pr-0"></th>
           <th class="px-0 py-3 w-full">Product</th>
+          <th class="px-1 md:px-6 py-3 whitespace-nowrap">SupplyTarget</th>
           <th class="px-1 md:px-6 py-3 whitespace-nowrap">Qty</th>
           <th class="px-2 md:px-6 py-3 whitespace-nowrap">Packed</th>
           <th class="px-1 md:px-6 py-3 whitespace-nowrap">Action</th>
@@ -41,6 +42,23 @@
               @keydown.enter="(event) => editItemName(item, event.target.value)"
               @blur="(event) => editItemName(item, event.target.value)"
             />
+          </td>
+          <td class="px-1 md:px-6 py-3 whitespace-nowrap">
+            <select
+              class="block w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              :value="item.supply_target_id"
+              @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
+            >
+              <option value="" selected>---</option>
+              <option
+                v-for="supplyTarget in supplyTargets"
+                :key="supplyTarget.id"
+                :value="supplyTarget.id"
+                @input="editItemSupplyTarget(item, supplyTarget.id)"
+              >
+                {{ supplyTarget.name }}
+              </option>
+            </select>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <div class="flex items-center">
@@ -136,6 +154,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const items = ref(null)
+const supplyTargets = ref(null)
 const newItemName = ref('')
 const addNewRef = ref(null)
 const errorMsg = ref(null)
@@ -215,6 +234,10 @@ async function addItem(itemName) {
   scrollIntoView(addNewRef.value, 50)
 }
 
+function editItemSupplyTarget(item, supplyTargetId) {
+  updateItem(item, 'supply_target_id', supplyTargetId)
+}
+
 function editItemName(item, newName) {
   if (item._status?.editing) {
     updateItem(item, 'name', newName)
@@ -234,6 +257,7 @@ async function updateItem(item, attr, val) {
     const savedItem = await response.json()
     item.index = savedItem.index
     item.name = savedItem.name
+    item.supply_target_id = savedItem.supply_target_id
     item.quantity = savedItem.quantity
     item.packed = savedItem.packed
   } catch (err) {
@@ -253,6 +277,8 @@ onMounted(async () => {
         }
       }))
       .sort((a, b) => a.index - b.index)
+    const supplyResponse = await fetch(`/api/trip/${params.tripId}/supply-targets`)
+    supplyTargets.value = await supplyResponse.json()
   } catch (err) {
     return err
   }
