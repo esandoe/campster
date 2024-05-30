@@ -53,6 +53,16 @@ def get_trips():
     return jsonify(trips)
 
 
+@app.route("/api/trips", methods=["POST"])
+def add_trip():
+    trip = Trip(
+        name=request.json["name"],
+    )
+    db.session.add(trip)
+    db.session.commit()
+    return jsonify(trip)
+
+
 @app.route("/api/trips/<trip_id>", methods=["GET"])
 def get_trip(trip_id):
     trip = Trip.query.filter_by(id=trip_id).first_or_404()
