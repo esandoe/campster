@@ -80,7 +80,7 @@ onMounted(async () => {
 })
 
 async function logout() {
-  await fetch('api/logout')
-  window.location.reload()
+  const response = await fetch('/api/logout', { method: 'POST' })
+  if (response.ok) window.location.reload()
 }
 </script>

@@ -54,7 +54,7 @@ def signup():
     return jsonify(Success="User created")
 
 
-@auth.route("/api/logout", methods=["GET"])
+@auth.route("/api/logout", methods=["POST"])
 @login_required
 def logout():
     logout_user()
