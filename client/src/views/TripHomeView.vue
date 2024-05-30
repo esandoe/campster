@@ -33,7 +33,17 @@
           </div>
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Lokasjon:</dt>
-            <dd v-if="!editingLocation" class="mb-2 text-normal">{{ trip?.location }}</dd>
+            <dd v-if="!editingLocation" class="mb-2 text-normal">
+              <a :href="`https://maps.google.com/?q=${trip?.location}`">🧭{{ trip?.location }}</a> <button @click="editingLocation = true">🧨juster</button>
+            </dd>
+            <dd v-else>
+              <input
+                type="text"
+                v-model="trip.location"
+                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+              />
+              <button @click="updateTrip('location', trip.location)">🗡lagre</button>
+            </dd>
           </div>
         </div>
         <div class="space-y-1 text-gray-500">
