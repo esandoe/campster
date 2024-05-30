@@ -43,7 +43,7 @@
                     : 'inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300'
                 "
                 aria-current="page"
-                >{{ participant.name }}'s liste</a
+                >{{ participant.username }}'s liste</a
               ></RouterLink
             >
           </li>

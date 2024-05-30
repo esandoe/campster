@@ -27,7 +27,7 @@
               :src="'/avatars/' + participant.avatar"
               class="object-cover rounded-full h-5 w-5 my-1 me-2"
             />
-            {{ participant.name }}
+            {{ participant.username }}
           </span>
         </div>
       </dl>
