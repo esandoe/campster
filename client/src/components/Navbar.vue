@@ -20,19 +20,26 @@
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 bg-[#ffebdd] md:bg-transparent rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
         >
           <li v-if="user">
-            <span class="py-0 px-2 flex items-center text-white">
+            <span class="py-0 px-2 flex items-center">
               <img
                 :src="'/avatars/' + user.avatar"
                 class="object-cover rounded-full h-5 w-5 mx-2"
               />
-              <span>{{ user.name }}</span>
+              <span>{{ user.username }}</span>
             </span>
+          </li>
+          <li v-if="user">
+            <a
+              class="cursor-pointer block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
+              @click.prevent="logout()"
+            >
+              Logg ut
+            </a>
           </li>
           <li v-else>
             <RouterLink :to="{ name: 'login' }">
               <a
                 class="block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
-                aria-current="page"
                 >Logg inn</a
               >
             </RouterLink>
@@ -41,7 +48,6 @@
             <RouterLink to="/">
               <a
                 class="block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
-                aria-current="page"
                 >Home</a
               >
             </RouterLink>
@@ -72,4 +78,9 @@ onMounted(async () => {
 
   if (response.ok) user.value = await response.json()
 })
+
+async function logout() {
+  await fetch('api/logout')
+  window.location.reload()
+}
 </script>

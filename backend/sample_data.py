@@ -16,30 +16,26 @@ ids = list(range(1, 5))
 sample_users = [
     User(
         id=ids.pop(random.randint(0, len(ids) - 1)),
-        email="email1@campster.com",
+        username="Rin Shima",
         password=generate_password_hash("123", method="scrypt"),
-        name="Rin Shima",
         avatar=avatar_path.FNIBS,
     ),
     User(
         id=ids.pop(random.randint(0, len(ids) - 1)),
-        email="email2@campster.com",
+        username="Nadeshiko Kagamihara",
         password=generate_password_hash("123", method="scrypt"),
-        name="Nadeshiko Kagamihara",
         avatar=avatar_path.GRETP,
     ),
     User(
         id=ids.pop(random.randint(0, len(ids) - 1)),
-        email="email3@campster.com",
+        username="Aoi Inuyama",
         password=generate_password_hash("123", method="scrypt"),
-        name="Aoi Inuyama",
         avatar=avatar_path.KLERB,
     ),
     User(
         id=ids.pop(random.randint(0, len(ids) - 1)),
-        email="email4@campster.com",
+        username="Chiaki Oogaki",
         password=generate_password_hash("123", method="scrypt"),
-        name="Chiaki Oogaki",
         avatar=avatar_path.RTYNM,
     ),
 ]

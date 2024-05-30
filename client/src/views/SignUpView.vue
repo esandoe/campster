@@ -11,29 +11,19 @@
           </h1>
           <form class="space-y-4 md:space-y-6" action="#">
             <div>
-              <label for="email" class="block mb-2 text-sm font-medium text-gray-900"
-                >Din e-post</label
+              <label for="username" class="block mb-2 text-sm font-medium text-gray-900"
+                >Ditt brukernavn</label
               >
               <input
-                type="email"
-                v-model="email"
+                id="username"
+                type="test"
+                v-model="username"
                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                 placeholder="name@company.com"
                 required
               />
             </div>
-            <div>
-              <label for="email" class="block mb-2 text-sm font-medium text-gray-900"
-                >Kallenavn</label
-              >
-              <input
-                type="text"
-                v-model="name"
-                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                placeholder="name@company.com"
-                required
-              />
-            </div>
+
             <div>
               <label for="password" class="block mb-2 text-sm font-medium text-gray-900"
                 >Passord</label
@@ -78,8 +68,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const email = ref(null)
-const name = ref(null)
+const username = ref(null)
 const password = ref(null)
 const password_repeat = ref(null)
 
@@ -92,8 +81,7 @@ async function signup() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      email: email.value,
-      name: name.value,
+      username: username.value,
       password: password.value
     })
   })
