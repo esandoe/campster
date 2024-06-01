@@ -1,5 +1,5 @@
 backend/.venv/
 backend/.campsterenv/
-backend/__pycache__/
 backend/instance/
+__pycache__/
 .vscode/
