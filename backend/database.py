@@ -2,10 +2,13 @@ from dataclasses import dataclass
 from datetime import datetime, date
 from enum import Enum
 import random
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from flask_login import UserMixin
+
+migrate = Migrate()
 
 
 class Base(DeclarativeBase):
@@ -28,6 +31,7 @@ class User(UserMixin, db.Model):
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
     avatar: Mapped[avatar_path] = mapped_column(default=avatar_path.FNIBS)
+    is_admin: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now

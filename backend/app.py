@@ -1,4 +1,12 @@
-from database import ParticipantItem, SupplyTarget, Trip, TripParticipant, db
+from database import (
+    ParticipantItem,
+    SupplyTarget,
+    Trip,
+    TripParticipant,
+    User,
+    db,
+    migrate,
+)
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_login import LoginManager
@@ -14,25 +22,24 @@ def create_app():
     app.config["SECRET_KEY"] = "super-secret-key"
 
     db.init_app(app)
+    migrate.init_app(app, db)
 
     # blueprint for auth routes in our app
     from auth import auth as auth_blueprint
 
     app.register_blueprint(auth_blueprint)
 
-    # Initialize database with dummy data on each restart
-    with app.app_context():
-        db.drop_all()
-        db.create_all()
+    # # Initialize database with dummy data on each restart
+    # with app.app_context():
+    #     db.drop_all()
+    #     db.create_all()
 
-        for trip in sample_trips:
-            db.session.add(trip)
-        db.session.commit()
+    #     for trip in sample_trips:
+    #         db.session.add(trip)
+    #     db.session.commit()
 
     login_manager = LoginManager()
     login_manager.init_app(app)
-
-    from database import User
 
     @login_manager.user_loader
     def load_user(user_id):
