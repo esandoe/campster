@@ -100,7 +100,14 @@ def get_trip(trip_id):
             "start_date": trip.start_date.isoformat() if trip.start_date else None,
             "end_date": trip.end_date.isoformat() if trip.end_date else None,
             "location": trip.location,
-            "participants": [participant.user for participant in trip.participants],
+            "participants": [
+                {
+                    "id": participant.id,
+                    "username": participant.user.username,
+                    "avatar": participant.user.avatar,
+                }
+                for participant in trip.participants
+            ],
         }
     )
 
@@ -138,8 +145,15 @@ def get_participants(trip_id):
         .join(TripParticipant.user)
         .all()
     )
-    users = [participant.user for participant in participants]
-    return jsonify(users)
+    participants = [
+        {
+            "id": participant.id,
+            "username": participant.user.username,
+            "avatar": participant.user.avatar,
+        }
+        for participant in participants
+    ]
+    return jsonify(participants)
 
 
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
