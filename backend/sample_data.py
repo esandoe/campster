@@ -18,25 +18,25 @@ sample_users = [
         id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Rin Shima",
         password=generate_password_hash("123", method="scrypt"),
-        avatar=avatar_path.FNIBS,
+        avatar=avatar_path.AVATAR_12,
     ),
     User(
         id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Nadeshiko Kagamihara",
         password=generate_password_hash("123", method="scrypt"),
-        avatar=avatar_path.GRETP,
+        avatar=avatar_path.AVATAR_6,
     ),
     User(
         id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Aoi Inuyama",
         password=generate_password_hash("123", method="scrypt"),
-        avatar=avatar_path.KLERB,
+        avatar=avatar_path.AVATAR_19,
     ),
     User(
         id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Chiaki Oogaki",
         password=generate_password_hash("123", method="scrypt"),
-        avatar=avatar_path.RTYNM,
+        avatar=avatar_path.AVATAR_20,
     ),
 ]
 
