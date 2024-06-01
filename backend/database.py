@@ -101,9 +101,9 @@ class Trip(db.Model):
         TripParticipant, backref="trip"
     )
     name: Mapped[str] = mapped_column(unique=True)
-    start_date: Mapped[date] = mapped_column()
-    end_date: Mapped[date] = mapped_column()
-    location: Mapped[str] = mapped_column()
+    start_date: Mapped[date] = mapped_column(nullable=True)
+    end_date: Mapped[date] = mapped_column(nullable=True)
+    location: Mapped[str] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now

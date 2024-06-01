@@ -5,15 +5,45 @@
         <div class="grid grid-cols-1">
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Start-dato</dt>
-            <dd class="mb-2 text-normal">{{ startDate }}</dd>
+            <dd v-if="!editingStartDate" class="mb-2 text-normal">
+              {{ startDate }} <button @click="editingStartDate = true">🧨juster</button>
+            </dd>
+            <dd v-else class="mb-2 text-normal">
+              <input
+                type="date"
+                v-model="trip.start_date"
+                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+              />
+              <button @click="updateTrip('start_date', trip.start_date)">🗡lagre</button>
+            </dd>
           </div>
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Slutt-dato</dt>
-            <dd class="mb-2 text-normal">{{ endDate }}</dd>
+            <dd v-if="!editingEndDate" class="mb-2 text-normal">
+              {{ endDate }} <button @click="editingEndDate = true">🧨juster</button>
+            </dd>
+            <dd v-else>
+              <input
+                type="date"
+                v-model="trip.end_date"
+                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+              />
+              <button @click="updateTrip('end_date', trip.end_date)">🗡lagre</button>
+            </dd>
           </div>
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Lokasjon:</dt>
-            <dd class="mb-2 text-normal">{{ trip?.location }}</dd>
+            <dd v-if="!editingLocation" class="mb-2 text-normal">
+              <a :href="`https://maps.google.com/?q=${trip?.location}`">🧭{{ trip?.location }}</a> <button @click="editingLocation = true">🧨juster</button>
+            </dd>
+            <dd v-else>
+              <input
+                type="text"
+                v-model="trip.location"
+                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+              />
+              <button @click="updateTrip('location', trip.location)">🗡lagre</button>
+            </dd>
           </div>
         </div>
         <div class="space-y-1 text-gray-500">
@@ -124,6 +154,10 @@ import { useRoute } from 'vue-router'
 const participants = ref(null)
 const trip = ref(null)
 
+const editingStartDate = ref(false)
+const editingEndDate = ref(false)
+const editingLocation = ref(false)
+
 const dateOptions = {
   weekday: 'long',
   year: 'numeric',
@@ -140,6 +174,30 @@ const endDate = computed(() => {
 })
 
 const tripId = useRoute().params.tripId
+
+const updateTrip = async (attributeName, attributeValue) => {
+  const response = await fetch(`/api/trips/${tripId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      [attributeName]: attributeValue
+    })
+  })
+  trip.value = await response.json()
+  switch (attributeName) {
+    case 'start_date':
+      editingStartDate.value = false
+      break
+    case 'end_date':
+      editingEndDate.value = false
+      break
+    case 'location':
+      editingLocation.value = false
+      break
+  }
+}
 
 onMounted(async () => {
   const tripResponse = await fetch(`/api/trips/${tripId}`)
