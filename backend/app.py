@@ -1,4 +1,5 @@
 from datetime import date
+from setup.initial_setup import intial_setup
 from database import (
     ParticipantItem,
     SupplyTarget,
@@ -6,12 +7,33 @@ from database import (
     TripParticipant,
     User,
     db,
+    is_initialized,
     migrate,
 )
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_login import LoginManager
-from sample_data import sample_trips
+from logging.config import dictConfig
+
+# Configure logging format and set log level to INFO
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "wsgi": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://flask.logging.wsgi_errors_stream",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "INFO", "handlers": ["wsgi"]},
+    }
+)
 
 
 # instantiate the app
@@ -30,21 +52,17 @@ def create_app():
 
     app.register_blueprint(auth_blueprint)
 
-    # # Initialize database with dummy data on each restart
-    # with app.app_context():
-    #     db.drop_all()
-    #     db.create_all()
-
-    #     for trip in sample_trips:
-    #         db.session.add(trip)
-    #     db.session.commit()
-
     login_manager = LoginManager()
     login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+
+    with app.app_context():
+        if not is_initialized():
+            app.logger.info("Initializing the application for first startup...")
+            intial_setup()
 
     return app
 

@@ -2,11 +2,13 @@ from dataclasses import dataclass
 from datetime import datetime, date
 from enum import Enum
 import random
+from flask import current_app as app
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from flask_login import UserMixin
+from alembic.migration import MigrationContext
 
 migrate = Migrate()
 
@@ -16,6 +18,16 @@ class Base(DeclarativeBase):
 
 
 db = SQLAlchemy(model_class=Base)
+
+
+def is_initialized():
+    """
+    Checks if the database has been initialized by checking the database migration revision.
+    """
+    migration_context = MigrationContext.configure(db.engine.connect())
+    current_revision = migration_context.get_current_heads()
+    app.logger.info(f"Current database head version(s): {current_revision}")
+    return len(current_revision) > 0
 
 
 class avatar_path(str, Enum):

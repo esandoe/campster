@@ -1,5 +1,6 @@
 import random
 from werkzeug.security import generate_password_hash
+import secrets
 
 from database import (
     SupplyTarget,
@@ -11,31 +12,25 @@ from database import (
 )
 from datetime import date
 
-ids = list(range(1, 5))
-
 sample_users = [
     User(
-        id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Rin Shima",
-        password=generate_password_hash("123", method="scrypt"),
+        password=generate_password_hash(secrets.token_hex(32), method="scrypt"),
         avatar=avatar_path.AVATAR_12,
     ),
     User(
-        id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Nadeshiko Kagamihara",
-        password=generate_password_hash("123", method="scrypt"),
+        password=generate_password_hash(secrets.token_hex(32), method="scrypt"),
         avatar=avatar_path.AVATAR_6,
     ),
     User(
-        id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Aoi Inuyama",
-        password=generate_password_hash("123", method="scrypt"),
+        password=generate_password_hash(secrets.token_hex(32), method="scrypt"),
         avatar=avatar_path.AVATAR_19,
     ),
     User(
-        id=ids.pop(random.randint(0, len(ids) - 1)),
         username="Chiaki Oogaki",
-        password=generate_password_hash("123", method="scrypt"),
+        password=generate_password_hash(secrets.token_hex(32), method="scrypt"),
         avatar=avatar_path.AVATAR_20,
     ),
 ]
