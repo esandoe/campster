@@ -19,16 +19,16 @@
         <ul
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 bg-[#ffebdd] md:bg-transparent rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
         >
-          <li v-if="user">
+          <li v-if="currentUser">
             <span class="py-0 px-2 flex items-center">
               <img
-                :src="'/avatars/' + user.avatar"
+                :src="'/avatars/' + currentUser.avatar"
                 class="object-cover rounded-full h-5 w-5 mx-2"
               />
-              <span>{{ user.username }}</span>
+              <span>{{ currentUser.username }}</span>
             </span>
           </li>
-          <li v-if="user">
+          <li v-if="currentUser">
             <a
               class="cursor-pointer block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
               @click.prevent="logout()"
@@ -67,20 +67,11 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import HamburgerMenuIcon from './icons/HamburgerMenuIcon.vue'
+import { useAuth } from '@/composables/auth'
 
-const user = ref(null)
+const { currentUser, logout } = useAuth()
+
 const showMenu = ref(false)
-
-onMounted(async () => {
-  const response = await fetch('/api/profile')
-
-  if (response.ok) user.value = await response.json()
-})
-
-async function logout() {
-  const response = await fetch('/api/logout', { method: 'POST' })
-  if (response.ok) window.location.reload()
-}
 </script>

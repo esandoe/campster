@@ -1,6 +1,25 @@
 <template>
   <div>
     <div aria-labelledby="trip-attributes">
+      <div
+        v-if="!isParticipant"
+        class="flex flex-col justify-between w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50"
+      >
+        <div class="mb-4 md:mb-0 md:me-4">
+          <p class="flex h-full items-center text-sm font-normal text-gray-500">
+            Du er ikke deltaker på denne turen enda — bli med da vell!
+          </p>
+        </div>
+        <div class="flex items-center flex-shrink-0">
+          <button
+            @click="joinTrip()"
+            class="inline-flex items-center justify-center px-3 py-2 me-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
+          >
+            Bli med!
+            <ArrowRightIcon />
+          </button>
+        </div>
+      </div>
       <dl class="grid grid-cols-2 gap-3 p-4 mx-auto">
         <div class="grid grid-cols-1">
           <div class="flex flex-col items-left">
@@ -34,7 +53,8 @@
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Lokasjon:</dt>
             <dd v-if="!editingLocation" class="mb-2 text-normal">
-              <a :href="`https://maps.google.com/?q=${trip?.location}`">🧭{{ trip?.location }}</a> <button @click="editingLocation = true">🧨juster</button>
+              <a :href="`https://maps.google.com/?q=${trip?.location}`">🧭{{ trip?.location }}</a>
+              <button @click="editingLocation = true">🧨juster</button>
             </dd>
             <dd v-else>
               <input
@@ -47,18 +67,7 @@
           </div>
         </div>
         <div class="space-y-1 text-gray-500">
-          <dt class="text-lg font-semibold text-gray-900">Deltakere</dt>
-          <span
-            v-for="participant in participants"
-            :key="participant.id"
-            class="flex items-center text-normal"
-          >
-            <img
-              :src="'/avatars/' + participant.avatar"
-              class="object-cover rounded-full h-5 w-5 my-1 me-2"
-            />
-            {{ participant.username }}
-          </span>
+          <ParticipantList :participants="participants" />
         </div>
       </dl>
     </div>
@@ -148,8 +157,13 @@
 
 <script setup>
 import AnonymousUserIcon from '@/components/icons/AnonymousUserIcon.vue'
+import ArrowRightIcon from '@/components/icons/ArrowRightIcon.vue'
+import ParticipantList from '@/components/ParticipantList.vue'
+import { useAuth } from '@/composables/auth'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+const { currentUser } = useAuth()
 
 const participants = ref(null)
 const trip = ref(null)
@@ -157,6 +171,10 @@ const trip = ref(null)
 const editingStartDate = ref(false)
 const editingEndDate = ref(false)
 const editingLocation = ref(false)
+
+const isParticipant = computed(() =>
+  participants.value?.some((p) => p.user_id == currentUser.value?.id)
+)
 
 const dateOptions = {
   weekday: 'long',
@@ -197,6 +215,16 @@ const updateTrip = async (attributeName, attributeValue) => {
       editingLocation.value = false
       break
   }
+}
+
+const joinTrip = async () => {
+  const response = await fetch(`/api/trips/${tripId}/join`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  if (response.ok) participants.value.push(await response.json())
 }
 
 onMounted(async () => {

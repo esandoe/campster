@@ -12,7 +12,7 @@ from database import (
 )
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user, login_required
 from logging.config import dictConfig
 
 # Configure logging format and set log level to INFO
@@ -103,6 +103,7 @@ def get_trip(trip_id):
             "participants": [
                 {
                     "id": participant.id,
+                    "user_id": participant.user.id,
                     "username": participant.user.username,
                     "avatar": participant.user.avatar,
                 }
@@ -148,12 +149,35 @@ def get_participants(trip_id):
     participants = [
         {
             "id": participant.id,
+            "user_id": participant.user.id,
             "username": participant.user.username,
             "avatar": participant.user.avatar,
         }
         for participant in participants
     ]
     return jsonify(participants)
+
+
+@app.route("/api/trips/<trip_id>/join", methods=["POST"])
+@login_required
+def join_trip(trip_id):
+    user_id = current_user.id
+
+    if TripParticipant.query.filter_by(trip_id=trip_id, user_id=user_id).first():
+        return jsonify(Error="User is already a participant of the trip")
+
+    participant = TripParticipant(trip_id=trip_id, user_id=user_id)
+    db.session.add(participant)
+    db.session.commit()
+
+    return jsonify(
+        {
+            "id": participant.id,
+            "user_id": participant.user.id,
+            "username": participant.user.username,
+            "avatar": participant.user.avatar,
+        }
+    )
 
 
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])

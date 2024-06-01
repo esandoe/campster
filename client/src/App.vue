@@ -1,6 +1,14 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue'
+import { useAuth } from './composables/auth'
+import { onMounted } from 'vue'
+
+const { updateUser } = useAuth()
+
+onMounted(async () => {
+  await updateUser()
+})
 </script>
 
 <template>

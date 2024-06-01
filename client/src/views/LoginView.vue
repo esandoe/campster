@@ -67,9 +67,11 @@
 </template>
 
 <script setup>
+import { useAuth } from '@/composables/auth'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+const { currentUser, updateUser } = useAuth()
 const router = useRouter()
 
 const username = ref(null)
@@ -90,11 +92,14 @@ async function login() {
   })
 
   const result = await response.json()
-  if (result.Success) router.go(0) // Refresh the page on successfull login
+  if (result.Success) {
+    updateUser()
+    router.go(-1)
+  }
 }
 
 onMounted(async () => {
-  const response = await fetch('api/profile')
-  if (response.ok) router.push({ name: 'home' })
+  await updateUser()
+  if (currentUser.value != null) router.push({ name: 'home' })
 })
 </script>
