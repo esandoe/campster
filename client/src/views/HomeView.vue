@@ -9,11 +9,11 @@
 
     <section>
       <h2 class="text-3xl font-semibold text-[#08384e] py-5">Nylige turer</h2>
-      <div class="flex flex-wrap space-x-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row gap-4">
         <div
           v-for="trip in trips"
           :key="trip.id"
-          class="max-w-sm min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow"
+          class="p-6 bg-white border border-gray-200 rounded-lg shadow"
         >
           <a href="#">
             <h5 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -23,11 +23,15 @@
 
           <div class="flex flex-row space-x-2 py-0">
             <UserGroupIcon />
-            <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">Deltakere: 5 personer</p>
+            <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">
+              {{ pluralize(trip.participants.length, 'deltaker', 'deltakere') }}
+            </p>
           </div>
           <div class="flex flex-row space-x-2 py-0">
             <MapPinAltIcon />
-            <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">Deltakere: 5 personer</p>
+            <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">
+              {{ trip.location ?? 'N/A' }}
+            </p>
           </div>
           <RouterLink
             :to="{ name: 'trip-overview', params: { tripId: trip.id } }"
@@ -37,7 +41,7 @@
             <ArrowRightIcon class="text-white ms-2" />
           </RouterLink>
         </div>
-        <div class="max-w-sm min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
           <a href="#">
             <h5 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               Opprett ny tur
@@ -69,6 +73,7 @@ import ArrowRightIcon from '@/components/icons/ArrowRightIcon.vue'
 import MapPinAltIcon from '@/components/icons/MapPinAltIcon.vue'
 import PlusIcon from '@/components/icons/PlusIcon.vue'
 import UserGroupIcon from '@/components/icons/UserGroupIcon.vue'
+import { pluralize } from '@/components/utils'
 import { onMounted, ref } from 'vue'
 
 const trips = ref(null)

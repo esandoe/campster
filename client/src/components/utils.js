@@ -20,3 +20,7 @@ export function scrollIntoView(el, offsetY = 0) {
     offsetY
   scrollTo(0, newScrollPos)
 }
+
+export function pluralize(count, word, pluralWord) {
+  return `${count} ${count === 1 ? word : pluralWord}`
+}
