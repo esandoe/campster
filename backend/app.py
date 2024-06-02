@@ -76,12 +76,14 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 @app.route("/api/trips", methods=["GET"])
+@login_required
 def get_trips():
     trips = Trip.query.all()
     return jsonify(trips)
 
 
 @app.route("/api/trips", methods=["POST"])
+@login_required
 def add_trip():
     trip = Trip(
         name=request.json["name"],
@@ -92,6 +94,7 @@ def add_trip():
 
 
 @app.route("/api/trips/<trip_id>", methods=["GET"])
+@login_required
 def get_trip(trip_id):
     trip = Trip.query.filter_by(id=trip_id).first_or_404()
 
@@ -116,6 +119,7 @@ def get_trip(trip_id):
 
 
 @app.route("/api/trips/<trip_id>", methods=["PUT"])
+@login_required
 def update_trip(trip_id):
     trip = Trip.query.filter_by(id=trip_id).first_or_404()
 
@@ -142,6 +146,7 @@ def update_trip(trip_id):
 
 
 @app.route("/api/trip/<trip_id>/participants", methods=["GET"])
+@login_required
 def get_participants(trip_id):
     participants = (
         TripParticipant.query.filter_by(trip_id=trip_id)
@@ -183,6 +188,7 @@ def join_trip(trip_id):
 
 
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
+@login_required
 def get_supply_targets(trip_id):
     targets = SupplyTarget.query.filter_by(trip_id=trip_id).all()
 
@@ -205,6 +211,7 @@ def get_supply_targets(trip_id):
 
 
 @app.route("/api/trip/<trip_id>/supply-targets/<supply_target_id>", methods=["DELETE"])
+@login_required
 def delete_supply_target(trip_id, supply_target_id):
     target = SupplyTarget.query.filter_by(
         id=supply_target_id, trip_id=trip_id
@@ -215,6 +222,7 @@ def delete_supply_target(trip_id, supply_target_id):
 
 
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["POST"])
+@login_required
 def add_supply_target(trip_id):
     target = SupplyTarget(
         trip_id=trip_id,
@@ -227,6 +235,7 @@ def add_supply_target(trip_id):
 
 
 @app.route("/api/trip/<trip_id>/participant/<participant_id>/items", methods=["GET"])
+@login_required
 def get_participant_items(trip_id, participant_id):
     items = (
         TripParticipant.query.filter_by(trip_id=trip_id, id=participant_id)
@@ -238,6 +247,7 @@ def get_participant_items(trip_id, participant_id):
 
 
 @app.route("/api/participant/<participant_id>/items", methods=["POST"])
+@login_required
 def add_participant_item(participant_id):
     participant = TripParticipant.query.filter_by(id=participant_id).first_or_404()
 
@@ -248,6 +258,7 @@ def add_participant_item(participant_id):
 
 
 @app.route("/api/participant/<participant_id>/items/<item_id>", methods=["PUT"])
+@login_required
 def update_participant_item(participant_id, item_id):
     item = ParticipantItem.query.filter_by(
         id=item_id, participant_id=participant_id
@@ -272,6 +283,7 @@ def update_participant_item(participant_id, item_id):
 
 
 @app.route("/api/participant/<participant_id>/items", methods=["DELETE"])
+@login_required
 def delete_participant_item(participant_id):
     item = ParticipantItem.query.filter_by(
         participant_id=participant_id, id=request.json["id"]
@@ -282,6 +294,7 @@ def delete_participant_item(participant_id):
 
 
 @app.route("/avatars/<filename>", methods=["GET"])
+@login_required
 def get_avatar(filename):
     return send_from_directory("avatars", filename)
 
