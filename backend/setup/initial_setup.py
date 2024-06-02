@@ -1,11 +1,9 @@
 import click
+from database import User, db
 from flask import current_app as app
 from flask_migrate import upgrade
-from werkzeug.security import generate_password_hash
-
 from setup.sample_data import sample_trips
-
-from database import User, db
+from werkzeug.security import generate_password_hash
 
 
 def intial_setup():
@@ -31,8 +29,7 @@ def run_database_migrations():
     try:
         upgrade()
     except Exception as e:
-        app.logger.error(f"Error running database migrations: {e}")
-        exit("Shutting down")
+        raise RuntimeError(f"Error running database migrations: {e}") from e
 
 
 def create_admin_user():
