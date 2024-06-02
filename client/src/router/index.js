@@ -23,6 +23,11 @@ const routes = [
     component: () => import('../views/SignUpView.vue')
   },
   {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('../views/SettingsView.vue')
+  },
+  {
     path: '/trip/:tripId',
     name: 'trip',
     component: () => import('../views/TripView.vue'),

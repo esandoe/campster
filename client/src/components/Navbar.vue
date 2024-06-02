@@ -20,13 +20,15 @@
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 bg-[#ffebdd] md:bg-transparent rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
         >
           <li v-if="currentUser">
-            <span class="py-0 px-2 flex items-center">
-              <img
-                :src="'/avatars/' + currentUser.avatar"
-                class="object-cover rounded-full h-5 w-5 mx-2"
-              />
-              <span>{{ currentUser.username }}</span>
-            </span>
+            <RouterLink :to="{ name: 'settings' }">
+              <span class="py-0 px-2 flex items-center">
+                <img
+                  :src="'/avatars/' + currentUser.avatar"
+                  class="object-cover rounded-full h-5 w-5 mx-2"
+                />
+                <span>{{ currentUser.username }}</span>
+              </span>
+            </RouterLink>
           </li>
           <li v-if="currentUser">
             <a
