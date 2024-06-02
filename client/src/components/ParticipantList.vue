@@ -7,7 +7,7 @@
   >
     <img
       :src="'/avatars/' + participant.avatar"
-      class="object-cover rounded-full h-5 w-5 my-1 me-2"
+      class="object-cover rounded-full h-8 w-8 my-0.5 me-2"
     />
     {{ participant.username }}
   </span>
