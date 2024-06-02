@@ -79,11 +79,25 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 def participant_or_admin_required(f):
     """Decorator to check if the current user is a participant of the trip or an admin."""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         trip_id = kwargs.get("trip_id")
         trip = Trip.query.filter_by(id=trip_id).first_or_404()
         if current_user.is_admin or trip.has_participant(current_user):
+            return f(*args, **kwargs)
+        return jsonify(Error="Unauthorized")
+
+    return decorated_function
+
+
+def item_owner_or_admin_required(f):
+    """Decorator to check if the item belongs to the participant."""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        participant_id = kwargs.get("participant_id")
+        if participant_id == current_user.id or current_user.is_admin:
             return f(*args, **kwargs)
         return jsonify(Error="Unauthorized")
 
@@ -267,6 +281,7 @@ def get_participant_items(trip_id, participant_id):
 @app.route("/api/participant/<participant_id>/items", methods=["POST"])
 @login_required
 @participant_or_admin_required
+@item_owner_or_admin_required
 def add_participant_item(participant_id):
     participant = TripParticipant.query.filter_by(id=participant_id).first_or_404()
 
@@ -279,6 +294,7 @@ def add_participant_item(participant_id):
 @app.route("/api/participant/<participant_id>/items/<item_id>", methods=["PUT"])
 @login_required
 @participant_or_admin_required
+@item_owner_or_admin_required
 def update_participant_item(participant_id, item_id):
     item = ParticipantItem.query.filter_by(
         id=item_id, participant_id=participant_id
@@ -305,6 +321,7 @@ def update_participant_item(participant_id, item_id):
 @app.route("/api/participant/<participant_id>/items", methods=["DELETE"])
 @login_required
 @participant_or_admin_required
+@item_owner_or_admin_required
 def delete_participant_item(participant_id):
     item = ParticipantItem.query.filter_by(
         participant_id=participant_id, id=request.json["id"]
