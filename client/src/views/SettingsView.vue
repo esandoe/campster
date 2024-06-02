@@ -77,7 +77,7 @@
 
 <script setup>
 import { useAuth } from '@/composables/auth'
-import { computed, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const { currentUser, updateUser } = useAuth()
 
@@ -100,14 +100,10 @@ watch(selectedAvatar, async (newValue, oldValue) => {
   }
 })
 
-const avatars = computed(() => {
-  const numbers = Array(21).keys()
-  const avatars = Array.from(numbers.map((n) => `avatar_${n}.jpg`))
-  avatars.push('fnibs.png')
-  avatars.push('gretp.png')
-  avatars.push('klerb.png')
-  avatars.push('rtynm.png')
+const avatars = ref(null)
 
-  return avatars
+onMounted(async () => {
+  const response = await fetch('/api/list-avatars')
+  if (response.ok) avatars.value = await response.json()
 })
 </script>
