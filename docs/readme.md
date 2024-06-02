@@ -52,6 +52,8 @@ If it completes successfully, you can now run the server!
 flask run --reload
 ```
 
+See also [Migrations](./migrations.md) for how to perform database migrations.
+
 ### Running the client 🌐📱
 
 You might want to open a new terminal for this? idk.
