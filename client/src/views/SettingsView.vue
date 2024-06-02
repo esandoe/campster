@@ -2,9 +2,9 @@
   <div class="container max-w-screen-lg mx-auto py-20 px-4 lg:px-0 flex flex-col space-y-5">
     <div class="w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50">
       <h1>Profil-innstillinger</h1>
+      <hr class="my-3" />
 
       <div>
-        <hr class="my-3" />
         <label
           for="username-text"
           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -68,9 +68,51 @@
     </div>
 
     <div
-      class="flex flex-col justify-between w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50"
+      v-if="currentUser?.is_admin"
+      class="w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50"
     >
-      <h1>Campster-innstillinger</h1>
+      <h3>Administrer brukere</h3>
+      <hr class="my-3" />
+
+      <div class="relative overflow-x-auto shadow-md">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500" v-if="allUsers">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 w-full whitespace-nowrap">Brukernavn</th>
+              <th class="px-4 py-2 whitespace-nowrap">Admin</th>
+              <th class="px-4 py-2 whitespace-nowrap" colspan="2">Handling</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="user in allUsers"
+              :key="user.id"
+              class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+            >
+              <th scope="row" class="px-2 py-2 w-full whitespace-nowrap">
+                {{ user.username }}
+              </th>
+              <td class="px-4 py-2 whitespace-nowrap">
+                <input type="checkbox" :checked="user.is_admin" />
+              </td>
+              <td class="px-4 py-2 whitespace-nowrap">
+                <a href="#" class="font-medium text-red-600 hover:underline"
+                  >Tilbakestill passord</a
+                >
+              </td>
+              <td class="px-4 py-2 whitespace-nowrap">
+                <a href="#" class="font-medium text-red-600 hover:underline">Slett</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <button
+        class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
+      >
+        Opprett bruker
+      </button>
     </div>
   </div>
 </template>
@@ -81,7 +123,9 @@ import { onMounted, ref, watch } from 'vue'
 
 const { currentUser, updateUser } = useAuth()
 
+const avatars = ref(null)
 const selectedAvatar = ref(currentUser.value?.avatar)
+const allUsers = ref(null)
 
 watch(currentUser, (newValue) => {
   selectedAvatar.value = newValue?.avatar
@@ -100,10 +144,13 @@ watch(selectedAvatar, async (newValue, oldValue) => {
   }
 })
 
-const avatars = ref(null)
+onMounted(() => {
+  fetch('/api/list-avatars')
+    .then((result) => result.json())
+    .then((value) => (avatars.value = value))
 
-onMounted(async () => {
-  const response = await fetch('/api/list-avatars')
-  if (response.ok) avatars.value = await response.json()
+  fetch('/api/settings/users')
+    .then((result) => result.json())
+    .then((value) => (allUsers.value = value))
 })
 </script>
