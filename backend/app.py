@@ -8,6 +8,7 @@ from database import (
     Trip,
     TripParticipant,
     User,
+    check_pending_migrations,
     db,
     is_initialized,
     migrate,
@@ -67,6 +68,9 @@ def create_app():
         if not is_initialized():
             app.logger.info("Initializing the application for first startup...")
             intial_setup()
+
+        if app.debug:
+            check_pending_migrations()
 
     return app
 

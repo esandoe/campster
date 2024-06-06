@@ -1,9 +1,21 @@
+from functools import wraps
+
 from database import User, db
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 auth = Blueprint("auth", __name__)
+
+
+def admin_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not current_user.is_admin:
+            return jsonify(Error="Unauthorized"), 403
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 @auth.route("/api/login", methods=["POST"])

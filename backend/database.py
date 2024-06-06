@@ -2,12 +2,14 @@ from dataclasses import dataclass
 from datetime import datetime, date
 from enum import Enum
 import random
+import click
 from flask import current_app as app
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from flask_login import UserMixin
+from alembic.script import ScriptDirectory
 from alembic.migration import MigrationContext
 
 migrate = Migrate()
@@ -28,6 +30,37 @@ def is_initialized():
     current_revision = migration_context.get_current_heads()
     app.logger.info(f"Current database head version(s): {current_revision}")
     return len(current_revision) > 0
+
+
+def _echo_warning(message):
+    click.secho(message, bg="yellow", fg="black")
+
+
+def _echo_error(message):
+    click.secho(message, bg="red", fg="white")
+
+
+def check_pending_migrations():
+    """
+    Checks if there are any pending database migrations.
+    """
+    with db.engine.connect() as conn:
+        script_ = ScriptDirectory("migrations")
+        context = MigrationContext.configure(conn)
+        db_revision = context.get_current_heads()[0]
+        script_revision = script_.get_heads()[0]
+
+        if db_revision != script_revision:
+            _echo_error("The database is not up-to-date. Upgrade the database.")
+
+            click.secho("Missing migrations:", bg="red", fg="white")
+            for revision in script_.iterate_revisions(script_revision, db_revision):
+                click.secho(f" - {revision}", bg="red", fg="white")
+
+            _echo_warning(
+                "The app may not work correctly until the database is upgraded"
+            )
+            _echo_warning("Run 'flask db upgrade' to upgrade the database.")
 
 
 class avatar_path(str, Enum):
@@ -60,11 +93,26 @@ class avatar_path(str, Enum):
 
 @dataclass
 class User(UserMixin, db.Model):
+    """
+    User model.
+
+    Args:
+        id (int): Primary key.
+        username (str): Unique username.
+        password (str): Password. Should be hashed using scrypt.
+        avatar (avatar_path): Avatar image path.
+        is_admin (bool): Is admin.
+        is_pending (bool): Is pending a password reset (for newly created users).
+        created_at (datetime): Created at.
+        updated_at (datetime): Updated at.
+    """
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
     avatar: Mapped[avatar_path] = mapped_column(default=avatar_path.FNIBS)
     is_admin: Mapped[bool] = mapped_column(default=False)
+    is_pending: Mapped[bool] = mapped_column(default=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now

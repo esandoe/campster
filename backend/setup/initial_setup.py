@@ -47,7 +47,9 @@ def create_admin_user():
             break
 
     hashed_password = generate_password_hash(password, method="scrypt")
-    admin = User(username=username, password=hashed_password, is_admin=True)
+    admin = User(
+        username=username, password=hashed_password, is_admin=True, is_pending=False
+    )
     db.session.add(admin)
     db.session.commit()
 
