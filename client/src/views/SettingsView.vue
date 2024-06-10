@@ -93,7 +93,11 @@
                 {{ user.username }}
               </th>
               <td class="px-4 py-2 whitespace-nowrap">
-                <input type="checkbox" :checked="user.is_admin" />
+                <input
+                  type="checkbox"
+                  :checked="user.is_admin"
+                  @change="updateUserIsAdmin(user.id, !user.is_admin)"
+                />
               </td>
               <td class="px-4 py-2 whitespace-nowrap">
                 <a href="#" class="font-medium text-red-600 hover:underline"
@@ -101,7 +105,11 @@
                 >
               </td>
               <td class="px-4 py-2 whitespace-nowrap">
-                <a href="#" class="font-medium text-red-600 hover:underline">Slett</a>
+                <a
+                  @click.prevent="deleteUser(user.id)"
+                  class="font-medium text-red-600 hover:underline"
+                  >Slett</a
+                >
               </td>
             </tr>
           </tbody>
@@ -143,6 +151,30 @@ watch(selectedAvatar, async (newValue, oldValue) => {
     if (response.ok) updateUser()
   }
 })
+
+async function deleteUser(userId) {
+  await fetch(`/api/settings/users/${userId}`, {
+    method: 'DELETE'
+  })
+}
+
+async function updateUserIsAdmin(userId, isAdmin) {
+  const response = await fetch(`/api/settings/users/${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      is_admin: isAdmin
+    })
+  })
+
+  if (response.ok) {
+    fetch('/api/settings/users')
+      .then((result) => result.json())
+      .then((value) => (allUsers.value = value))
+  }
+}
 
 onMounted(() => {
   fetch('/api/list-avatars')

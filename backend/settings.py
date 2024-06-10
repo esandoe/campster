@@ -62,10 +62,14 @@ def delete_user(user_id):
 
 
 @admin_required
-@settings.route("/api/settings/users/<int:user_id>", methods=["POST"])
+@settings.route("/api/settings/users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
     user = User.query.get_or_404(user_id)
     body = request.get_json()
+
+    if user_id == current_user.id and not body["is_admin"]:
+        abort(400, "Cannot demote yourself")
+
     user.is_admin = body["is_admin"]
     db.session.commit()
 
