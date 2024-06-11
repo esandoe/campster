@@ -17,14 +17,14 @@
       </button>
       <div class="w-full md:block md:w-auto" :class="{ hidden: !showMenu }">
         <ul
-          class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 bg-[#ffebdd] md:bg-transparent rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
+          class="font-medium flex flex-col items-center p-4 md:p-0 mt-4 border border-gray-100 bg-[#ffebdd] md:bg-transparent rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
         >
           <li v-if="currentUser">
             <RouterLink :to="{ name: 'settings' }">
-              <span class="py-0 px-2 flex items-center">
+              <span class="flex items-center whitespace-nowrap">
                 <img
                   :src="'/avatars/' + currentUser.avatar"
-                  class="object-cover rounded-full h-5 w-5 mx-2"
+                  class="object-cover rounded-full h-8 w-8 mx-3"
                 />
                 <span>{{ currentUser.username }}</span>
               </span>
