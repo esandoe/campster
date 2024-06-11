@@ -116,7 +116,48 @@
         </table>
       </div>
 
+      <hr class="mt-5 mb-3" />
+
+      <h4 class="mb-2">Opprett ny bruker</h4>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 md:space-x-5">
+        <div>
+          <label
+            for="new-user-username"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Brukernavn</label
+          >
+          <input
+            type="text"
+            id="new-user-username"
+            aria-describedby="username-text-explanation"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="olanordmann"
+            v-model="newUserUsername"
+          />
+        </div>
+
+        <div>
+          <label
+            for="new-user-password"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Midlertidig passord</label
+          >
+          <input
+            type="password"
+            id="new-user-password"
+            aria-describedby="username-text-explanation"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="•••••••••"
+            v-model="newUserPassword"
+          />
+        </div>
+      </div>
+      <p v-if="addUserErrorMessage" class="mt-2 text-sm text-red-600 dark:text-red-500">
+        {{ addUserErrorMessage }}
+      </p>
       <button
+        @click.prevent="createUser()"
         class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
       >
         Opprett bruker
@@ -135,6 +176,10 @@ const avatars = ref(null)
 const selectedAvatar = ref(currentUser.value?.avatar)
 const allUsers = ref(null)
 
+const newUserUsername = ref(null)
+const newUserPassword = ref(null)
+const addUserErrorMessage = ref(null)
+
 watch(currentUser, (newValue) => {
   selectedAvatar.value = newValue?.avatar
 })
@@ -152,10 +197,44 @@ watch(selectedAvatar, async (newValue, oldValue) => {
   }
 })
 
+async function createUser() {
+  const [username, temp_password] = [newUserUsername.value, newUserPassword.value]
+  const response = await fetch(`/api/settings/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: username,
+      temp_password: temp_password
+    })
+  })
+
+  if (!response.ok) {
+    addUserErrorMessage.value = (await response.json()).Error
+    return
+  }
+
+  addUserErrorMessage.value = null
+  newUserUsername.value = null
+  newUserPassword.value
+  fetchUserList()
+}
+
+function fetchUserList() {
+  fetch('/api/settings/users')
+    .then((result) => result.json())
+    .then((value) => (allUsers.value = value))
+}
+
 async function deleteUser(userId) {
-  await fetch(`/api/settings/users/${userId}`, {
+  const response = await fetch(`/api/settings/users/${userId}`, {
     method: 'DELETE'
   })
+
+  if (response.ok) {
+    fetchUserList()
+  }
 }
 
 async function updateUserIsAdmin(userId, isAdmin) {
@@ -170,9 +249,7 @@ async function updateUserIsAdmin(userId, isAdmin) {
   })
 
   if (response.ok) {
-    fetch('/api/settings/users')
-      .then((result) => result.json())
-      .then((value) => (allUsers.value = value))
+    fetchUserList()
   }
 }
 
@@ -181,8 +258,6 @@ onMounted(() => {
     .then((result) => result.json())
     .then((value) => (avatars.value = value))
 
-  fetch('/api/settings/users')
-    .then((result) => result.json())
-    .then((value) => (allUsers.value = value))
+  fetchUserList()
 })
 </script>

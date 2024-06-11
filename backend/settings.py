@@ -42,6 +42,27 @@ def add_user():
     username = body["username"]
     password = body["temp_password"]
 
+    if not username or not password:
+        return jsonify(Error="Username and password are required"), 400
+
+    if password.strip() == "":
+        return jsonify(Error="Password cannot be empty or whitespace"), 400
+
+    if username.strip() == "":
+        return jsonify(Error="Username cannot be empty or whitespace"), 400
+
+    if len(password) < 8:
+        return jsonify(Error="Password must be at least 8 characters"), 400
+
+    if len(username) < 3:
+        return jsonify(Error="Username must be at least 3 characters"), 400
+
+    if username == "admin":
+        return jsonify(Error="Username cannot be admin"), 400
+
+    if User.query.filter_by(username=username).first():
+        return jsonify(Error="Username already exists"), 400
+
     new_user = User(username=username, password=password, is_pending=True)
     db.session.add(new_user)
     db.session.commit()
