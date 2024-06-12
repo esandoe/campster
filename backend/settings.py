@@ -2,6 +2,7 @@ from auth import admin_required
 from database import User, avatar_path, db
 from flask import Blueprint, abort, jsonify, request
 from flask_login import current_user, login_required
+from werkzeug.security import check_password_hash
 
 settings = Blueprint("settings", __name__)
 
@@ -22,6 +23,30 @@ def update_avatar():
 def list_avatars():
     return jsonify([avatar for avatar in avatar_path])
 
+
+@settings.route("/api/settings/user/change-password", methods=["POST"])
+@login_required
+def change_password():
+    data = request.json
+    old_password = data.get("old_password")
+    new_password = data.get("new_password")
+    confirm_new_password = data.get("confirm_new_password")
+
+    if not old_password or not new_password or not confirm_new_password:
+        return jsonify(Error="Fyll nå ut alle felter og prøv igjen."), 400
+
+    if new_password != confirm_new_password:
+        return jsonify(Error="Nye passord er ikke like."), 400
+
+    user = User.query.get(current_user.id)
+
+    if not check_password_hash(user.password, old_password):
+        return jsonify(Error="Det gamle passordet er feil."), 400
+
+    user.set_password(new_password)
+    db.session.commit()
+
+    return jsonify(success=True), 200
 
 @admin_required
 @settings.route("/api/settings/users", methods=["GET"])

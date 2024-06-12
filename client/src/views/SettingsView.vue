@@ -67,6 +67,49 @@
       </div>
     </div>
 
+    <div v-if="currentUser != null" class="w-1/2 p-4 rounded-lg shadow-sm md:flex-row bg-gray-50">
+      <h2>Bytt passord</h2>
+      <hr class="my-3" />
+      <form id="change-password-form" @submit.prevent="changePassword">
+        <div>
+          <label for="old_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gammelt password</label>
+          <input
+            type="password"
+            id="old_password"
+            v-model="oldPassword"
+            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            required
+          />
+        </div>
+        <div class="mt-2">
+          <label for="new_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nytt passord</label>
+          <input
+            type="password"
+            id="new_password"
+            v-model="newPassword"
+            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            required
+          />
+        </div>
+        <div class="mt-2">
+          <label for="confirm_new_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bekreft nytt passord</label>
+          <input
+            type="password"
+            id="confirm_new_password"
+            v-model="confirmNewPassword"
+            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
+        >
+          Bytt passord
+        </button>
+      </form>
+    </div>
+
     <div
       v-if="currentUser?.is_admin"
       class="w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50"
@@ -180,6 +223,10 @@ const newUserUsername = ref(null)
 const newUserPassword = ref(null)
 const addUserErrorMessage = ref(null)
 
+const oldPassword = ref(null);
+const newPassword = ref(null);
+const confirmNewPassword = ref(null);
+
 watch(currentUser, (newValue) => {
   selectedAvatar.value = newValue?.avatar
 })
@@ -196,6 +243,39 @@ watch(selectedAvatar, async (newValue, oldValue) => {
     if (response.ok) updateUser()
   }
 })
+
+async function changePassword() {
+  if (newPassword.value !== confirmNewPassword.value) {
+    alert('Nye passord matcher ikke hverandre');
+    return;
+  }
+
+  fetch('/api/settings/user/change-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      old_password: oldPassword.value,
+      new_password: newPassword.value,
+      confirm_new_password: confirmNewPassword.value,
+    }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Du byttet passord, flott!');
+        oldPassword.value = '';
+        newPassword.value = '';
+        confirmNewPassword.value = '';
+      } else {
+        alert('Feil: ' + data.Error);
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
 
 async function createUser() {
   const [username, temp_password] = [newUserUsername.value, newUserPassword.value]
