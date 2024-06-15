@@ -170,7 +170,7 @@ onMounted(async () => {
   const tripResponse = await fetch(`/api/trips/${tripId}`)
   trip.value = await tripResponse.json()
   participants.value = trip.value.participants
-  const attachmentsResponse = await fetch(`/api/trips/${tripId}/attachments`)
+  const attachmentsResponse = await fetch(`/api/trips/${tripId}/attachments/`)
   attachments.value = await attachmentsResponse.json()
   console.log(attachments.value)
 })

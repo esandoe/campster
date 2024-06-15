@@ -222,7 +222,7 @@ def join_trip(trip_id):
 
 
 @app.route("/api/trips/<trip_id>/attachments/", methods=["GET"])
-# @login_required
+@login_required
 def get_attachments(trip_id):
     participants = TripParticipant.query.filter_by(trip_id=trip_id).all()
     attachments = [
