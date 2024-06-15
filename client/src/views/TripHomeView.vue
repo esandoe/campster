@@ -60,21 +60,33 @@
     </div>
 
     <h2 class="py-5 text-lg font-semibold text-gray-900">Innlegg</h2>
-    <div v-for="attachment in attachments" :key="attachment.id">
+    <form v-if="isParticipant" @submit.prevent="createAttachment">
+      <div class="flex flex-col items-left">
+        <textarea v-model="attachment.text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+          placeholder="Skriv et innlegg..." />
+        <input type="file" v-on:change="uploadFile" />
+        <button type="submit"
+          class="inline-flex items-center justify-center px-3 py-2 mt-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300">
+          Publiser
+        </button>
+      </div>
+    </form>
+    <div v-for="attachment in sortedAttachments" :key="attachment.id">
       <div class="flex items-start gap-2.5">
         <img :src="'/avatars/' + attachment.user.avatar" class="object-cover rounded-full h-10 w-10 my-3" />
         <div
           class="flex flex-col w-full my-3 mr-5 leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
           <div class="flex items-center space-x-2 rtl:space-x-reverse">
             <span class="text-sm font-semibold text-gray-900">{{ attachment.user.name }}</span>
-            <span class="text-sm font-normal text-gray-500">{{ no_format_date(attachment.created_at, false, true) }}</span>
+            <span class="text-sm font-normal text-gray-500">{{ no_format_date(attachment.created_at, false, true)
+              }}</span>
           </div>
           <p>{{ attachment.text }}</p>
-          <p class="text-sm font-normal py-2.5 text-gray-900">{{ attachment.content }}</p>
-          <p v-if="attachment.image" class="text-sm font-normal pb-2.5 text-gray-900">
-            <a :href="attachment.image" class="text-blue-700 underline hover:no-underline font-medium break-all">{{
-              attachment.image }}</a>
-            <img :src="attachment.image" class="rounded-lg my-2 max-w-md" />
+          <p v-if="attachment.filepath" class="text-sm font-normal pb-2.5 text-gray-900">
+            <a :href="attachment.filepath" class="text-blue-700 underline hover:no-underline font-medium break-all">{{
+              attachment.filepath }}</a>
+            <img :src="attachment.filepath" class="rounded-lg my-2 max-w-md" />
           </p>
         </div>
       </div>
@@ -83,7 +95,6 @@
 </template>
 
 <script setup>
-import AnonymousUserIcon from '@/components/icons/AnonymousUserIcon.vue'
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon.vue'
 import ParticipantList from '@/components/ParticipantList.vue'
 import { useAuth } from '@/composables/auth'
@@ -95,6 +106,14 @@ const { currentUser } = useAuth()
 const participants = ref(null)
 const trip = ref(null)
 const attachments = ref([])
+const sortedAttachments = computed(
+  () => attachments.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+)
+
+const attachment = ref({
+  text: '',
+  filename: '',
+})
 
 const editingStartDate = ref(false)
 const editingEndDate = ref(false)
@@ -103,6 +122,30 @@ const editingLocation = ref(false)
 const isParticipant = computed(() =>
   participants.value?.some((p) => p.user_id == currentUser.value?.id)
 )
+
+const uploadFile = async (event) => {
+  attachment.filename = event.target.files[0].name
+  const formData = new FormData()
+  formData.append('file', event.target.files[0])
+  const response = await fetch(`/api/trips/${tripId}/attachments/upload-file/`, {
+    method: 'POST',
+    body: formData
+  })
+  attachment.value.filename = await response.json()
+}
+
+const createAttachment = async () => {
+  const response = await fetch(`/api/trips/${tripId}/attachments/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(attachment.value)
+  })
+  attachments.value.push(await response.json())
+  attachment.value.text = ''
+  attachment.value.filename = ''
+}
 
 const no_format_date = (date, include_weekday = false, include_time = false) => {
   return new Date(date).toLocaleDateString('NO-no', {

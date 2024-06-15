@@ -1,8 +1,11 @@
 from datetime import date
 from functools import wraps
 from logging.config import dictConfig
+from os import makedirs
+from werkzeug.utils import secure_filename
 
 from database import (
+    ParticipantAttachment,
     ParticipantItem,
     SupplyTarget,
     Trip,
@@ -229,6 +232,7 @@ def get_attachments(trip_id):
         {
             "id": attachment.id,
             "filename": attachment.filename,
+            "filepath": f"/trips/{trip_id}/files/{attachment.filename}",
             "text": attachment.text,
             "user": {
                 "name": participant.user.username,
@@ -241,6 +245,53 @@ def get_attachments(trip_id):
         for attachment in participant.attachments
     ]
     return jsonify(attachments)
+
+
+@app.route("/api/trips/<trip_id>/attachments/upload-file/", methods=["POST"])
+@login_required
+@participant_or_admin_required
+def upload_file(trip_id):
+    if "file" not in request.files:
+        return jsonify(Error="No file part")
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify(Error="No selected file")
+    if file:
+        filename = secure_filename(file.filename)
+        makedirs(f"trips/{trip_id}", exist_ok=True)
+        file.save(f"trips/{trip_id}/{filename}")
+        return jsonify(filename)
+
+
+@app.route("/api/trips/<trip_id>/attachments/", methods=["POST"])
+@login_required
+@participant_or_admin_required
+def add_attachment(trip_id):
+    participant = TripParticipant.query.filter_by(
+        trip_id=trip_id, user_id=current_user.id
+    ).first_or_404()
+
+    attachment = ParticipantAttachment(
+        participant_id=participant.id,
+        filename=request.json["filename"] if request.json["filename"] != '' else None,
+        text=request.json["text"],
+    )
+    db.session.add(attachment)
+    db.session.commit()
+    return jsonify(
+        {
+            "id": attachment.id,
+            "filename": attachment.filename,
+            "filepath": f"/trips/{trip_id}/files/{attachment.filename}",
+            "text": attachment.text,
+            "user": {
+                "name": participant.user.username,
+                "avatar": participant.user.avatar,
+            },
+            "created_at": attachment.created_at,
+            "updated_at": attachment.updated_at,
+        }
+    )
 
 
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
@@ -361,6 +412,11 @@ def delete_participant_item(participant_id):
 @login_required
 def get_avatar(filename):
     return send_from_directory("avatars", filename)
+
+@app.route("/trips/<trip_id>/files/<filename>", methods=["GET"])
+@login_required
+def get_file(trip_id, filename):
+    return send_from_directory(f"trips/{trip_id}", filename)
 
 
 if __name__ == "__main__":
