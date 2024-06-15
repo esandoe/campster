@@ -221,6 +221,28 @@ def join_trip(trip_id):
     )
 
 
+@app.route("/api/trips/<trip_id>/attachments/", methods=["GET"])
+# @login_required
+def get_attachments(trip_id):
+    participants = TripParticipant.query.filter_by(trip_id=trip_id).all()
+    attachments = [
+        {
+            "id": attachment.id,
+            "filename": attachment.filename,
+            "text": attachment.text,
+            "user": {
+                "name": participant.user.username,
+                "avatar": participant.user.avatar,
+            },
+            "created_at": attachment.created_at,
+            "updated_at": attachment.updated_at,
+        }
+        for participant in participants
+        for attachment in participant.attachments
+    ]
+    return jsonify(attachments)
+
+
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
 @login_required
 def get_supply_targets(trip_id):

@@ -142,12 +142,27 @@ class ParticipantItem(db.Model):
 
 
 @dataclass
+class ParticipantAttachment(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    participant_id: Mapped[int] = mapped_column(ForeignKey("trip_participant.id"))
+    filename: Mapped[str] = mapped_column(nullable=True)
+    text: Mapped[str] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(
+        default=datetime.now, onupdate=datetime.now
+    )
+
+
+@dataclass
 class TripParticipant(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     user: Mapped[User] = relationship(User, backref="trip_participations")
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     items: Mapped[list[ParticipantItem]] = relationship("ParticipantItem")
+    attachments: Mapped[list[ParticipantAttachment]] = relationship(
+        "ParticipantAttachment"
+    )
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now
