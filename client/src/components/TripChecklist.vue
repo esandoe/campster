@@ -187,12 +187,11 @@ function dropHandler(event, dropPos) {
 }
 
 async function removeItem(item) {
-  const response = await fetch(`/api/participant/${params.listId}/items`, {
+  const response = await fetch(`/api/participant/${params.listId}/items/${item.id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ id: item.id })
+    }
   })
 
   if (response.ok) items.value = items.value.filter((i) => i.id != item.id)
