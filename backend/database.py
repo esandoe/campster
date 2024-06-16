@@ -11,6 +11,7 @@ from sqlalchemy import ForeignKey
 from flask_login import UserMixin
 from alembic.script import ScriptDirectory
 from alembic.migration import MigrationContext
+from werkzeug.security import check_password_hash, generate_password_hash
 
 migrate = Migrate()
 
@@ -117,6 +118,10 @@ class User(UserMixin, db.Model):
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now
     )
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
 
 
 @dataclass

@@ -3,3 +3,4 @@ backend/.campsterenv/
 backend/instance/
 __pycache__/
 .vscode/
+.idea
