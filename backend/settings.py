@@ -2,7 +2,7 @@ from auth import admin_required
 from database import User, avatar_path, db
 from flask import Blueprint, abort, jsonify, request
 from flask_login import current_user, login_required
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 settings = Blueprint("settings", __name__)
 
@@ -48,6 +48,7 @@ def change_password():
 
     return jsonify(success=True), 200
 
+
 @admin_required
 @settings.route("/api/settings/users", methods=["GET"])
 def get_users():
@@ -88,7 +89,8 @@ def add_user():
     if User.query.filter_by(username=username).first():
         return jsonify(Error="Username already exists"), 400
 
-    new_user = User(username=username, password=password, is_pending=True)
+    password_hashed = generate_password_hash(password)
+    new_user = User(username=username, password=password_hashed, is_pending=True)
     db.session.add(new_user)
     db.session.commit()
 

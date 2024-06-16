@@ -1,7 +1,7 @@
 from functools import wraps
 
-from database import User, db
-from flask import Blueprint, jsonify, request
+from database import ParticipantItem, TripParticipant, User, db
+from flask import Blueprint, abort, jsonify, request
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -16,6 +16,82 @@ def admin_required(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def participant_self_required(f):
+    """Decorator to make sure the current user is the same as the participant referenced, or an admin."""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "participant_id" not in kwargs:
+            raise ValueError(
+                "user_id is required when decorated by `participant_self_required`"
+            )
+
+        participant_id = kwargs.get("participant_id")
+        participant = TripParticipant.query.filter(
+            TripParticipant.id == participant_id,
+            TripParticipant.user_id == current_user.id,
+        ).first()
+        if current_user.is_admin or participant:
+            return f(*args, **kwargs)
+
+        abort(403)
+
+    return decorated_function
+
+
+def participant_of_trip_required(f):
+    """Decorator to make sure the current user is a participant of the trip (or is an admin)."""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "trip_id" not in kwargs:
+            raise ValueError(
+                "trip_id is required when decorated by `participant_required`"
+            )
+
+        trip_id = kwargs.get("trip_id")
+        participant = TripParticipant.query.filter(
+            TripParticipant.trip_id == trip_id,
+            TripParticipant.user_id == current_user.id,
+        ).first()
+        if current_user.is_admin or participant:
+            return f(*args, **kwargs)
+
+        abort(403)
+
+    return decorated_function
+
+
+def item_owner_required(f):
+    """Decorator to make sure the item belongs to the participant."""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "participant_id" not in kwargs or "item_id" not in kwargs:
+            raise ValueError(
+                "participant_id and item_id are required when decorated by `item_owner_required`"
+            )
+
+        participant_id = kwargs.get("participant_id")
+        item_id = kwargs.get("item_id")
+        participant = TripParticipant.query.filter(
+            TripParticipant.id == participant_id,
+            TripParticipant.user_id == current_user.id,
+        ).first()
+
+        item = ParticipantItem.query.filter(
+            ParticipantItem.participant_id == participant_id,
+            ParticipantItem.id == item_id,
+        ).first()
+
+        if current_user.is_admin or (participant and item):
+            return f(*args, **kwargs)
+
+        abort(403)
+
+    return decorated_function
 
 
 @auth.route("/api/login", methods=["POST"])
