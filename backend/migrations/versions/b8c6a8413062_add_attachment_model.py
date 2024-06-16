@@ -21,6 +21,7 @@ def upgrade():
     op.create_table('participant_attachment',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('participant_id', sa.Integer(), nullable=False),
+    sa.Column('trip_id', sa.Integer(), nullable=False),
     sa.Column('filename', sa.String(), nullable=True),
     sa.Column('text', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),

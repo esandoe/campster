@@ -85,7 +85,7 @@ sample_trips = [
                     )
                 ],
                 attachments=[
-                    ParticipantAttachment(filename=None, text="Lorem ipsum dolor sit amet")
+                    ParticipantAttachment(trip_id=1, filename=None, text="Lorem ipsum dolor sit amet")
                 ],
             )
             for user in random.sample(sample_users, 4)
