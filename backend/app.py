@@ -1,7 +1,7 @@
 from datetime import date
 from functools import wraps
 from logging.config import dictConfig
-from os import makedirs
+from os import makedirs, path
 from werkzeug.utils import secure_filename
 
 from database import (
@@ -258,8 +258,11 @@ def upload_file(trip_id):
         return jsonify(Error="No selected file")
     if file:
         filename = secure_filename(file.filename)
-        makedirs(f"trips/{trip_id}", exist_ok=True)
-        file.save(f"trips/{trip_id}/{filename}")
+        file_path = f"uploads/trips/{trip_id}/attachments/{filename}"
+        if path.exists(file_path):
+            return jsonify(Error="File already exists")
+        makedirs(f"uploads/trips/{trip_id}/attachments/", exist_ok=True)
+        file.save(file_path)
         return jsonify(filename)
 
 
@@ -416,7 +419,7 @@ def get_avatar(filename):
 @app.route("/trips/<trip_id>/files/<filename>", methods=["GET"])
 @login_required
 def get_file(trip_id, filename):
-    return send_from_directory(f"trips/{trip_id}", filename)
+    return send_from_directory(f"uploads/trips/{trip_id}/attachments", filename)
 
 
 if __name__ == "__main__":

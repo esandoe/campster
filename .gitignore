@@ -1,6 +1,6 @@
 backend/.venv/
 backend/.campsterenv/
 backend/instance/
-backend/trips/
+backend/uploads/
 __pycache__/
 .vscode/
