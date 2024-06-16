@@ -5,7 +5,7 @@ from os import makedirs, path
 from werkzeug.utils import secure_filename
 
 from database import (
-    ParticipantAttachment,
+    TripAttachment,
     ParticipantItem,
     SupplyTarget,
     Trip,
@@ -274,7 +274,8 @@ def add_attachment(trip_id):
         trip_id=trip_id, user_id=current_user.id
     ).first_or_404()
 
-    attachment = ParticipantAttachment(
+    attachment = TripAttachment(
+        trip_id=trip_id,
         participant_id=participant.id,
         filename=request.json["filename"] if request.json["filename"] != '' else None,
         text=request.json["text"],
