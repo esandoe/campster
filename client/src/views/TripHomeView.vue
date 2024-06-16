@@ -83,7 +83,7 @@
               }}</span>
           </div>
           <p>{{ attachment.text }}</p>
-          <p v-if="attachment.filepath" class="text-sm font-normal pb-2.5 text-gray-900">
+          <p v-if="attachment.filename" class="text-sm font-normal pb-2.5 text-gray-900">
             <a :href="attachment.filepath" class="text-blue-700 underline hover:no-underline font-medium break-all">{{
               attachment.filepath }}</a>
             <img :src="attachment.filepath" class="rounded-lg my-2 max-w-md" />
