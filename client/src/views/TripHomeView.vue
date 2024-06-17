@@ -1,16 +1,20 @@
 <template>
   <div>
     <div aria-labelledby="trip-attributes">
-      <div v-if="!isParticipant"
-        class="flex flex-col justify-between w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50">
+      <div
+        v-if="!isParticipant"
+        class="flex flex-col justify-between w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50"
+      >
         <div class="mb-4 md:mb-0 md:me-4">
           <p class="flex h-full items-center text-sm font-normal text-gray-500">
             Du er ikke deltaker på denne turen enda — bli med da vell!
           </p>
         </div>
         <div class="flex items-center flex-shrink-0">
-          <button @click="joinTrip()"
-            class="inline-flex items-center justify-center px-3 py-2 me-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300">
+          <button
+            @click="joinTrip()"
+            class="inline-flex items-center justify-center px-3 py-2 me-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
+          >
             Bli med!
             <ArrowRightIcon />
           </button>
@@ -24,8 +28,11 @@
               {{ startDate }} <button @click="editingStartDate = true">🧨juster</button>
             </dd>
             <dd v-else class="mb-2 text-normal">
-              <input type="date" v-model="trip.start_date"
-                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900" />
+              <input
+                type="date"
+                v-model="trip.start_date"
+                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+              />
               <button @click="updateTrip('start_date', trip.start_date)">🗡lagre</button>
             </dd>
           </div>
@@ -35,8 +42,11 @@
               {{ endDate }} <button @click="editingEndDate = true">🧨juster</button>
             </dd>
             <dd v-else>
-              <input type="date" v-model="trip.end_date"
-                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900" />
+              <input
+                type="date"
+                v-model="trip.end_date"
+                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+              />
               <button @click="updateTrip('end_date', trip.end_date)">🗡lagre</button>
             </dd>
           </div>
@@ -47,8 +57,11 @@
               <button @click="editingLocation = true">🧨juster</button>
             </dd>
             <dd v-else>
-              <input type="text" v-model="trip.location"
-                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900" />
+              <input
+                type="text"
+                v-model="trip.location"
+                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+              />
               <button @click="updateTrip('location', trip.location)">🗡lagre</button>
             </dd>
           </div>
@@ -61,37 +74,63 @@
 
     <h2 class="py-5 text-lg font-semibold text-gray-900">Innlegg</h2>
     <form v-if="isParticipant" @submit.prevent="createAttachment">
-      <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+      <div class="w-full mb-4 border border-gray-200 rounded-lg">
         <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
           <label for="text" class="sr-only">Skriv innlegg</label>
-          <textarea v-model="attachment.text" id="text" name="text" rows="3"
-            class="w-full px-3 py-2 border-none resize-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
-            placeholder="Skriv innlegg"></textarea>
-            <button type="submit"
-              class="inline-flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300">
-              Publiser
-            </button>
-          <input type="file"
-            v-on:change="uploadFile"
-            class="inline-flex items-center justify-center px-3 py-2 pl-6">
-          </input>
+          <textarea
+            v-model="attachment.text"
+            id="text"
+            name="text"
+            rows="3"
+            class="w-full px-0 sm:text-sm text-gray-900 resize-none border-none focus:ring-0"
+            placeholder="Skriv innlegg"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center justify-between px-3 py-2 border-t bg-gray-50">
+          <button
+            type="submit"
+            class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-blue-800"
+          >
+            Publiser
+          </button>
+          <div class="flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
+            {{ attachment.filename }}
+            <label
+              for="file-upload"
+              type="button"
+              class="inline-flex justify-center items-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+            >
+              <input id="file-upload" class="hidden" type="file" v-on:change="uploadFile" />
+              <ImageUploadIcon />
+              <span class="sr-only">Upload image</span>
+            </label>
+          </div>
         </div>
       </div>
     </form>
     <div v-for="attachment in sortedAttachments" :key="attachment.id">
       <div class="flex items-start gap-2.5">
-        <img :src="'/avatars/' + attachment.user.avatar" class="object-cover rounded-full h-10 w-10 my-3" />
+        <img
+          :src="'/avatars/' + attachment.user.avatar"
+          class="object-cover rounded-full h-10 w-10 my-3"
+        />
         <div
-          class="flex flex-col w-full my-3 mr-5 leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
+          class="flex flex-col w-full my-3 mr-5 leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl"
+        >
           <div class="flex items-center space-x-2 rtl:space-x-reverse">
             <span class="text-sm font-semibold text-gray-900">{{ attachment.user.name }}</span>
-            <span class="text-sm font-normal text-gray-500">{{ no_format_date(attachment.created_at, false, true)
-              }}</span>
+            <span class="text-sm font-normal text-gray-500">{{
+              no_format_date(attachment.created_at, false, true)
+            }}</span>
           </div>
           <p>{{ attachment.text }}</p>
           <p v-if="attachment.filename" class="text-sm font-normal pb-2.5 text-gray-900">
-            <a :href="attachment.filepath" class="text-blue-700 underline hover:no-underline font-medium break-all">{{
-              attachment.filepath }}</a>
+            <a
+              :href="attachment.filepath"
+              class="text-blue-700 underline hover:no-underline font-medium break-all"
+              >{{ attachment.filepath }}</a
+            >
             <img :src="attachment.filepath" class="rounded-lg my-2 max-w-md" />
           </p>
         </div>
@@ -106,19 +145,21 @@ import ParticipantList from '@/components/ParticipantList.vue'
 import { useAuth } from '@/composables/auth'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import ImageUploadIcon from '../components/icons/ImageUploadIcon.vue'
 
 const { currentUser } = useAuth()
 
 const participants = ref(null)
 const trip = ref(null)
 const attachments = ref([])
-const sortedAttachments = computed(
-  () => attachments.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-)
+const sortedAttachments = computed(() => {
+  const copy = [...attachments.value]
+  return copy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+})
 
 const attachment = ref({
   text: '',
-  filename: '',
+  filename: ''
 })
 
 const editingStartDate = ref(false)
@@ -130,7 +171,7 @@ const isParticipant = computed(() =>
 )
 
 const uploadFile = async (event) => {
-  attachment.filename = event.target.files[0].name
+  attachment.value.filename = event.target.files[0].name
   const formData = new FormData()
   formData.append('file', event.target.files[0])
   const response = await fetch(`/api/trips/${tripId}/attachments/upload-file/`, {
@@ -160,15 +201,8 @@ const no_format_date = (date, include_weekday = false, include_time = false) => 
     month: 'long',
     day: 'numeric',
     hour: include_time ? 'numeric' : undefined,
-    minute: include_time ? 'numeric' : undefined,
+    minute: include_time ? 'numeric' : undefined
   })
-}
-
-const dateOptions = {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
 }
 
 const startDate = computed(() => {
