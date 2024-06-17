@@ -1,5 +1,7 @@
 from datetime import date
 from logging.config import dictConfig
+from os import makedirs, path
+from werkzeug.utils import secure_filename
 
 from auth import (
     item_owner_required,
@@ -7,6 +9,7 @@ from auth import (
     participant_self_required,
 )
 from database import (
+    TripAttachment,
     ParticipantItem,
     SupplyTarget,
     Trip,
@@ -198,6 +201,80 @@ def join_trip(trip_id):
     )
 
 
+@app.route("/api/trips/<trip_id>/attachments/", methods=["GET"])
+@login_required
+def get_attachments(trip_id):
+    participants = TripParticipant.query.filter_by(trip_id=trip_id).all()
+    attachments = [
+        {
+            "id": attachment.id,
+            "filename": attachment.filename,
+            "filepath": f"/trips/{trip_id}/files/{attachment.filename}",
+            "text": attachment.text,
+            "user": {
+                "name": participant.user.username,
+                "avatar": participant.user.avatar,
+            },
+            "created_at": attachment.created_at,
+            "updated_at": attachment.updated_at,
+        }
+        for participant in participants
+        for attachment in participant.attachments
+    ]
+    return jsonify(attachments)
+
+
+@app.route("/api/trips/<trip_id>/attachments/upload-file/", methods=["POST"])
+@login_required
+@participant_or_admin_required
+def upload_file(trip_id):
+    if "file" not in request.files:
+        return jsonify(Error="No file part")
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify(Error="No selected file")
+    if file:
+        filename = secure_filename(file.filename)
+        file_path = f"uploads/trips/{trip_id}/attachments/{filename}"
+        if path.exists(file_path):
+            return jsonify(Error="File already exists")
+        makedirs(f"uploads/trips/{trip_id}/attachments/", exist_ok=True)
+        file.save(file_path)
+        return jsonify(filename)
+
+
+@app.route("/api/trips/<trip_id>/attachments/", methods=["POST"])
+@login_required
+@participant_or_admin_required
+def add_attachment(trip_id):
+    participant = TripParticipant.query.filter_by(
+        trip_id=trip_id, user_id=current_user.id
+    ).first_or_404()
+
+    attachment = TripAttachment(
+        trip_id=trip_id,
+        participant_id=participant.id,
+        filename=request.json["filename"] if request.json["filename"] != '' else None,
+        text=request.json["text"],
+    )
+    db.session.add(attachment)
+    db.session.commit()
+    return jsonify(
+        {
+            "id": attachment.id,
+            "filename": attachment.filename,
+            "filepath": f"/trips/{trip_id}/files/{attachment.filename}",
+            "text": attachment.text,
+            "user": {
+                "name": participant.user.username,
+                "avatar": participant.user.avatar,
+            },
+            "created_at": attachment.created_at,
+            "updated_at": attachment.updated_at,
+        }
+    )
+
+
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
 @login_required
 def get_supply_targets(trip_id):
@@ -313,6 +390,11 @@ def delete_participant_item(participant_id, item_id):
 @login_required
 def get_avatar(filename):
     return send_from_directory("avatars", filename)
+
+@app.route("/trips/<trip_id>/files/<filename>", methods=["GET"])
+@login_required
+def get_file(trip_id, filename):
+    return send_from_directory(f"uploads/trips/{trip_id}/attachments", filename)
 
 
 if __name__ == "__main__":

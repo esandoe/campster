@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash
 import secrets
 
 from database import (
+    TripAttachment,
     SupplyTarget,
     Trip,
     TripParticipant,
@@ -82,6 +83,9 @@ sample_trips = [
                     for (name, target, quantity) in random.sample(
                         sample_participant_items, 8
                     )
+                ],
+                attachments=[
+                    TripAttachment(trip_id=1, filename=None, text="Lorem ipsum dolor sit amet")
                 ],
             )
             for user in random.sample(sample_users, 4)
