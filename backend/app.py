@@ -226,7 +226,7 @@ def get_attachments(trip_id):
 
 @app.route("/api/trips/<trip_id>/attachments/upload-file/", methods=["POST"])
 @login_required
-@participant_or_admin_required
+@participant_of_trip_required
 def upload_file(trip_id):
     if "file" not in request.files:
         return jsonify(Error="No file part")
@@ -245,7 +245,7 @@ def upload_file(trip_id):
 
 @app.route("/api/trips/<trip_id>/attachments/", methods=["POST"])
 @login_required
-@participant_or_admin_required
+@participant_of_trip_required
 def add_attachment(trip_id):
     participant = TripParticipant.query.filter_by(
         trip_id=trip_id, user_id=current_user.id
@@ -254,7 +254,7 @@ def add_attachment(trip_id):
     attachment = TripAttachment(
         trip_id=trip_id,
         participant_id=participant.id,
-        filename=request.json["filename"] if request.json["filename"] != '' else None,
+        filename=request.json["filename"] if request.json["filename"] != "" else None,
         text=request.json["text"],
     )
     db.session.add(attachment)
@@ -390,6 +390,7 @@ def delete_participant_item(participant_id, item_id):
 @login_required
 def get_avatar(filename):
     return send_from_directory("avatars", filename)
+
 
 @app.route("/trips/<trip_id>/files/<filename>", methods=["GET"])
 @login_required
