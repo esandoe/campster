@@ -59,6 +59,13 @@
             >
               Logg inn
             </button>
+            <div
+              v-if="error"
+              class="p-4 text-sm font-medium text-red-800 rounded-lg bg-red-50"
+              role="alert"
+            >
+              {{ error }}
+            </div>
           </form>
         </div>
       </div>
@@ -78,6 +85,8 @@ const username = ref(null)
 const password = ref(null)
 const remember = ref(null)
 
+const error = ref(null)
+
 async function login() {
   const response = await fetch('/api/login', {
     method: 'POST',
@@ -91,11 +100,17 @@ async function login() {
     })
   })
 
+  if (!response.ok) {
+    error.value = 'Kunne ikke logge inn.'
+  }
+
   const result = await response.json()
   if (result.Success) {
     updateUser()
     router.go(-1)
   }
+
+  error.value = result.Error
 }
 
 onMounted(async () => {

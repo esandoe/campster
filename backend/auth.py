@@ -101,14 +101,14 @@ def login_post():
     remember = bool(request.json.get("remember"))
 
     if username is None or username == "":
-        return jsonify(Error="username is required")
+        return jsonify(Error="Brukernavn er påkrevd.")
 
     if password is None or password == "":
-        return jsonify(Error="Password is required")
+        return jsonify(Error="Passord er påkrevd.")
 
     user = User.query.filter_by(username=username).first()
     if not user or not check_password_hash(user.password, password):
-        return jsonify(Error="Please check your login details and try again.")
+        return jsonify(Error="Feil brukernavn eller passord.")
 
     login_user(user, remember=remember)
     return jsonify(Success="Logged in.")
