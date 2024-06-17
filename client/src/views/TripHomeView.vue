@@ -75,7 +75,7 @@
     <h2 class="py-5 text-lg font-semibold text-gray-900">Innlegg</h2>
     <form v-if="isParticipant" @submit.prevent="createAttachment">
       <div class="w-full mb-4 border border-gray-200 rounded-lg">
-        <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+        <div class="px-4 py-2 bg-white rounded-t-lg">
           <label for="text" class="sr-only">Skriv innlegg</label>
           <textarea
             v-model="attachment.text"
@@ -90,16 +90,16 @@
         <div class="flex items-center justify-between px-3 py-2 border-t bg-gray-50">
           <button
             type="submit"
-            class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-blue-800"
+            class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
             Publiser
           </button>
-          <div class="flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
+          <div class="flex ps-0 text-sm space-x-1 rtl:space-x-reverse items-center sm:ps-2">
             {{ attachment.filename }}
             <label
               for="file-upload"
               type="button"
-              class="inline-flex justify-center items-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+              class="inline-flex justify-center items-center ms-4 p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200"
             >
               <input id="file-upload" class="hidden" type="file" v-on:change="uploadFile" />
               <ImageUploadIcon />
