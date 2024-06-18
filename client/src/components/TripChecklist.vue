@@ -143,7 +143,7 @@
         <span class="font-medium">{{ errorMsg }}</span>
       </p>
       <button
-        class="block text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
+        class="block text-gray-900 border-2 border-blue-500 bg-white hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
         @click="suggestItemName()"
       >
         ✨ Hva med... ✨
