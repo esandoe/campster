@@ -1,6 +1,8 @@
 <template>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <p v-if="!items"><ListSkeleton /></p>
+    <p v-if="!items">
+      <ListSkeleton />
+    </p>
     <table v-else class="table-fixed text-sm text-left text-gray-500 rounded-md">
       <thead class="text-lg text-gray-700 bg-gray-200">
         <tr>
@@ -13,49 +15,30 @@
         </tr>
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
-        <tr
-          v-for="(item, pos) in items"
-          :key="item.id"
-          class="border-b checklist-item"
-          :class="{
-            'cursor-move bg-gray-200': dragHoverPosition === pos,
-            'bg-gray-100': dragHoverPosition !== pos
-          }"
-          @dragstart="(e) => dragstart_handler(e, pos)"
-          @drop="(e) => dropHandler(e, pos)"
-          @dragenter.prevent="dragHoverPosition = pos"
-          @dragover.prevent
-        >
+        <tr v-for="(item, pos) in items" :key="item.id" class="border-b checklist-item" :class="{
+          'cursor-move bg-gray-200': dragHoverPosition === pos,
+          'bg-gray-100': dragHoverPosition !== pos
+        }" @dragstart="(e) => dragstart_handler(e, pos)" @drop="(e) => dropHandler(e, pos)"
+          @dragenter.prevent="dragHoverPosition = pos" @dragover.prevent>
           <td draggable="true" class="cursor-pointer pr-0">
             <DraggableItemIcon />
           </td>
           <td class="w-full px-0 py-1 text-lg text-gray-900">
-            <input
-              class="w-full block px-4 py-2 rounded-md outline-none"
-              :class="{
-                'bg-transparent hover:bg-white cursor-pointer': !item._status?.editing,
-                'bg-white': item._status?.editing
-              }"
-              :value="item.name"
-              @click="item._status.editing = true"
-              @focus="item._status.editing = true"
+            <input class="w-full block px-4 py-2 rounded-md outline-none" :class="{
+              'bg-transparent hover:bg-white cursor-pointer': !item._status?.editing,
+              'bg-white': item._status?.editing
+            }" :value="item.name" @click="item._status.editing = true" @focus="item._status.editing = true"
               @keydown.enter="(event) => editItemName(item, event.target.value)"
-              @blur="(event) => editItemName(item, event.target.value)"
-            />
+              @blur="(event) => editItemName(item, event.target.value)" />
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <select
               class="block w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               :value="item.supply_target_id"
-              @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
-            >
+              @input="(event) => updateItem(item, 'supply_target_id', event.target.value)">
               <option value="" selected>---</option>
-              <option
-                v-for="supplyTarget in supplyTargets"
-                :key="supplyTarget.id"
-                :value="supplyTarget.id"
-                @input="editItemSupplyTarget(item, supplyTarget.id)"
-              >
+              <option v-for="supplyTarget in supplyTargets" :key="supplyTarget.id" :value="supplyTarget.id"
+                @input="editItemSupplyTarget(item, supplyTarget.id)">
                 {{ supplyTarget.name }}
               </option>
             </select>
@@ -64,28 +47,19 @@
             <div class="flex items-center">
               <button
                 class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
-                type="button"
-                @click="updateItem(item, 'quantity', --item.quantity)"
-              >
+                type="button" @click="updateItem(item, 'quantity', --item.quantity)">
                 <span class="sr-only">Quantity button</span>
                 <minus-icon />
               </button>
               <div>
-                <input
-                  type="number"
-                  id="first_product"
+                <input type="number" id="first_product"
                   class="bg-gray-50 w-14 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2.5 py-1"
-                  placeholder="0"
-                  :value="item.quantity"
-                  @input="(event) => updateItem(item, 'quantity', event.target.value)"
-                  required
-                />
+                  placeholder="0" :value="item.quantity"
+                  @input="(event) => updateItem(item, 'quantity', event.target.value)" required />
               </div>
               <button
                 class="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
-                type="button"
-                @click="updateItem(item, 'quantity', ++item.quantity)"
-              >
+                type="button" @click="updateItem(item, 'quantity', ++item.quantity)">
                 <span class="sr-only">Quantity button</span>
                 <plus-icon />
               </button>
@@ -93,12 +67,9 @@
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
+              <input type="checkbox"
                 class="w-5 h-5 text-xl text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                :checked="item.packed"
-                @input="updateItem(item, 'packed', !item.packed)"
-              />
+                :checked="item.packed" @input="updateItem(item, 'packed', !item.packed)" />
             </label>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
@@ -111,29 +82,17 @@
     </table>
 
     <div class="w-full px-6 py-4 font-semibold bg-gray-100 text-gray-400" ref="addNewRef">
-      <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-      >Legg til ny</label
-      >
+      <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Legg til ny</label>
       <div class="relative">
-        <input
-        type="text"
-        id="add-item"
-        class="block w-full p-4 text-sm border rounded-lg"
-        :class="{
+        <input type="text" id="add-item" class="block w-full p-4 text-sm border rounded-lg" :class="{
           'text-gray-900  border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500':
-          !errorMsg,
+            !errorMsg,
           'bg-red-50 border-red-500 text-red-900 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500':
-          !!errorMsg
-        }"
-          placeholder="Legg til ny"
-          v-model="newItemName"
-          @keydown.enter="addItem(newItemName)"
-          @keydown.esc="errorMsg = null"
-          />
-          <button
-          @click="addItem(newItemName)"
-          class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
-          >
+            !!errorMsg
+        }" placeholder="Legg til ny" v-model="newItemName" @keydown.enter="addItem(newItemName)"
+          @keydown.esc="errorMsg = null" />
+        <button @click="addItem(newItemName)"
+          class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2">
           <PlusIcon class="h-4 w-4" />
         </button>
       </div>
@@ -142,8 +101,7 @@
       </p>
       <button
         class="block text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
-        @click="suggestItemName()"
-      >
+        @click="suggestItemName()">
         ✨ Hva med... ✨
       </button>
     </div>
@@ -308,11 +266,13 @@ onMounted(async () => {
     all 0.5s ease,
     background-color 0s;
 }
+
 .checklist-enter,
 .checklist-leave-to {
   opacity: 0;
   transform: translateX(300px);
 }
+
 .checklist-leave-active {
   position: absolute;
 }
