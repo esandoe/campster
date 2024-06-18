@@ -1,6 +1,7 @@
 from datetime import date
 from logging.config import dictConfig
 from os import makedirs, path
+from sqlalchemy import distinct
 from werkzeug.utils import secure_filename
 
 from auth import (
@@ -339,8 +340,10 @@ def get_participant_items(trip_id, participant_id):
 @app.route("/api/items", methods=["GET"])
 @login_required
 def get_all_item_names():
-    items = ParticipantItem.query.all()
-    return jsonify([item.name for item in items])
+    item_names = (
+        ParticipantItem.query.with_entities(ParticipantItem.name).distinct().all()
+    )
+    return jsonify([item_name[0] for item_name in item_names])
 
 
 @app.route("/api/participant/<participant_id>/items", methods=["POST"])
