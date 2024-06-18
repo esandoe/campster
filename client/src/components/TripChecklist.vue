@@ -112,34 +112,40 @@
 
     <div class="w-full px-6 py-4 font-semibold bg-gray-100 text-gray-400" ref="addNewRef">
       <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-        >Legg til ny</label
+      >Legg til ny</label
       >
       <div class="relative">
         <input
-          type="text"
-          id="add-item"
-          class="block w-full p-4 text-sm border rounded-lg"
-          :class="{
-            'text-gray-900  border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500':
-              !errorMsg,
-            'bg-red-50 border-red-500 text-red-900 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500':
-              !!errorMsg
-          }"
+        type="text"
+        id="add-item"
+        class="block w-full p-4 text-sm border rounded-lg"
+        :class="{
+          'text-gray-900  border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500':
+          !errorMsg,
+          'bg-red-50 border-red-500 text-red-900 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500':
+          !!errorMsg
+        }"
           placeholder="Legg til ny"
           v-model="newItemName"
           @keydown.enter="addItem(newItemName)"
           @keydown.esc="errorMsg = null"
-        />
-        <button
+          />
+          <button
           @click="addItem(newItemName)"
           class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
-        >
+          >
           <PlusIcon class="h-4 w-4" />
         </button>
       </div>
       <p class="mt-2 text-sm text-red-600 dark:text-red-500">
         <span class="font-medium">{{ errorMsg }}</span>
       </p>
+      <button
+        class="block text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
+        @click="suggestItemName()"
+      >
+        ✨ hva med... ✨
+      </button>
     </div>
   </div>
 </template>
@@ -159,8 +165,13 @@ const newItemName = ref('')
 const addNewRef = ref(null)
 const errorMsg = ref(null)
 const dragHoverPosition = ref(null)
+const remainingSuggestions = ref(null)
 
 const params = useRoute().params
+
+const suggestItemName = () => {
+  newItemName.value = remainingSuggestions.value.pop() ?? "...godt humør?"
+}
 
 Array.prototype.move = function (from, to) {
   this.splice(to, 0, this.splice(from, 1)[0])
@@ -278,6 +289,10 @@ onMounted(async () => {
       .sort((a, b) => a.index - b.index)
     const supplyResponse = await fetch(`/api/trip/${params.tripId}/supply-targets`)
     supplyTargets.value = await supplyResponse.json()
+    const suggestionsResponse = await fetch(`/api/items`)
+    const suggestions = await suggestionsResponse.json()
+    remainingSuggestions.value = suggestions
+    refreshSuggestion()
   } catch (err) {
     return err
   }
