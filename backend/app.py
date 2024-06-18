@@ -336,6 +336,13 @@ def get_participant_items(trip_id, participant_id):
     return jsonify(items)
 
 
+@app.route("/api/items", methods=["GET"])
+@login_required
+def get_all_item_names():
+    items = ParticipantItem.query.all()
+    return jsonify([item.name for item in items])
+
+
 @app.route("/api/participant/<participant_id>/items", methods=["POST"])
 @login_required
 @participant_self_required
