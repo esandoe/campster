@@ -123,6 +123,16 @@
             <span class="text-sm font-normal text-gray-500">{{
               no_format_date(attachment.created_at, false, true)
             }}</span>
+            <span class="grow">&nbsp;</span>
+            <button
+              type="button"
+              class="h-8 w-8 bg-gray-100 text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-200 inline-flex items-center justify-center"
+              aria-label="Delete"
+              @click="deleteAttachment(attachment.id)"
+            >
+              <span class="sr-only">Delete</span>
+              <CloseIcon />
+            </button>
           </div>
           <p>{{ attachment.text }}</p>
           <p v-if="attachment.filename" class="text-sm font-normal pb-2.5 text-gray-900">
@@ -145,9 +155,12 @@ import ParticipantList from '@/components/ParticipantList.vue'
 import { useAuth } from '@/composables/auth'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import ImageUploadIcon from '../components/icons/ImageUploadIcon.vue'
+import ImageUploadIcon from '@/components/icons/ImageUploadIcon.vue'
+import CloseIcon from '@/components/icons/CloseIcon.vue'
 
 const { currentUser } = useAuth()
+
+const tripId = useRoute().params.tripId
 
 const participants = ref(null)
 const trip = ref(null)
@@ -194,6 +207,19 @@ const createAttachment = async () => {
   attachment.value.filename = ''
 }
 
+const deleteAttachment = async (attachmentId) => {
+  if (!confirm('Slette innlegg?')) return
+
+  const response = await fetch(`/api/trips/${tripId}/attachments/${attachmentId}`, {
+    method: 'DELETE'
+  })
+  if (response.ok) {
+    attachments.value = attachments.value.filter((at) => at.id != attachmentId)
+  } else {
+    console.error(`${response.status}, ${response.statusText}: ${await response.text()}`)
+  }
+}
+
 const no_format_date = (date, include_weekday = false, include_time = false) => {
   return new Date(date).toLocaleDateString('NO-no', {
     weekday: include_weekday ? 'long' : undefined,
@@ -212,8 +238,6 @@ const startDate = computed(() => {
 const endDate = computed(() => {
   return no_format_date(trip.value?.end_date, true)
 })
-
-const tripId = useRoute().params.tripId
 
 const updateTrip = async (attributeName, attributeValue) => {
   const response = await fetch(`/api/trips/${tripId}`, {
