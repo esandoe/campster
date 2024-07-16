@@ -1,8 +1,6 @@
 from datetime import date
 from logging.config import dictConfig
-from os import makedirs, path
-from sqlalchemy import distinct
-from werkzeug.utils import secure_filename
+from os import makedirs, path, remove
 
 from auth import (
     item_owner_required,
@@ -10,10 +8,10 @@ from auth import (
     participant_self_required,
 )
 from database import (
-    TripAttachment,
     ParticipantItem,
     SupplyTarget,
     Trip,
+    TripAttachment,
     TripParticipant,
     User,
     check_pending_migrations,
@@ -25,6 +23,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_login import LoginManager, current_user, login_required
 from setup.initial_setup import intial_setup
+from werkzeug.utils import secure_filename
 
 # Configure logging format and set log level to INFO
 dictConfig(
@@ -274,6 +273,25 @@ def add_attachment(trip_id):
             "updated_at": attachment.updated_at,
         }
     )
+
+
+# delete attachment
+@app.route("/api/trips/<trip_id>/attachments/<attachment_id>", methods=["DELETE"])
+@login_required
+@participant_of_trip_required
+def delete_attachment(trip_id, attachment_id):
+    attachment = TripAttachment.query.filter_by(
+        id=attachment_id, trip_id=trip_id
+    ).first_or_404()
+
+    if attachment.filename:
+        file_path = f"uploads/trips/{trip_id}/attachments/{attachment.filename}"
+        if path.exists(file_path):
+            remove(file_path)
+
+    db.session.delete(attachment)
+    db.session.commit()
+    return jsonify(success=True)
 
 
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
