@@ -112,7 +112,7 @@
       </TransitionGroup>
     </table>
 
-    <div class="w-full px-6 py-4 font-semibold bg-gray-100 text-gray-400" ref="addNewRef">
+    <div class="w-full px-6 py-4 font-semibold bg-gray-50 text-gray-400" ref="addNewRef">
       <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
         >Legg til ny</label
       >
@@ -132,22 +132,22 @@
           @keydown.enter="addItem(newItemName)"
           @keydown.esc="errorMsg = null"
         />
-        <button
+        <PrimaryButton
           @click="addItem(newItemName)"
-          class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
+          class="absolute end-2.5 bottom-2.5 !rounded-full !p-2"
         >
           <PlusIcon class="h-4 w-4" />
-        </button>
+        </PrimaryButton>
       </div>
       <p class="mt-2 text-sm text-red-600 dark:text-red-500">
         <span class="font-medium">{{ errorMsg }}</span>
       </p>
-      <button
-        class="block text-gray-900 border-2 border-blue-500 bg-white hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
+      <SecondaryButton
+        
         @click="suggestItemName()"
       >
         ✨ Hva med... ✨
-      </button>
+      </SecondaryButton>
     </div>
   </div>
 </template>
@@ -160,6 +160,8 @@ import PlusIcon from '@/components/icons/PlusIcon.vue'
 import { scrollIntoView } from '@/components/utils'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import PrimaryButton from '@/components/ui/PrimaryButton.vue'
+import SecondaryButton from './ui/SecondaryButton.vue'
 
 const items = ref(null)
 const supplyTargets = ref(null)

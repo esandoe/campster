@@ -72,7 +72,11 @@
       <hr class="my-3" />
       <form id="change-password-form" @submit.prevent="changePassword">
         <div>
-          <label for="old_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gammelt password</label>
+          <label
+            for="old_password"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Gammelt password</label
+          >
           <input
             type="password"
             id="old_password"
@@ -82,7 +86,11 @@
           />
         </div>
         <div class="mt-2">
-          <label for="new_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nytt passord</label>
+          <label
+            for="new_password"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Nytt passord</label
+          >
           <input
             type="password"
             id="new_password"
@@ -92,7 +100,11 @@
           />
         </div>
         <div class="mt-2">
-          <label for="confirm_new_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bekreft nytt passord</label>
+          <label
+            for="confirm_new_password"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Bekreft nytt passord</label
+          >
           <input
             type="password"
             id="confirm_new_password"
@@ -101,12 +113,7 @@
             required
           />
         </div>
-        <button
-          type="submit"
-          class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
-        >
-          Bytt passord
-        </button>
+        <PrimaryButton type="submit" class="mt-4"> Bytt passord </PrimaryButton>
       </form>
     </div>
 
@@ -199,17 +206,13 @@
       <p v-if="addUserErrorMessage" class="mt-2 text-sm text-red-600 dark:text-red-500">
         {{ addUserErrorMessage }}
       </p>
-      <button
-        @click.prevent="createUser()"
-        class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
-      >
-        Opprett bruker
-      </button>
+      <PrimaryButton @click.prevent="createUser()" class="mt-4">Opprett bruker</PrimaryButton>
     </div>
   </div>
 </template>
 
 <script setup>
+import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import { useAuth } from '@/composables/auth'
 import { onMounted, ref, watch } from 'vue'
 
@@ -223,9 +226,9 @@ const newUserUsername = ref(null)
 const newUserPassword = ref(null)
 const addUserErrorMessage = ref(null)
 
-const oldPassword = ref(null);
-const newPassword = ref(null);
-const confirmNewPassword = ref(null);
+const oldPassword = ref(null)
+const newPassword = ref(null)
+const confirmNewPassword = ref(null)
 
 watch(currentUser, (newValue) => {
   selectedAvatar.value = newValue?.avatar
@@ -246,35 +249,35 @@ watch(selectedAvatar, async (newValue, oldValue) => {
 
 async function changePassword() {
   if (newPassword.value !== confirmNewPassword.value) {
-    alert('Nye passord matcher ikke hverandre');
-    return;
+    alert('Nye passord matcher ikke hverandre')
+    return
   }
 
   fetch('/api/settings/user/change-password', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       old_password: oldPassword.value,
       new_password: newPassword.value,
-      confirm_new_password: confirmNewPassword.value,
-    }),
+      confirm_new_password: confirmNewPassword.value
+    })
   })
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       if (data.success) {
-        alert('Du byttet passord, flott!');
-        oldPassword.value = '';
-        newPassword.value = '';
-        confirmNewPassword.value = '';
+        alert('Du byttet passord, flott!')
+        oldPassword.value = ''
+        newPassword.value = ''
+        confirmNewPassword.value = ''
       } else {
-        alert('Feil: ' + data.Error);
+        alert('Feil: ' + data.Error)
       }
     })
     .catch((error) => {
-      console.error('Error:', error);
-    });
+      console.error('Error:', error)
+    })
 }
 
 async function createUser() {

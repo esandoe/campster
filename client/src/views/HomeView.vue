@@ -54,14 +54,11 @@
             class="px-3 py-2 mr-2 mt-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
             placeholder="Navn på tur"
           />
-          <button
-            @click="tripButtonPress"
-            class="inline-flex items-center px-3 py-2 mt-2 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
-          >
+          <PrimaryButton @click="tripButtonPress">
             <span v-if="!creatingTrip">Opprett tur</span>
             &ZeroWidthSpace;
             <PlusIcon class="text-white mx-2" />
-          </button>
+          </PrimaryButton>
         </div>
       </div>
     </section>
@@ -72,6 +69,7 @@
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon.vue'
 import MapPinAltIcon from '@/components/icons/MapPinAltIcon.vue'
 import PlusIcon from '@/components/icons/PlusIcon.vue'
+import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import UserGroupIcon from '@/components/icons/UserGroupIcon.vue'
 import { pluralize } from '@/components/utils'
 import { onMounted, ref } from 'vue'

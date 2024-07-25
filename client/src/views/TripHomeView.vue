@@ -11,13 +11,10 @@
           </p>
         </div>
         <div class="flex items-center flex-shrink-0">
-          <button
-            @click="joinTrip()"
-            class="inline-flex items-center justify-center px-3 py-2 me-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
-          >
+          <PrimaryButton @click="joinTrip()">
             Bli med!
             <ArrowRightIcon />
-          </button>
+          </PrimaryButton>
         </div>
       </div>
       <dl class="grid grid-cols-2 gap-3 p-4 mx-auto">
@@ -88,12 +85,7 @@
         </div>
 
         <div class="flex items-center justify-between px-3 py-2 border-t bg-gray-50">
-          <button
-            type="submit"
-            class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
-          >
-            Publiser
-          </button>
+          <PrimaryButton type="submit"> Publiser </PrimaryButton>
           <div class="flex ps-0 text-sm space-x-1 rtl:space-x-reverse items-center sm:ps-2">
             {{ attachment.filename }}
             <label
@@ -157,6 +149,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ImageUploadIcon from '@/components/icons/ImageUploadIcon.vue'
 import CloseIcon from '@/components/icons/CloseIcon.vue'
+import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 
 const { currentUser } = useAuth()
 
