@@ -94,14 +94,10 @@
             </div>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                class="w-5 h-5 text-xl text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                :checked="item.packed"
-                @input="updateItem(item, 'packed', !item.packed)"
-              />
-            </label>
+            <CheckBox
+              v-model="item.packed"
+              @input="updateItem(item, 'packed', !item.packed)"
+            ></CheckBox>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <button @click="removeItem(item)" class="font-medium text-red-600 hover:underline">
@@ -142,12 +138,7 @@
       <p class="mt-2 text-sm text-red-600 dark:text-red-500">
         <span class="font-medium">{{ errorMsg }}</span>
       </p>
-      <SecondaryButton
-        
-        @click="suggestItemName()"
-      >
-        ✨ Hva med... ✨
-      </SecondaryButton>
+      <SecondaryButton @click="suggestItemName()"> ✨ Hva med... ✨ </SecondaryButton>
     </div>
   </div>
 </template>
@@ -162,6 +153,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import SecondaryButton from './ui/SecondaryButton.vue'
+import CheckBox from './ui/CheckBox.vue'
 
 const items = ref(null)
 const supplyTargets = ref(null)
