@@ -33,12 +33,11 @@
               {{ trip.location ?? 'N/A' }}
             </p>
           </div>
-          <RouterLink
-            :to="{ name: 'trip-overview', params: { tripId: trip.id } }"
-            class="inline-flex items-center px-3 py-2 mt-2 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
-          >
-            Gå til side
-            <ArrowRightIcon class="text-white ms-2" />
+          <RouterLink :to="{ name: 'trip-overview', params: { tripId: trip.id } }">
+            <PrimaryButton>
+              Gå til side
+              <ArrowRightIcon class="text-white ms-2" />
+            </PrimaryButton>
           </RouterLink>
         </div>
         <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
