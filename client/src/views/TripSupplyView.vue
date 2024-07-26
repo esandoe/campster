@@ -42,27 +42,27 @@
         <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
           >Legg til ny</label
         >
-        <div class="relative">
-          <input
+        <div class="flex space-x-2">
+          <div class="inline-block w-2/3">
+          <TextInput
             type="text"
             id="add-item-name"
-            class="px-3 py-2 w-2/3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+            class="bg-white !py-2"
             placeholder="Legg til ny"
-          />
+          /> </div>
           <input
             type="number"
             min="1"
             id="add-item-target"
-            class="px-3 py-2 w-1/6 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+            class="px-3 py-2 w-1/6 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
             placeholder="Mål"
           />
-          <button
-            type="button"
+          <PrimaryButton
             @click="addSupplyTarget"
-            class="absolute w-1/6 inset-y-0 right-0 px-4 text-sm font-medium text-gray-700 bg-gray-300 border border-gray-300 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            class="w-1/6"
           >
             Legg til
-          </button>
+          </PrimaryButton>
         </div>
       </div>
     </ul>
@@ -71,6 +71,8 @@
 
 <script setup>
 import ProgressBar from '@/components/ProgressBar.vue'
+import PrimaryButton from '@/components/ui/PrimaryButton.vue';
+import TextInput from '@/components/ui/TextInput.vue';
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 

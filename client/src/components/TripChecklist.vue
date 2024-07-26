@@ -64,14 +64,15 @@
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <div class="flex items-center">
-              <button
-                class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
-                type="button"
+
+              <SecondaryButton
+                class="me-3 !p-1 !rounded-full"
                 @click="updateItem(item, 'quantity', --item.quantity)"
               >
                 <span class="sr-only">Quantity button</span>
-                <minus-icon />
-              </button>
+                <MinusIcon class="text-gray-500 h-3 w-3" />
+              </SecondaryButton>
+              
               <div>
                 <input
                   type="number"
@@ -83,25 +84,20 @@
                   required
                 />
               </div>
-              <button
-                class="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
-                type="button"
+              <SecondaryButton
+                class="ms-3 !p-1 !rounded-full"
                 @click="updateItem(item, 'quantity', ++item.quantity)"
               >
                 <span class="sr-only">Quantity button</span>
-                <plus-icon />
-              </button>
+                <PlusIcon class="text-gray-500 h-3 w-3" />
+              </SecondaryButton>
             </div>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                class="w-5 h-5 text-xl text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                :checked="item.packed"
-                @input="updateItem(item, 'packed', !item.packed)"
-              />
-            </label>
+            <CheckBox
+              v-model="item.packed"
+              @input="updateItem(item, 'packed', !item.packed)"
+            ></CheckBox>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <button @click="removeItem(item)" class="font-medium text-red-600 hover:underline">
@@ -112,42 +108,25 @@
       </TransitionGroup>
     </table>
 
-    <div class="w-full px-6 py-4 font-semibold bg-gray-100 text-gray-400" ref="addNewRef">
-      <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-        >Legg til ny</label
-      >
+    <div class="w-full px-6 py-4 font-semibold bg-gray-50 text-gray-400" ref="addNewRef">
+
       <div class="relative">
-        <input
-          type="text"
-          id="add-item"
-          class="block w-full p-4 text-sm border rounded-lg"
-          :class="{
-            'text-gray-900  border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500':
-              !errorMsg,
-            'bg-red-50 border-red-500 text-red-900 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500':
-              !!errorMsg
-          }"
+        <TextInput
+          class="!p-4 mb-3"
           placeholder="Legg til ny"
           v-model="newItemName"
+          :error="errorMsg"
           @keydown.enter="addItem(newItemName)"
           @keydown.esc="errorMsg = null"
         />
-        <button
+        <PrimaryButton
           @click="addItem(newItemName)"
-          class="block text-white absolute end-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
+          class="absolute end-2.5 top-2.5 !rounded-full !p-2"
         >
           <PlusIcon class="h-4 w-4" />
-        </button>
+        </PrimaryButton>
       </div>
-      <p class="mt-2 text-sm text-red-600 dark:text-red-500">
-        <span class="font-medium">{{ errorMsg }}</span>
-      </p>
-      <button
-        class="block text-gray-900 border-2 border-blue-500 bg-white hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2"
-        @click="suggestItemName()"
-      >
-        ✨ Hva med... ✨
-      </button>
+      <SecondaryButton @click="suggestItemName()">✨ Hva med... ✨</SecondaryButton>
     </div>
   </div>
 </template>
@@ -160,6 +139,10 @@ import PlusIcon from '@/components/icons/PlusIcon.vue'
 import { scrollIntoView } from '@/components/utils'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import PrimaryButton from '@/components/ui/PrimaryButton.vue'
+import SecondaryButton from './ui/SecondaryButton.vue'
+import CheckBox from './ui/CheckBox.vue'
+import TextInput from './ui/TextInput.vue'
 
 const items = ref(null)
 const supplyTargets = ref(null)

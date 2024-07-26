@@ -5,23 +5,13 @@
       <hr class="my-3" />
 
       <div>
-        <label
-          for="username-text"
-          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >Ditt brukernavn</label
-        >
-        <input
-          type="text"
-          id="username-text"
-          aria-describedby="username-text-explanation"
-          class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        <TextInput
+          name="Ditt brukernavn"
+          description="Logg inn med dette navnet. Du kan (foreløpig) ikke endre ditt brukernavn."
           placeholder="brukernavn"
           :value="currentUser?.username"
           disabled
         />
-        <p id="username-textexplanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Logg inn med dette navnet. Du kan (foreløpig) ikke endre ditt brukernavn.
-        </p>
       </div>
 
       <div>
@@ -72,41 +62,20 @@
       <hr class="my-3" />
       <form id="change-password-form" @submit.prevent="changePassword">
         <div>
-          <label for="old_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gammelt password</label>
-          <input
-            type="password"
-            id="old_password"
-            v-model="oldPassword"
-            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            required
-          />
+          <TextInput name="Gammelt passord" type="password" v-model="oldPassword" required />
         </div>
         <div class="mt-2">
-          <label for="new_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nytt passord</label>
-          <input
-            type="password"
-            id="new_password"
-            v-model="newPassword"
-            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            required
-          />
+          <TextInput name="Nytt passord" type="password" v-model="newPassword" required />
         </div>
         <div class="mt-2">
-          <label for="confirm_new_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bekreft nytt passord</label>
-          <input
+          <TextInput
+            name="Bekreft nytt passord"
             type="password"
-            id="confirm_new_password"
             v-model="confirmNewPassword"
-            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             required
           />
         </div>
-        <button
-          type="submit"
-          class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
-        >
-          Bytt passord
-        </button>
+        <PrimaryButton type="submit" class="mt-4"> Bytt passord </PrimaryButton>
       </form>
     </div>
 
@@ -165,32 +134,17 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 md:space-x-5">
         <div>
-          <label
-            for="new-user-username"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Brukernavn</label
-          >
-          <input
-            type="text"
-            id="new-user-username"
-            aria-describedby="username-text-explanation"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          <TextInput
+            name="Brukernavn"
             placeholder="olanordmann"
             v-model="newUserUsername"
           />
         </div>
 
         <div>
-          <label
-            for="new-user-password"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Midlertidig passord</label
-          >
-          <input
+          <TextInput
+            name="Midlertidig passord"
             type="password"
-            id="new-user-password"
-            aria-describedby="username-text-explanation"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="•••••••••"
             v-model="newUserPassword"
           />
@@ -199,17 +153,14 @@
       <p v-if="addUserErrorMessage" class="mt-2 text-sm text-red-600 dark:text-red-500">
         {{ addUserErrorMessage }}
       </p>
-      <button
-        @click.prevent="createUser()"
-        class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-700 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-blue-300"
-      >
-        Opprett bruker
-      </button>
+      <PrimaryButton @click.prevent="createUser()" class="mt-4">Opprett bruker</PrimaryButton>
     </div>
   </div>
 </template>
 
 <script setup>
+import PrimaryButton from '@/components/ui/PrimaryButton.vue'
+import TextInput from '@/components/ui/TextInput.vue'
 import { useAuth } from '@/composables/auth'
 import { onMounted, ref, watch } from 'vue'
 
@@ -223,9 +174,9 @@ const newUserUsername = ref(null)
 const newUserPassword = ref(null)
 const addUserErrorMessage = ref(null)
 
-const oldPassword = ref(null);
-const newPassword = ref(null);
-const confirmNewPassword = ref(null);
+const oldPassword = ref(null)
+const newPassword = ref(null)
+const confirmNewPassword = ref(null)
 
 watch(currentUser, (newValue) => {
   selectedAvatar.value = newValue?.avatar
@@ -246,35 +197,35 @@ watch(selectedAvatar, async (newValue, oldValue) => {
 
 async function changePassword() {
   if (newPassword.value !== confirmNewPassword.value) {
-    alert('Nye passord matcher ikke hverandre');
-    return;
+    alert('Nye passord matcher ikke hverandre')
+    return
   }
 
   fetch('/api/settings/user/change-password', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       old_password: oldPassword.value,
       new_password: newPassword.value,
-      confirm_new_password: confirmNewPassword.value,
-    }),
+      confirm_new_password: confirmNewPassword.value
+    })
   })
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       if (data.success) {
-        alert('Du byttet passord, flott!');
-        oldPassword.value = '';
-        newPassword.value = '';
-        confirmNewPassword.value = '';
+        alert('Du byttet passord, flott!')
+        oldPassword.value = ''
+        newPassword.value = ''
+        confirmNewPassword.value = ''
       } else {
-        alert('Feil: ' + data.Error);
+        alert('Feil: ' + data.Error)
       }
     })
     .catch((error) => {
-      console.error('Error:', error);
-    });
+      console.error('Error:', error)
+    })
 }
 
 async function createUser() {
