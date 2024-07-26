@@ -64,14 +64,15 @@
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <div class="flex items-center">
-              <button
-                class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
-                type="button"
+
+              <SecondaryButton
+                class="me-3 !p-1 !rounded-full"
                 @click="updateItem(item, 'quantity', --item.quantity)"
               >
                 <span class="sr-only">Quantity button</span>
-                <minus-icon />
-              </button>
+                <MinusIcon class="text-gray-500 h-3 w-3" />
+              </SecondaryButton>
+              
               <div>
                 <input
                   type="number"
@@ -83,14 +84,13 @@
                   required
                 />
               </div>
-              <button
-                class="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
-                type="button"
+              <SecondaryButton
+                class="ms-3 !p-1 !rounded-full"
                 @click="updateItem(item, 'quantity', ++item.quantity)"
               >
                 <span class="sr-only">Quantity button</span>
-                <plus-icon />
-              </button>
+                <PlusIcon class="text-gray-500 h-3 w-3" />
+              </SecondaryButton>
             </div>
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
