@@ -109,36 +109,25 @@
     </table>
 
     <div class="w-full px-6 py-4 font-semibold bg-gray-50 text-gray-400" ref="addNewRef">
-      <label for="add-item" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-        >Legg til ny</label
-      >
+
       <div class="relative">
-        <input
+        <TextInput
           type="text"
-          id="add-item"
-          class="block w-full p-4 text-sm border rounded-lg"
-          :class="{
-            'text-gray-900  border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500':
-              !errorMsg,
-            'bg-red-50 border-red-500 text-red-900 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500':
-              !!errorMsg
-          }"
+          class="!p-4 mb-3"
           placeholder="Legg til ny"
           v-model="newItemName"
+          :error="errorMsg"
           @keydown.enter="addItem(newItemName)"
           @keydown.esc="errorMsg = null"
         />
         <PrimaryButton
           @click="addItem(newItemName)"
-          class="absolute end-2.5 bottom-2.5 !rounded-full !p-2"
+          class="absolute end-2.5 top-2.5 !rounded-full !p-2"
         >
           <PlusIcon class="h-4 w-4" />
         </PrimaryButton>
       </div>
-      <p class="mt-2 text-sm text-red-600 dark:text-red-500">
-        <span class="font-medium">{{ errorMsg }}</span>
-      </p>
-      <SecondaryButton @click="suggestItemName()"> ✨ Hva med... ✨ </SecondaryButton>
+      <SecondaryButton @click="suggestItemName()">✨ Hva med... ✨</SecondaryButton>
     </div>
   </div>
 </template>
@@ -154,6 +143,7 @@ import { useRoute } from 'vue-router'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import SecondaryButton from './ui/SecondaryButton.vue'
 import CheckBox from './ui/CheckBox.vue'
+import TextInput from './ui/TextInput.vue'
 
 const items = ref(null)
 const supplyTargets = ref(null)

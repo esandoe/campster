@@ -5,23 +5,13 @@
       <hr class="my-3" />
 
       <div>
-        <label
-          for="username-text"
-          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >Ditt brukernavn</label
-        >
-        <input
-          type="text"
-          id="username-text"
-          aria-describedby="username-text-explanation"
-          class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        <TextInput
+          name="Ditt brukernavn"
+          description="Logg inn med dette navnet. Du kan (foreløpig) ikke endre ditt brukernavn."
           placeholder="brukernavn"
           :value="currentUser?.username"
           disabled
         />
-        <p id="username-textexplanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Logg inn med dette navnet. Du kan (foreløpig) ikke endre ditt brukernavn.
-        </p>
       </div>
 
       <div>
@@ -72,44 +62,16 @@
       <hr class="my-3" />
       <form id="change-password-form" @submit.prevent="changePassword">
         <div>
-          <label
-            for="old_password"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Gammelt password</label
-          >
-          <input
-            type="password"
-            id="old_password"
-            v-model="oldPassword"
-            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            required
-          />
+          <TextInput name="Gammelt passord" type="password" v-model="oldPassword" required />
         </div>
         <div class="mt-2">
-          <label
-            for="new_password"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Nytt passord</label
-          >
-          <input
-            type="password"
-            id="new_password"
-            v-model="newPassword"
-            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            required
-          />
+          <TextInput name="Nytt passord" type="password" v-model="newPassword" required />
         </div>
         <div class="mt-2">
-          <label
-            for="confirm_new_password"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Bekreft nytt passord</label
-          >
-          <input
+          <TextInput
+            name="Bekreft nytt passord"
             type="password"
-            id="confirm_new_password"
             v-model="confirmNewPassword"
-            class="bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             required
           />
         </div>
@@ -172,32 +134,18 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 md:space-x-5">
         <div>
-          <label
-            for="new-user-username"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Brukernavn</label
-          >
-          <input
+          <TextInput
             type="text"
-            id="new-user-username"
-            aria-describedby="username-text-explanation"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            name="Brukernavn"
             placeholder="olanordmann"
             v-model="newUserUsername"
           />
         </div>
 
         <div>
-          <label
-            for="new-user-password"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Midlertidig passord</label
-          >
-          <input
+          <TextInput
+            name="Midlertidig passord"
             type="password"
-            id="new-user-password"
-            aria-describedby="username-text-explanation"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="•••••••••"
             v-model="newUserPassword"
           />
@@ -213,6 +161,7 @@
 
 <script setup>
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
+import TextInput from '@/components/ui/TextInput.vue'
 import { useAuth } from '@/composables/auth'
 import { onMounted, ref, watch } from 'vue'
 
