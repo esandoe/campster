@@ -7,10 +7,10 @@
     >{{ name }}</label
   >
   <input
+    type="text"
     v-model="model"
     v-bind="$attrs"
     v-bind:aria-describedby="helperTextId"
-    type="text"
     class="block w-full p-2.5 text-sm rounded-lg border text-gray-700 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:border-blue-500 disabled:text-gray-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
     :class="{
       'bg-red-50 border-red-500 text-red-900 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500':

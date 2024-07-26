@@ -46,11 +46,9 @@
               Opprett ny tur
             </h5>
           </a>
-          <input
-            v-model="tripName"
+          <TextInput
             v-if="creatingTrip"
-            type="text"
-            class="px-3 py-2 mr-2 mt-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+            v-model="tripName"
             placeholder="Navn på tur"
           />
           <PrimaryButton @click="tripButtonPress">
@@ -72,6 +70,7 @@ import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import UserGroupIcon from '@/components/icons/UserGroupIcon.vue'
 import { pluralize } from '@/components/utils'
 import { onMounted, ref } from 'vue'
+import TextInput from '@/components/ui/TextInput.vue'
 
 const trips = ref(null)
 const creatingTrip = ref(false)

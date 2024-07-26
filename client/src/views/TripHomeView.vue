@@ -54,10 +54,8 @@
               <button @click="editingLocation = true">🧨juster</button>
             </dd>
             <dd v-else>
-              <input
-                type="text"
+              <TextInput
                 v-model="trip.location"
-                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
               />
               <button @click="updateTrip('location', trip.location)">🗡lagre</button>
             </dd>
@@ -150,6 +148,7 @@ import { useRoute } from 'vue-router'
 import ImageUploadIcon from '@/components/icons/ImageUploadIcon.vue'
 import CloseIcon from '@/components/icons/CloseIcon.vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
+import TextInput from '@/components/ui/TextInput.vue'
 
 const { currentUser } = useAuth()
 

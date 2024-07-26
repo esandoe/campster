@@ -112,7 +112,6 @@
 
       <div class="relative">
         <TextInput
-          type="text"
           class="!p-4 mb-3"
           placeholder="Legg til ny"
           v-model="newItemName"
