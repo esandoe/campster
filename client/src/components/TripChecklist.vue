@@ -277,7 +277,6 @@ onMounted(async () => {
     const suggestionsResponse = await fetch(`/api/items`)
     const suggestions = await suggestionsResponse.json()
     remainingSuggestions.value = suggestions
-    refreshSuggestion()
   } catch (err) {
     return err
   }
