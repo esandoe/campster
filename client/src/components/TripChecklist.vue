@@ -213,13 +213,15 @@ async function addItem(itemName) {
     return
   }
 
+  const itemPosition = (items.value.slice(-1)[0]?.index || 0) + 1_000_000
+
   errorMsg.value = null
   const response = await fetch(`/api/participant/${params.listId}/items`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ name: itemName })
+    body: JSON.stringify({ name: itemName, index: itemPosition })
   })
   const item = await response.json()
   console.log(item)

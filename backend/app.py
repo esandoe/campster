@@ -370,7 +370,11 @@ def get_all_item_names():
 def add_participant_item(participant_id):
     participant = TripParticipant.query.filter_by(id=participant_id).first_or_404()
 
-    item = ParticipantItem(participant_id=participant_id, name=request.json["name"])
+    item = ParticipantItem(
+        participant_id=participant_id,
+        name=request.json["name"],
+        index=request.json["index"],
+    )
     participant.items.append(item)
     db.session.commit()
     return jsonify(item)
