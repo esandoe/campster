@@ -19,7 +19,7 @@ from database import (
     is_initialized,
     migrate,
 )
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_login import LoginManager, current_user, login_required
 from setup.initial_setup import intial_setup
@@ -352,6 +352,41 @@ def get_participant_items(trip_id, participant_id):
         .items
     )
 
+    return jsonify(items)
+
+
+@app.route(
+    "/api/trip/<trip_id>/participant/<participant_id>/autofill", methods=["POST"]
+)
+@login_required
+def autofill_participant_items(trip_id, participant_id):
+    """
+    Endpoint which autofills the participants list by using the previous trips list
+    """
+    print(trip_id, participant_id)
+    current_trip = TripParticipant.query.filter_by(
+        trip_id=trip_id, id=participant_id
+    ).first_or_404()
+
+    print(current_trip)
+    if len(current_trip.items) > 0:
+        abort(400)
+
+    previous_trip = (
+        TripParticipant.query.filter(TripParticipant.user_id == current_trip.user_id)
+        .filter(TripParticipant.trip_id != trip_id)
+        .filter(TripParticipant.items.any())
+        .order_by(TripParticipant.created_at.desc())
+        .first_or_404()
+    )
+
+    items = [
+        ParticipantItem(participant_id=participant_id, name=item.name, index=item.index)
+        for item in previous_trip.items
+    ]
+
+    current_trip.items.extend(items)
+    db.session.commit()
     return jsonify(items)
 
 

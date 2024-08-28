@@ -6,8 +6,7 @@
     <table v-else class="table-fixed text-sm text-left text-gray-500 rounded-md">
       <thead class="text-lg text-gray-700 bg-gray-200">
         <tr>
-          <th class="pr-0"></th>
-          <th class="px-0 py-3 w-full">Product</th>
+          <th class="px-2 py-3 w-full" colspan="2">Product</th>
           <th class="px-1 md:px-6 py-3 whitespace-nowrap">SupplyTarget</th>
           <th class="px-1 md:px-6 py-3 whitespace-nowrap">Qty</th>
           <th class="px-2 md:px-6 py-3 whitespace-nowrap">Packed</th>
@@ -15,6 +14,17 @@
         </tr>
       </thead>
       <TransitionGroup name="checklist" tag="tbody">
+        <tr v-if="items.length === 0">
+          <td colspan="5" class="text-left w-full px-5 py-3">
+            <p class="text-md">
+              Du har ingenting i pakkelisten din enda! Vil du kopiere listen din fra sist?
+            </p>
+
+            <SecondaryButton @click="copyItemsFromOtherTrip()" class="me-2 mt-2"
+              >📋 kopier fra sist</SecondaryButton
+            >
+          </td>
+        </tr>
         <tr
           v-for="(item, pos) in items"
           :key="item.id"
@@ -64,7 +74,6 @@
           </td>
           <td class="px-1 md:px-6 py-3 whitespace-nowrap">
             <div class="flex items-center">
-
               <SecondaryButton
                 class="me-3 !p-1 !rounded-full"
                 @click="updateItem(item, 'quantity', --item.quantity)"
@@ -72,7 +81,7 @@
                 <span class="sr-only">Quantity button</span>
                 <MinusIcon class="text-gray-500 h-3 w-3" />
               </SecondaryButton>
-              
+
               <div>
                 <input
                   type="number"
@@ -109,7 +118,6 @@
     </table>
 
     <div class="w-full px-6 py-4 font-semibold bg-gray-50 text-gray-400" ref="addNewRef">
-
       <div class="relative">
         <TextInput
           class="!p-4 mb-3"
@@ -259,6 +267,27 @@ async function updateItem(item, attr, val) {
     item.packed = savedItem.packed
   } catch (err) {
     return err
+  }
+}
+
+async function copyItemsFromOtherTrip() {
+  const response = await fetch(`/api/trip/${params.tripId}/participant/${params.listId}/autofill`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: {}
+  })
+  if (response.ok) {
+    const itemList = await response.json()
+    items.value = itemList
+      .map((item) => ({
+        ...item,
+        _status: {
+          editing: false
+        }
+      }))
+      .sort((a, b) => a.index - b.index)
   }
 }
 
