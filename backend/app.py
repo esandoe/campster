@@ -363,7 +363,6 @@ def autofill_participant_items(trip_id, participant_id):
     """
     Endpoint which autofills the participants list by using the previous trips list
     """
-    print(trip_id, participant_id)
     current_trip = TripParticipant.query.filter_by(
         trip_id=trip_id, id=participant_id
     ).first_or_404()
