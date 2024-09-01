@@ -113,6 +113,7 @@
               </td>
               <td class="px-4 py-2 whitespace-nowrap">
                 <a href="#" class="font-medium text-red-600 hover:underline"
+                @click="resetPassword(user.id, user.username)"
                   >Tilbakestill passord</a
                 >
               </td>
@@ -281,6 +282,24 @@ async function updateUserIsAdmin(userId, isAdmin) {
 
   if (response.ok) {
     fetchUserList()
+  }
+}
+
+async function resetPassword(userId, username) {
+  const response = await fetch(`/api/settings/users/${userId}/password-reset`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  
+  if (response.ok) {
+    const body = await response.json()
+    const pass = body["TemporaryPassword"]
+    alert(`Nytt midlertidig passord for ${username}: ${pass}`)
+  }
+  else {
+    alert("Feil")
   }
 }
 

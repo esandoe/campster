@@ -1,3 +1,5 @@
+import random
+import string
 from auth import admin_required
 from database import User, avatar_path, db
 from flask import Blueprint, abort, jsonify, request
@@ -122,3 +124,21 @@ def update_user(user_id):
     db.session.commit()
 
     return jsonify(Success="User updated")
+
+
+@admin_required
+@settings.route("/api/settings/users/<int:user_id>/password-reset", methods=["PUT"])
+def reset_password(user_id):
+    user = User.query.get_or_404(user_id)
+
+    if user_id == current_user.id:
+        abort(400, "Cannot reset your own password.")
+
+    password = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    password_hashed = generate_password_hash(password)
+
+    user.password = password_hashed
+    user.is_pending = True
+    db.session.commit()
+
+    return jsonify(Success="Password reset", TemporaryPassword=password)
