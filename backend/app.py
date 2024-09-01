@@ -368,7 +368,6 @@ def autofill_participant_items(trip_id, participant_id):
         trip_id=trip_id, id=participant_id
     ).first_or_404()
 
-    print(current_trip)
     if len(current_trip.items) > 0:
         abort(400)
 
