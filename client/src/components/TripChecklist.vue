@@ -1,6 +1,8 @@
 <template>
   <div class="relative overflow-x-auto">
-    <SecondaryButton @click="editMode = !editMode" class="m-2">Rediger</SecondaryButton>
+    <SecondaryButton @click="editMode = !editMode" class="m-2">
+      {{ editMode ? 'Lagre' : 'Rediger' }}
+    </SecondaryButton>
 
     <p v-if="!items">
       <ListSkeleton />
@@ -11,8 +13,9 @@
         <tr>
           <th v-if="editMode"></th>
           <th class="px-2 py-2 w-full">Produkt</th>
+          <th class="px-1 md:px-6 py-2 max-md:hidden">Forsyningsmål</th>
           <th class="px-1 md:px-6 py-2 whitespace-nowrap">Antall</th>
-          <th class="px-2 md:px-6 py-2 whitespace-nowrap">Pakket</th>
+          <th v-if="!editMode" class="px-1 md:px-6 py-2 whitespace-nowrap">Pakket</th>
           <th v-if="editMode">Slett</th>
         </tr>
       </thead>
@@ -31,12 +34,11 @@
         <tr
           v-for="(item, pos) in items"
           :key="item.id"
-          class="border-b checklist-item"
+          class="checklist-item"
           :class="{
-            'cursor-move border-b-2 border-b-black':
-              dragHoverPosition === pos && dragStartPosition < pos,
-            'cursor-move border-t-2 border-t-black':
-              dragHoverPosition === pos && dragStartPosition > pos
+            'border-b-4 border-b-gray-600': dragHoverPosition === pos && dragStartPosition < pos,
+            'border-t-4 border-t-gray-600': dragHoverPosition === pos && dragStartPosition > pos,
+            'border-b border-b-gray-300': dragHoverPosition !== pos
           }"
           @dragstart="(e) => dragstart_handler(e, pos)"
           @drop="(e) => dropHandler(e, pos)"
@@ -46,8 +48,8 @@
           <td v-if="editMode" draggable="true" class="cursor-pointer pr-0">
             <DraggableItemIcon />
           </td>
-          <td class="w-full px-2 py-2 text-gray-900 md:flex">
-            <div class="flex-1">
+          <td class="w-full px-2 py-2 text-gray-900">
+            <div>
               <input
                 class="w-full py-0 md:py-1 rounded-sm outline-none"
                 :class="{
@@ -61,14 +63,42 @@
                 @blur="(event) => editItemName(item, event.target.value)"
               />
             </div>
-            <div class="flex-none px-0 md:px-4 py-0 pb-1" v-if="item.supply_target && !editMode">
-              <label class="text-xs md:text-sm"
+
+            <div class="md:hidden">
+              <div class="px-0 py-0 pb-1" v-if="item.supply_target && !editMode">
+                <label class="text-xs"
+                  ><span class="md:hidden">Forsyningsmål:</span
+                  >{{ item.supply_target?.name }}</label
+                >
+              </div>
+              <div class="px-0 md:px-4 py-0 pb-1" v-if="editMode">
+                <select
+                  class="text-xs text-gray-500 bg-transparent border-0 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200"
+                  :value="item.supply_target_id"
+                  @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
+                >
+                  <option value="" selected>---</option>
+                  <option
+                    v-for="supplyTarget in supplyTargets"
+                    :key="supplyTarget.id"
+                    :value="supplyTarget.id"
+                    @input="editItemSupplyTarget(item, supplyTarget.id)"
+                  >
+                    {{ supplyTarget.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </td>
+          <td class="max-md:hidden px-1 md:px-6 py-2 whitespace-nowrap">
+            <div class="px-0 py-0" v-if="item.supply_target && !editMode">
+              <label class="text-sm"
                 ><span class="md:hidden">Forsyningsmål:</span>{{ item.supply_target?.name }}</label
               >
             </div>
-            <div class="flex-none px-0 md:px-4 py-0 pb-1" v-if="editMode">
+            <div class="px-0 py-0" v-if="editMode">
               <select
-                class="text-xs md:text-sm text-gray-500 bg-transparent border-0 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200"
+                class="text-sm text-gray-500 bg-transparent border-0 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200"
                 :value="item.supply_target_id"
                 @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
               >
@@ -91,7 +121,7 @@
               :editable="editMode"
             />
           </td>
-          <td class="px-1 md:px-6 py-2 whitespace-nowrap text-right">
+          <td v-if="!editMode" class="px-1 md:px-6 py-2 whitespace-nowrap">
             <CheckBox
               v-model="item.packed"
               @input="updateItem(item, 'packed', !item.packed)"
@@ -316,8 +346,8 @@ onMounted(async () => {
   transition:
     all 0.5s ease,
     background-color 0s,
-    border-bottom 0s,
-    border-top 0s;
+    border-bottom 0.2s,
+    border-top 0.2s;
 }
 
 .checklist-enter,
