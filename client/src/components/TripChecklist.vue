@@ -67,13 +67,13 @@
             <div class="md:hidden">
               <div class="px-0 py-0 pb-1" v-if="item.supply_target && !editMode">
                 <label class="text-xs"
-                  ><span class="md:hidden">Forsyningsmål:</span
+                  ><span class="md:hidden">Forsyningsmål: </span
                   >{{ item.supply_target?.name }}</label
                 >
               </div>
-              <div class="px-0 md:px-4 py-0 pb-1" v-if="editMode">
+              <div class="px-0 py-0" v-if="editMode">
                 <select
-                  class="text-xs text-gray-500 bg-transparent border-0 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200"
+                  class="text-xs text-blue-600 py-1.5 border-0 appearance-none focus:outline-none focus:ring-0 focus:border-1 focus:border-gray-200"
                   :value="item.supply_target_id"
                   @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
                 >
@@ -90,7 +90,7 @@
               </div>
             </div>
           </td>
-          <td class="max-md:hidden px-1 md:px-6 py-2 whitespace-nowrap">
+          <td class="max-md:hidden px-0 md:px-6 py-2 whitespace-nowrap">
             <div class="px-0 py-0" v-if="item.supply_target && !editMode">
               <label class="text-sm"
                 ><span class="md:hidden">Forsyningsmål:</span>{{ item.supply_target?.name }}</label
