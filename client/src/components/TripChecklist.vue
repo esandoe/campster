@@ -136,7 +136,7 @@
       </TransitionGroup>
     </table>
 
-    <div class="w-full px-6 py-4 font-semibold text-gray-400" ref="addNewRef">
+    <div class="w-full px-6 py-4 font-semibold" ref="addNewRef">
       <div class="relative">
         <TextInput
           class="!p-4 mb-3"
