@@ -169,7 +169,7 @@ def update_server():
         if os.name == "nt"
         else NPMPackage("../client")
     )
-    pkg.build()
+    pkg.run_script("build")
 
     def restart():
         # wait a couple seconds before restarting
