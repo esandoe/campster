@@ -163,7 +163,9 @@ def update_server():
     from pynpm import NPMPackage
 
     pkg = (
-        NPMPackage("../client", shell=True)  # Have to use shell=True on Windows
+        NPMPackage(
+            "../client/package.json", shell=True
+        )  # Have to use shell=True on Windows
         if os.name == "nt"
         else NPMPackage("../client")
     )
