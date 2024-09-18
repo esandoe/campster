@@ -112,8 +112,10 @@
                 />
               </td>
               <td class="px-4 py-2 whitespace-nowrap">
-                <a href="#" class="font-medium text-red-600 hover:underline"
-                @click="resetPassword(user.id, user.username)"
+                <a
+                  href="#"
+                  class="font-medium text-red-600 hover:underline"
+                  @click="resetPassword(user.id, user.username)"
                   >Tilbakestill passord</a
                 >
               </td>
@@ -135,11 +137,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 md:space-x-5">
         <div>
-          <TextInput
-            name="Brukernavn"
-            placeholder="olanordmann"
-            v-model="newUserUsername"
-          />
+          <TextInput name="Brukernavn" placeholder="olanordmann" v-model="newUserUsername" />
         </div>
 
         <div>
@@ -155,6 +153,19 @@
         {{ addUserErrorMessage }}
       </p>
       <PrimaryButton @click.prevent="createUser()" class="mt-4">Opprett bruker</PrimaryButton>
+    </div>
+
+    <div
+      v-if="currentUser?.is_admin"
+      class="w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50"
+    >
+      <h2>Oppdater campster til siste versjon</h2>
+      <button
+        @click="restartServer()"
+        class="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+      >
+        Oppdater
+      </button>
     </div>
   </div>
 </template>
@@ -195,6 +206,10 @@ watch(selectedAvatar, async (newValue, oldValue) => {
     if (response.ok) updateUser()
   }
 })
+
+async function restartServer() {
+  fetch('/api/settings/server/update', { method: 'POST' })
+}
 
 async function changePassword() {
   if (newPassword.value !== confirmNewPassword.value) {
@@ -292,14 +307,13 @@ async function resetPassword(userId, username) {
       'Content-Type': 'application/json'
     }
   })
-  
+
   if (response.ok) {
     const body = await response.json()
-    const pass = body["TemporaryPassword"]
+    const pass = body['TemporaryPassword']
     alert(`Nytt midlertidig passord for ${username}: ${pass}`)
-  }
-  else {
-    alert("Feil")
+  } else {
+    alert('Feil')
   }
 }
 
