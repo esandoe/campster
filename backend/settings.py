@@ -162,8 +162,12 @@ def update_server():
     print("Building frontend...")
     from pynpm import NPMPackage
 
-    pkg = NPMPackage("../client")
-    pkg.run_script("build")
+    pkg = (
+        NPMPackage("../client", shell=True)  # Have to use shell=True on Windows
+        if os.name == "nt"
+        else NPMPackage("../client")
+    )
+    pkg.build()
 
     def restart():
         # wait a couple seconds before restarting
