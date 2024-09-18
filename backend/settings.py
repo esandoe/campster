@@ -1,5 +1,9 @@
+import os
 import random
 import string
+import sys
+from threading import Thread
+
 from auth import admin_required
 from database import User, avatar_path, db
 from flask import Blueprint, abort, jsonify, request
@@ -134,7 +138,9 @@ def reset_password(user_id):
     if user_id == current_user.id:
         abort(400, "Cannot reset your own password.")
 
-    password = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    password = "".join(
+        random.choice(string.ascii_uppercase + string.digits) for _ in range(6)
+    )
     password_hashed = generate_password_hash(password)
 
     user.password = password_hashed
@@ -142,3 +148,34 @@ def reset_password(user_id):
     db.session.commit()
 
     return jsonify(Success="Password reset", TemporaryPassword=password)
+
+
+@admin_required
+@settings.route("/api/settings/server/update", methods=["POST"])
+def update_server():
+    from git import Repo
+
+    print("Pulling latest changes")
+    repo = Repo("..")
+    repo.remotes.origin.pull()
+
+    print("Building frontend...")
+    from pynpm import NPMPackage
+
+    pkg = NPMPackage("../client")
+    pkg.run_script("build")
+
+    def restart():
+        # wait a couple seconds before restarting
+        import time
+
+        time.sleep(2)
+
+        print("Restarting server...")
+        os.execv(sys.argv[0], sys.argv)
+
+    # Start a new thread to restart the server, so we can return a response to the client first
+    thread = Thread(target=restart)
+    thread.start()
+
+    return jsonify("Ok")
