@@ -98,8 +98,11 @@ def get_trips():
 @app.route("/api/trips", methods=["POST"])
 @login_required
 def add_trip():
+    data = request.get_json()
+    if not data or "name" not in data:
+        return jsonify({"error": "Missing required field: name"}), 400
     trip = Trip(
-        name=request.json["name"],
+        name=data["name"],
     )
     db.session.add(trip)
     db.session.commit()
@@ -135,19 +138,19 @@ def get_trip(trip_id):
 @login_required
 @participant_of_trip_required
 def update_trip(trip_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing or invalid JSON in request body"}), 400
     trip = Trip.query.filter_by(id=trip_id).first_or_404()
-
-    if "name" in request.json:
-        trip.name = request.json["name"]
-    if "start_date" in request.json:
-        trip.start_date = date.fromisoformat(request.json["start_date"])
-    if "end_date" in request.json:
-        trip.end_date = date.fromisoformat(request.json["end_date"])
-    if "location" in request.json:
-        trip.location = request.json["location"]
-
+    if "name" in data:
+        trip.name = data["name"]
+    if "start_date" in data:
+        trip.start_date = date.fromisoformat(data["start_date"])
+    if "end_date" in data:
+        trip.end_date = date.fromisoformat(data["end_date"])
+    if "location" in data:
+        trip.location = data["location"]
     db.session.commit()
-
     return jsonify(
         {
             "id": trip.id,
@@ -231,31 +234,35 @@ def upload_file(trip_id):
     if "file" not in request.files:
         return jsonify(Error="No file part")
     file = request.files["file"]
-    if file.filename == "":
+    if not file or not file.filename:
         return jsonify(Error="No selected file")
-    if file:
-        filename = secure_filename(file.filename)
-        file_path = f"uploads/trips/{trip_id}/attachments/{filename}"
-        if path.exists(file_path):
-            return jsonify(Error="File already exists")
-        makedirs(f"uploads/trips/{trip_id}/attachments/", exist_ok=True)
-        file.save(file_path)
-        return jsonify(filename)
+    filename = secure_filename(file.filename)
+    file_path = f"uploads/trips/{trip_id}/attachments/{filename}"
+    if path.exists(file_path):
+        return jsonify(Error="File already exists")
+    makedirs(f"uploads/trips/{trip_id}/attachments/", exist_ok=True)
+    file.save(file_path)
+    return jsonify(filename)
 
 
 @app.route("/api/trips/<trip_id>/attachments/", methods=["POST"])
 @login_required
 @participant_of_trip_required
 def add_attachment(trip_id):
+    data = request.get_json()
+    if not data or "text" not in data:
+        return jsonify({"error": "Missing required field: text"}), 400
+    if "filename" not in data or not data["filename"]:
+        return jsonify({"error": "Missing required field: filename"}), 400
+
     participant = TripParticipant.query.filter_by(
         trip_id=trip_id, user_id=current_user.id
     ).first_or_404()
-
     attachment = TripAttachment(
         trip_id=trip_id,
         participant_id=participant.id,
-        filename=request.json["filename"] if request.json["filename"] != "" else None,
-        text=request.json["text"],
+        filename=data["filename"],
+        text=data["text"],
     )
     db.session.add(attachment)
     db.session.commit()
@@ -333,10 +340,13 @@ def delete_supply_target(trip_id, supply_target_id):
 @login_required
 @participant_of_trip_required
 def add_supply_target(trip_id):
+    data = request.get_json()
+    if not data or "name" not in data or "target_quantity" not in data:
+        return jsonify({"error": "Missing required fields: name, target_quantity"}), 400
     target = SupplyTarget(
         trip_id=trip_id,
-        name=request.json["name"],
-        target_quantity=request.json["target_quantity"],
+        name=data["name"],
+        target_quantity=data["target_quantity"],
     )
     db.session.add(target)
     db.session.commit()
@@ -401,12 +411,14 @@ def get_all_item_names():
 @login_required
 @participant_self_required
 def add_participant_item(participant_id):
+    data = request.get_json()
+    if not data or "name" not in data or "index" not in data:
+        return jsonify({"error": "Missing required fields: name, index"}), 400
     participant = TripParticipant.query.filter_by(id=participant_id).first_or_404()
-
     item = ParticipantItem(
         participant_id=participant_id,
-        name=request.json["name"],
-        index=request.json["index"],
+        name=data["name"],
+        index=data["index"],
     )
     participant.items.append(item)
     db.session.commit()
@@ -417,16 +429,23 @@ def add_participant_item(participant_id):
 @login_required
 @item_owner_required
 def update_participant_item(participant_id, item_id):
+    data = request.get_json()
+    required_fields = ["index", "supply_target_id", "name", "quantity", "packed"]
+    if not data or not all(field in data for field in required_fields):
+        return (
+            jsonify(
+                {"error": f"Missing required fields: {', '.join(required_fields)}"}
+            ),
+            400,
+        )
     item = ParticipantItem.query.filter_by(
         id=item_id, participant_id=participant_id
     ).first_or_404()
-
-    item.index = request.json["index"]
-    item.supply_target_id = request.json["supply_target_id"]
-    item.name = request.json["name"]
-    item.quantity = request.json["quantity"]
-    item.packed = request.json["packed"]
-
+    item.index = data["index"]
+    item.supply_target_id = data["supply_target_id"]
+    item.name = data["name"]
+    item.quantity = data["quantity"]
+    item.packed = data["packed"]
     db.session.commit()
     return jsonify(
         {
