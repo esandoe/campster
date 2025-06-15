@@ -129,7 +129,7 @@
           </td>
           <td v-if="editMode" class="px-1 md:px-6 py-2 whitespace-nowrap text-right">
             <button @click="removeItem(item)" class="hover:underline">
-              <CloseIcon class="bg-red w-10 h-10"></CloseIcon>
+              <CloseIcon class="bg-red w-4 h-4"></CloseIcon>
             </button>
           </td>
         </tr>
