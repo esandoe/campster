@@ -92,7 +92,14 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 @login_required
 def get_trips():
     trips = Trip.query.all()
-    return jsonify(trips)
+
+    def sort_key(trip):
+        # If start_date is None, treat as oldest
+        return trip.start_date or date.min
+
+    sorted_trips = sorted(trips, key=sort_key, reverse=True)
+
+    return jsonify(sorted_trips)
 
 
 @app.route("/api/trips", methods=["POST"])
