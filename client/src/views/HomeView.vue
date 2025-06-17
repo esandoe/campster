@@ -1,76 +1,56 @@
 <template>
   <div class="container max-w-screen-lg mx-auto py-20 shadow-m px-4 lg:px-0">
     <section class="py-12">
-      <h2 class="text-6xl font-bold text-[#08384e] max-w-prose">Planlegg tur og del pakkelister</h2>
+      <BaseHeading variant="xl">Planlegg tur og del pakkelister</BaseHeading>
       <p class="my-4 text-lg font-semibold max-w-prose">
         Campster gjør det enkelt å planlegge felles turer og pakkelister!
       </p>
     </section>
 
-    <section>
-      <h2 class="text-3xl font-semibold text-[#08384e] py-5">Nylige turer</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row gap-4">
-        <div
-          v-for="trip in trips"
-          :key="trip.id"
-          class="p-6 bg-white border border-gray-200 rounded-lg shadow"
-        >
-          <a href="#">
-            <h5 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {{ trip.name }}
-            </h5>
-          </a>
-
-          <div class="flex flex-row space-x-2 py-0">
-            <UserGroupIcon />
-            <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">
-              {{ pluralize(trip.participants.length, 'deltaker', 'deltakere') }}
-            </p>
-          </div>
-          <div class="flex flex-row space-x-2 py-0">
-            <MapPinAltIcon />
-            <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">
-              {{ trip.location ?? 'N/A' }}
-            </p>
-          </div>
-          <RouterLink :to="{ name: 'trip-overview', params: { tripId: trip.id } }">
-            <PrimaryButton>
-              Gå til side
-              <ArrowRightIcon class="text-white ms-2" />
-            </PrimaryButton>
-          </RouterLink>
-        </div>
-        <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
-          <a href="#">
-            <h5 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Opprett ny tur
-            </h5>
-          </a>
-          <TextInput
-            v-if="creatingTrip"
-            v-model="tripName"
-            placeholder="Navn på tur"
-          />
+    <section v-if="upcomingTrips.length">
+      <div class="flex justify-between items-center mb-6">
+        <BaseHeading variant="md">Kommende turer</BaseHeading>
+        <div v-if="!creatingTrip" class="flex items-center">
           <PrimaryButton @click="tripButtonPress">
-            <span v-if="!creatingTrip">Opprett tur</span>
-            &ZeroWidthSpace;
+            Opprett tur
             <PlusIcon class="text-white mx-2" />
           </PrimaryButton>
         </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row gap-4">
+        <TripCard v-for="trip in upcomingTrips" :key="trip.id" :trip="trip" />
+        <div
+          v-if="creatingTrip"
+          class="p-6 flex flex-col justify-center items-stretch bg-white border border-gray-200 rounded-lg shadow h-full"
+        >
+          <div class="mb-3">
+            <TextInput v-model="tripName" placeholder="Navn på tur" class="mb-2" />
+          </div>
+          <div class="flex gap-2">
+            <PrimaryButton @click="tripButtonPress" class="w-full">Lagre tur</PrimaryButton>
+            <TertiaryButton @click="cancelCreateTrip" class="w-full">Avbryt</TertiaryButton>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <BaseHeading variant="md">Nylige turer</BaseHeading>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row gap-4">
+        <TripCard v-for="trip in recentTrips" :key="trip.id" :trip="trip" />
       </div>
     </section>
   </div>
 </template>
 
 <script setup>
-import ArrowRightIcon from '@/components/icons/ArrowRightIcon.vue'
-import MapPinAltIcon from '@/components/icons/MapPinAltIcon.vue'
 import PlusIcon from '@/components/icons/PlusIcon.vue'
+import TripCard from '@/components/TripCard.vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
-import UserGroupIcon from '@/components/icons/UserGroupIcon.vue'
-import { pluralize } from '@/components/utils'
-import { onMounted, ref } from 'vue'
+import TertiaryButton from '@/components/ui/TertiaryButton.vue'
 import TextInput from '@/components/ui/TextInput.vue'
+import BaseHeading from '@/components/ui/BaseHeading.vue'
+import { computed, onMounted, ref } from 'vue'
 
 const trips = ref(null)
 const creatingTrip = ref(false)
@@ -94,8 +74,21 @@ const createTrip = async () => {
   creatingTrip.value = false
 }
 
+function cancelCreateTrip() {
+  creatingTrip.value = false
+  tripName.value = ''
+}
+
 onMounted(async () => {
   const response = await fetch('api/trips')
   trips.value = await response.json()
 })
+
+const today = new Date()
+const upcomingTrips = computed(() =>
+  (trips.value || []).filter((trip) => !trip.start_date || new Date(trip.start_date) >= today)
+)
+const recentTrips = computed(() =>
+  (trips.value || []).filter((trip) => trip.start_date && new Date(trip.start_date) < today)
+)
 </script>
