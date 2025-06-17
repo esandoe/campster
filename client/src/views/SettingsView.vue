@@ -16,9 +16,7 @@
 
       <div>
         <hr class="my-3" />
-        <label
-          for="avatar-selector"
-          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        <label for="avatar-selector" class="block mb-2 text-sm font-medium text-gray-900"
           >Avatar</label
         >
         <div class="inline-block p-2 bg-gray-200">
@@ -29,9 +27,7 @@
           />
         </div>
 
-        <p id="avatar-textexplanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Velg din avatar
-        </p>
+        <p id="avatar-textexplanation" class="mt-2 text-sm text-gray-500">Velg din avatar</p>
         <div class="flex bg-gray-100">
           <div class="flex flex-wrap">
             <div v-for="avatar in avatars" :key="avatar" class="inline-block m-3">
@@ -99,7 +95,7 @@
             <tr
               v-for="user in allUsers"
               :key="user.id"
-              class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+              class="odd:bg-white odd:even:bg-gray-50 even:border-b"
             >
               <th scope="row" class="px-2 py-2 w-full whitespace-nowrap">
                 {{ user.username }}
@@ -149,7 +145,7 @@
           />
         </div>
       </div>
-      <p v-if="addUserErrorMessage" class="mt-2 text-sm text-red-600 dark:text-red-500">
+      <p v-if="addUserErrorMessage" class="mt-2 text-sm text-red-600">
         {{ addUserErrorMessage }}
       </p>
       <PrimaryButton @click.prevent="createUser()" class="mt-4">Opprett bruker</PrimaryButton>
