@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 bg-white border border-gray-200 rounded-lg shadow flex flex-col gap-2">
     <div class="flex items-center justify-between mb-2">
-      <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+      <h5 class="text-2xl font-bold tracking-tight text-gray-900">
         {{ trip.name }}
       </h5>
       <span
@@ -20,13 +20,13 @@
     <a href="#" class="block">
       <div class="flex flex-row space-x-2 py-0">
         <UserGroupIcon />
-        <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">
+        <p class="mb-3 font-normal text-gray-400">
           {{ pluralize(trip.participants.length, 'deltaker', 'deltakere') }}
         </p>
       </div>
       <div class="flex flex-row space-x-2 py-0">
         <MapPinAltIcon />
-        <p class="mb-3 font-normal text-gray-400 dark:text-gray-400">
+        <p class="mb-3 font-normal text-gray-400">
           {{ trip.location ?? 'N/A' }}
         </p>
       </div>
