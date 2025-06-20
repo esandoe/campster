@@ -1,17 +1,18 @@
-from dataclasses import dataclass
-from datetime import datetime, date
-from enum import Enum
 import random
+from dataclasses import dataclass
+from datetime import date, datetime
+from enum import Enum
+
 import click
+from alembic.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from flask import current_app as app
+from flask_login import UserMixin
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
-from flask_login import UserMixin
-from alembic.script import ScriptDirectory
-from alembic.migration import MigrationContext
-from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from werkzeug.security import generate_password_hash
 
 migrate = Migrate()
 
@@ -123,7 +124,6 @@ class User(UserMixin, db.Model):
         self.password = generate_password_hash(password)
 
 
-
 @dataclass
 class ParticipantItem(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -166,9 +166,7 @@ class TripParticipant(db.Model):
     user: Mapped[User] = relationship(User, backref="trip_participations")
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     items: Mapped[list[ParticipantItem]] = relationship("ParticipantItem")
-    attachments: Mapped[list[TripAttachment]] = relationship(
-        "TripAttachment"
-    )
+    attachments: Mapped[list[TripAttachment]] = relationship("TripAttachment")
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now
@@ -185,9 +183,7 @@ class Trip(db.Model):
     start_date: Mapped[date] = mapped_column(nullable=True)
     end_date: Mapped[date] = mapped_column(nullable=True)
     location: Mapped[str] = mapped_column(nullable=True)
-    attachments: Mapped[list[TripAttachment]] = relationship(
-        "TripAttachment"
-    )
+    attachments: Mapped[list[TripAttachment]] = relationship("TripAttachment")
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now
@@ -198,7 +194,7 @@ class Trip(db.Model):
 class SupplyTarget(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
-    name: Mapped[str] = mapped_column(unique=True)
+    name: Mapped[str] = mapped_column(nullable=False)
     target_quantity: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(

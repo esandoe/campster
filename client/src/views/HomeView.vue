@@ -7,7 +7,7 @@
       </p>
     </section>
 
-    <section v-if="upcomingTrips.length">
+    <section v-if="upcomingTrips.length || creatingTrip">
       <div class="flex justify-between items-center mb-6">
         <BaseHeading variant="md">Kommende turer</BaseHeading>
         <div v-if="!creatingTrip" class="flex items-center">
@@ -35,7 +35,15 @@
       </div>
     </section>
     <section>
-      <BaseHeading variant="md">Nylige turer</BaseHeading>
+      <div class="flex justify-between items-center mb-6">
+        <BaseHeading variant="md">Nylige turer</BaseHeading>
+        <div v-if="!creatingTrip && upcomingTrips.length === 0" class="flex items-center">
+          <PrimaryButton @click="tripButtonPress">
+            Opprett tur
+            <PlusIcon class="text-white mx-2" />
+          </PrimaryButton>
+        </div>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-row gap-4">
         <TripCard v-for="trip in recentTrips" :key="trip.id" :trip="trip" />
       </div>
