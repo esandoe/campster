@@ -22,10 +22,7 @@
           <li v-if="currentUser">
             <RouterLink :to="{ name: 'settings' }">
               <span class="flex items-center whitespace-nowrap">
-                <img
-                  :src="'/avatars/' + currentUser.avatar"
-                  class="object-cover rounded-full h-8 w-8 mx-3"
-                />
+                <AvatarImage :name="currentUser.avatar" :alt="currentUser.username" />
                 <span>{{ currentUser.username }}</span>
               </span>
             </RouterLink>
@@ -71,6 +68,7 @@
 <script setup>
 import { ref } from 'vue'
 import HamburgerMenuIcon from './icons/HamburgerMenuIcon.vue'
+import AvatarImage from './AvatarImage.vue'
 import { useAuth } from '@/composables/auth'
 
 const { currentUser, logout } = useAuth()
