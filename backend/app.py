@@ -313,6 +313,14 @@ def delete_attachment(trip_id, attachment_id):
 def get_supply_targets(trip_id):
     targets = SupplyTarget.query.filter_by(trip_id=trip_id).all()
 
+    def get_item_owner(item):
+        participant = TripParticipant.query.filter_by(id=item.participant_id).one()
+        return {
+            "id": participant.id,
+            "username": participant.user.username,
+            "avatar": participant.user.avatar,
+        }
+
     return jsonify(
         [
             {
@@ -320,7 +328,13 @@ def get_supply_targets(trip_id):
                 "name": target.name,
                 "target_quantity": target.target_quantity,
                 "items": [
-                    {"id": item.id, "name": item.name, "quantity": item.quantity}
+                    {
+                        "id": item.id,
+                        "name": item.name,
+                        "quantity": item.quantity,
+                        "participant": get_item_owner(item),
+                        "packed": item.packed,
+                    }
                     for item in ParticipantItem.query.filter_by(
                         supply_target=target
                     ).all()

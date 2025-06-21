@@ -36,8 +36,13 @@
               />
             </div>
             <div class="text-xs text-gray-500 truncate divide-y divide-none">
-              <div v-for="item in supplyTarget.items" :key="item.id" class="px-2">
-                {{ item.name }}: {{ item.quantity }}
+              <div v-for="item in supplyTarget.items" :key="item.id" class="ps-0">
+                <AvatarImage
+                  :name="item.participant.avatar"
+                  :title="item.participant.username"
+                  size="4"
+                />{{ item.name }}:
+                {{ item.quantity }}
               </div>
             </div>
           </td>
@@ -113,6 +118,7 @@
 </template>
 
 <script setup>
+import AvatarImage from '@/components/AvatarImage.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import TextInput from '@/components/ui/TextInput.vue'
