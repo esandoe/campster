@@ -353,9 +353,27 @@ def add_supply_target(trip_id):
     target = SupplyTarget(
         trip_id=trip_id,
         name=data["name"],
-        target_quantity=data["target_quantity"],
+        target_quantity=data["target_quantity"] if data["target_quantity"] else 1,
     )
     db.session.add(target)
+    db.session.commit()
+    return jsonify(target)
+
+
+@app.route("/api/trip/<trip_id>/supply-targets/<supply_target_id>", methods=["PUT"])
+@login_required
+@participant_of_trip_required
+def update_supply_target(trip_id, supply_target_id):
+    data = request.get_json()
+    target = SupplyTarget.query.filter_by(
+        id=supply_target_id, trip_id=trip_id
+    ).first_or_404()
+
+    if "name" in data:
+        target.name = data["name"]
+    if "target_quantity" in data:
+        target.target_quantity = data["target_quantity"]
+
     db.session.commit()
     return jsonify(target)
 
