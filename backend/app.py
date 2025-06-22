@@ -257,10 +257,9 @@ def upload_file(trip_id):
 @participant_of_trip_required
 def add_attachment(trip_id):
     data = request.get_json()
-    if not data or "text" not in data:
-        return jsonify({"error": "Missing required field: text"}), 400
-    if "filename" not in data or not data["filename"]:
-        return jsonify({"error": "Missing required field: filename"}), 400
+
+    if "filename" not in data and "text" not in data:
+        return jsonify({"error": "Missing required fields: filename or text"}), 400
 
     participant = TripParticipant.query.filter_by(
         trip_id=trip_id, user_id=current_user.id
@@ -268,9 +267,10 @@ def add_attachment(trip_id):
     attachment = TripAttachment(
         trip_id=trip_id,
         participant_id=participant.id,
-        filename=data["filename"],
-        text=data["text"],
+        filename=data.get("filename", None),
+        text=data.get("text", None),
     )
+
     db.session.add(attachment)
     db.session.commit()
     return jsonify(
