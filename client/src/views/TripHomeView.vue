@@ -54,9 +54,7 @@
               <button @click="editingLocation = true">🧨juster</button>
             </dd>
             <dd v-else>
-              <TextInput
-                v-model="trip.location"
-              />
+              <TextInput v-model="trip.location" />
               <button @click="updateTrip('location', trip.location)">🗡lagre</button>
             </dd>
           </div>
@@ -124,7 +122,7 @@
               <CloseIcon />
             </button>
           </div>
-          <p>{{ attachment.text }}</p>
+          <p class="text-base">{{ attachment.text }}</p>
           <p v-if="attachment.filename" class="text-sm font-normal pb-2.5 text-gray-900">
             <a
               :href="attachment.filepath"
