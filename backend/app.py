@@ -367,7 +367,7 @@ def add_supply_target(trip_id):
     target = SupplyTarget(
         trip_id=trip_id,
         name=data["name"],
-        target_quantity=data["target_quantity"] if data["target_quantity"] else 1,
+        target_quantity=data["target_quantity"],
     )
     db.session.add(target)
     db.session.commit()
