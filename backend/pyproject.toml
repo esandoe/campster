@@ -1,0 +1,16 @@
+[project]
+name = "campster-backend"
+version = "0.1.0"
+description = "Backend for Campster, a camping trip planning application"
+readme = "../readme.md"
+requires-python = "~=3.12.8"
+dependencies = [
+    "Flask>=3.1.1",
+    "Flask-Cors>=6.0.1",
+    "Flask-SQLAlchemy>=3.1.1",
+    "Flask-Migrate>=4.1.0",
+    "flask_login>=0.6.3",
+    "GitPython>=3.1.24",
+    "Waitress>=3.0.0",
+    "pynpm>=0.2.0",
+]
