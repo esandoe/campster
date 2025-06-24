@@ -9,7 +9,10 @@
     </p>
 
     <table v-else class="table-fixed text-left text-gray-500 rounded-md">
-      <thead class="text-xs uppercase text-gray-700 bg-gray-50">
+      <thead
+        v-if="!items[0]?.name.startsWith('section:')"
+        class="text-xs uppercase text-gray-700 bg-gray-50"
+      >
         <tr>
           <th v-if="editMode"></th>
           <th class="px-2 py-2 w-full">Produkt</th>
@@ -31,49 +34,122 @@
             >
           </td>
         </tr>
-        <tr
-          v-for="(item, pos) in items"
-          :key="item.id"
-          class="checklist-item"
-          :class="{
-            'border-b-4 border-b-gray-600': dragHoverPosition === pos && dragStartPosition < pos,
-            'border-t-4 border-t-gray-600': dragHoverPosition === pos && dragStartPosition > pos,
-            'border-b border-b-gray-300': dragHoverPosition !== pos
-          }"
-          @dragstart="(e) => dragstart_handler(e, pos)"
-          @drop="(e) => dropHandler(e, pos)"
-          @dragenter.prevent="dragHoverPosition = pos"
-          @dragover.prevent
-        >
-          <td v-if="editMode" draggable="true" class="cursor-pointer pr-0">
-            <DraggableItemIcon />
-          </td>
-          <td class="w-full px-2 py-2 text-gray-900">
-            <div>
+
+        <template v-for="(item, pos) in items" :key="item.id">
+          <tr
+            v-if="item.name.startsWith('section:')"
+            :class="{
+              'border-b-4 border-b-gray-600': dragHoverPosition === pos && dragStartPosition < pos,
+              'border-t-4 border-t-gray-600': dragHoverPosition === pos && dragStartPosition > pos,
+              'border-b border-b-gray-300': dragHoverPosition !== pos
+            }"
+            @dragstart="(e) => dragstart_handler(e, pos)"
+            @drop="(e) => dropHandler(e, pos)"
+            @dragenter.prevent="dragHoverPosition = pos"
+            @dragover.prevent
+          >
+            <td v-if="editMode" draggable="true" class="cursor-pointer pr-0 pt-8 pb-2">
+              <DraggableItemIcon />
+            </td>
+            <td class="px-2 pt-8 pb-2 text-gray-900 font-bold text-xl" :colspan="editMode ? 3 : 4">
               <input
                 class="w-full py-0 md:py-1 rounded-sm outline-none"
                 :class="{
                   'bg-transparent hover:bg-white cursor-pointer': !item._status?.editing,
                   'bg-gray-50 outline-1 outline-gray-400': item._status?.editing
                 }"
-                :value="item.name"
+                :value="item.name.replace('section:', '')"
                 @click="item._status.editing = true"
                 @focus="item._status.editing = true"
-                @keydown.enter="(event) => editItemName(item, event.target.value)"
-                @blur="(event) => editItemName(item, event.target.value)"
+                @keydown.enter="(event) => editItemName(item, `section:${event.target.value}`)"
+                @blur="(event) => editItemName(item, `section:${event.target.value}`)"
               />
-            </div>
+            </td>
+            <td v-if="editMode" class="px-1 md:px-6 pt-8 pb-2 whitespace-nowrap text-right">
+              <button @click="removeItem(item)" class="hover:underline hover:cursor-pointer">
+                <CloseIcon class="bg-red w-4 h-4"></CloseIcon>
+              </button>
+            </td>
+          </tr>
+          <tr
+            v-if="item.name.startsWith('section:')"
+            class="w-full text-xs uppercase text-gray-700 bg-gray-50"
+          >
+            <th v-if="editMode"></th>
+            <th class="px-2 py-2 w-full">Produkt</th>
+            <th class="px-1 md:px-6 py-2 max-md:hidden">Forsyningsmål</th>
+            <th class="px-1 md:px-6 py-2 whitespace-nowrap">Antall</th>
+            <th v-if="!editMode" class="px-1 md:px-6 py-2 whitespace-nowrap">Pakket</th>
+            <th v-if="editMode">Slett</th>
+          </tr>
+          <tr
+            v-else
+            class="checklist-item"
+            :class="{
+              'border-b-4 border-b-gray-600': dragHoverPosition === pos && dragStartPosition < pos,
+              'border-t-4 border-t-gray-600': dragHoverPosition === pos && dragStartPosition > pos,
+              'border-b border-b-gray-300': dragHoverPosition !== pos
+            }"
+            @dragstart="(e) => dragstart_handler(e, pos)"
+            @drop="(e) => dropHandler(e, pos)"
+            @dragenter.prevent="dragHoverPosition = pos"
+            @dragover.prevent
+          >
+            <td v-if="editMode" draggable="true" class="cursor-pointer pr-0">
+              <DraggableItemIcon />
+            </td>
+            <td class="w-full px-2 py-2 text-gray-900">
+              <div>
+                <input
+                  class="w-full py-0 md:py-1 rounded-sm outline-none"
+                  :class="{
+                    'bg-transparent hover:bg-white cursor-pointer': !item._status?.editing,
+                    'bg-gray-50 outline-1 outline-gray-400': item._status?.editing
+                  }"
+                  :value="item.name"
+                  @click="item._status.editing = true"
+                  @focus="item._status.editing = true"
+                  @keydown.enter="(event) => editItemName(item, event.target.value)"
+                  @blur="(event) => editItemName(item, event.target.value)"
+                />
+              </div>
 
-            <div class="md:hidden">
-              <div class="px-0 py-0 pb-1" v-if="item.supply_target && !editMode">
-                <label class="text-xs"
-                  ><span class="md:hidden">Forsyningsmål: </span
+              <div class="md:hidden">
+                <div class="px-0 py-0 pb-1" v-if="item.supply_target && !editMode">
+                  <label class="text-xs"
+                    ><span class="md:hidden">Forsyningsmål: </span
+                    >{{ item.supply_target?.name }}</label
+                  >
+                </div>
+                <div class="px-0 py-0" v-if="editMode">
+                  <select
+                    class="text-xs text-blue-600 py-1.5 border-0 appearance-none focus:outline-none focus:ring-0 focus:border-1 focus:border-gray-200"
+                    :value="item.supply_target_id"
+                    @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
+                  >
+                    <option value="" selected>---</option>
+                    <option
+                      v-for="supplyTarget in supplyTargets"
+                      :key="supplyTarget.id"
+                      :value="supplyTarget.id"
+                      @input="editItemSupplyTarget(item, supplyTarget.id)"
+                    >
+                      {{ supplyTarget.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </td>
+            <td class="max-md:hidden px-0 md:px-6 py-2 whitespace-nowrap">
+              <div class="px-0 py-0" v-if="item.supply_target && !editMode">
+                <label class="text-sm"
+                  ><span class="md:hidden">Forsyningsmål:</span
                   >{{ item.supply_target?.name }}</label
                 >
               </div>
               <div class="px-0 py-0" v-if="editMode">
                 <select
-                  class="text-xs text-blue-600 py-1.5 border-0 appearance-none focus:outline-none focus:ring-0 focus:border-1 focus:border-gray-200"
+                  class="text-sm text-gray-500 bg-transparent border-0 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200"
                   :value="item.supply_target_id"
                   @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
                 >
@@ -88,51 +164,30 @@
                   </option>
                 </select>
               </div>
-            </div>
-          </td>
-          <td class="max-md:hidden px-0 md:px-6 py-2 whitespace-nowrap">
-            <div class="px-0 py-0" v-if="item.supply_target && !editMode">
-              <label class="text-sm"
-                ><span class="md:hidden">Forsyningsmål:</span>{{ item.supply_target?.name }}</label
+            </td>
+            <td class="px-1 md:px-6 py-2 whitespace-nowrap">
+              <CounterInput
+                :value="item.quantity"
+                @update:value="($event) => updateItem(item, 'quantity', $event)"
+                :editable="editMode"
+              />
+            </td>
+            <td v-if="!editMode" class="px-1 md:px-6 py-2 whitespace-nowrap">
+              <CheckBox
+                v-model="item.packed"
+                @input="updateItem(item, 'packed', !item.packed)"
+              ></CheckBox>
+            </td>
+            <td v-if="editMode" class="px-1 md:px-6 py-2 whitespace-nowrap text-right">
+              <button
+                @click="removeItem(item)"
+                class="transition-colors hover:text-red-400 hover:cursor-pointer"
               >
-            </div>
-            <div class="px-0 py-0" v-if="editMode">
-              <select
-                class="text-sm text-gray-500 bg-transparent border-0 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200"
-                :value="item.supply_target_id"
-                @input="(event) => updateItem(item, 'supply_target_id', event.target.value)"
-              >
-                <option value="" selected>---</option>
-                <option
-                  v-for="supplyTarget in supplyTargets"
-                  :key="supplyTarget.id"
-                  :value="supplyTarget.id"
-                  @input="editItemSupplyTarget(item, supplyTarget.id)"
-                >
-                  {{ supplyTarget.name }}
-                </option>
-              </select>
-            </div>
-          </td>
-          <td class="px-1 md:px-6 py-2 whitespace-nowrap">
-            <CounterInput
-              :value="item.quantity"
-              @update:value="($event) => updateItem(item, 'quantity', $event)"
-              :editable="editMode"
-            />
-          </td>
-          <td v-if="!editMode" class="px-1 md:px-6 py-2 whitespace-nowrap">
-            <CheckBox
-              v-model="item.packed"
-              @input="updateItem(item, 'packed', !item.packed)"
-            ></CheckBox>
-          </td>
-          <td v-if="editMode" class="px-1 md:px-6 py-2 whitespace-nowrap text-right">
-            <button @click="removeItem(item)" class="hover:underline">
-              <CloseIcon class="bg-red w-4 h-4"></CloseIcon>
-            </button>
-          </td>
-        </tr>
+                <CloseIcon class="bg-red w-4 h-4"></CloseIcon>
+              </button>
+            </td>
+          </tr>
+        </template>
       </TransitionGroup>
     </table>
 
@@ -256,6 +311,9 @@ async function addItem(itemName) {
     body: JSON.stringify({ name: itemName, index: itemPosition })
   })
   const item = await response.json()
+  item._status = {
+    editing: false
+  }
   console.log(item)
   items.value.push(item)
   newItemName.value = ''
