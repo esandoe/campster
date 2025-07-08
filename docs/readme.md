@@ -14,7 +14,7 @@ Required:
 
 - node (currently 22.0.0)
 - npm (currently 10.6.0)
-- python (currently 3.11.6)
+- [uv](https://docs.astral.sh/uv/) (or manually managed Python environment)
 
 Recommended:
 
@@ -26,30 +26,19 @@ Recommended:
 ### Running the backend 🐍🖥
 
 Navigate to the backend,
-create a python venv,
-activate the venv,
-install dependencies in said venv
+use uv to install dependencies.
+use uv + flask to run the server.
 
-Windows
-```powershell
-cd backend &&
-python -m venv .campsterenv &&
-.campsterenv/Scripts/Activate.ps1 &&
-pip install -r requirements.txt
-```
+Win/Mac/Linux:
 
-Mac/Linux
 ```bash
-cd backend &&
-python3.12 -m venv .campsterenv &&
-source .campsterenv/bin/activate &&
-pip install -r requirements.txt
+cd backend && uv run
 ```
 
 If it completes successfully, you can now run the server!
 
-```powershell
-flask run --reload
+```bash
+uv run flask run --reload
 ```
 
 See also [Migrations](./migrations.md) for how to perform database migrations.
