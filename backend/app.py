@@ -1,6 +1,7 @@
 from datetime import date
 from logging.config import dictConfig
 from os import makedirs, path, remove
+import os
 
 from auth import (
     item_owner_required,
@@ -519,6 +520,17 @@ def get_avatar(filename):
 @login_required
 def get_file(trip_id, filename):
     return send_from_directory(f"uploads/trips/{trip_id}/attachments", filename)
+
+# Catch-all route for serving the client files
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>", methods=["GET"])
+def serve_client(path):
+    static_folder = "../client/dist"
+    
+    if path != "" and os.path.exists(os.path.join(static_folder, path)):
+        return send_from_directory(static_folder, path)
+    else:
+        return send_from_directory(static_folder, "index.html")
 
 
 if __name__ == "__main__":
