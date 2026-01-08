@@ -12,13 +12,19 @@ jobs:
     if: |
       (github.event_name == 'issues' && github.event.assignee.login == 'claude-code[bot]') ||
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
-    
+
     runs-on: ubuntu-latest
-    
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Run Claude Code
         uses: anthropics/claude-code-action@v1
         with:
@@ -33,8 +39,8 @@ jobs:
             - Implement a fix
             - Run tests to verify the fix works
             - Create a pull request with your changes
-            
+
             Important guidelines:
             - Do NOT change UI/layout unless explicitly asked
-            - Test your solution before submitting
+            - Run all relevant tests before submitting
             - Keep changes minimal and focused on the issue
