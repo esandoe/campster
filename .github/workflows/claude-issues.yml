@@ -1,35 +1,43 @@
-name: Claude Auto-Fix Issues
+name: Claude Code
 
 on:
-  issues:
-    types: [assigned]
   issue_comment:
     types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  claude-fix:
-    # Only run if Claude is assigned or mentioned
+  claude:
     if: |
-      (github.event_name == 'issues' && github.event.assignee.login == 'claude-code[bot]') ||
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
-
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
-      issues: write
       pull-requests: write
+      issues: write
       id-token: write
-
+      actions: read # Required for Claude to read CI results on PRs
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
 
       - name: Run Claude Code
+        id: claude
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude-args: --model claude-sonnet-4-5-20250929 --max_tokens 8000
+          claude-args: --model claude-haiku-4-5-20251001 --max_tokens 8000
+          additional_permissions: |
+            write:**/*
           prompt: |
             I need you to fix this GitHub issue:
             
