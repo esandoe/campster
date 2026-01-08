@@ -36,6 +36,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: --model claude-haiku-4-5-20251001 --max_tokens 8000
+          show_full_output: true
           additional_permissions: |
             write:**/*
           prompt: |
@@ -58,6 +59,5 @@ jobs:
             - Create a pull request with your changes
 
             Important guidelines:
-            - Do NOT change UI/layout unless explicitly asked
             - Run all relevant tests before submitting
             - Keep changes minimal and focused on the issue
