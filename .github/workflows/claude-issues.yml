@@ -1,0 +1,40 @@
+name: Claude Auto-Fix Issues
+
+on:
+  issues:
+    types: [assigned]
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-fix:
+    # Only run if Claude is assigned or mentioned
+    if: |
+      (github.event_name == 'issues' && github.event.assignee.login == 'claude-code[bot]') ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          max_tokens: 8000
+          model: claude-sonnet-4-5-20250929
+          prompt: |
+            Please analyze this issue and create a fix:
+            - Read the issue description carefully
+            - Identify relevant code files
+            - Run existing tests to understand current behavior
+            - Implement a fix
+            - Run tests to verify the fix works
+            - Create a pull request with your changes
+            
+            Important guidelines:
+            - Do NOT change UI/layout unless explicitly asked
+            - Test your solution before submitting
+            - Keep changes minimal and focused on the issue
