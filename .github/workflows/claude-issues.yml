@@ -32,6 +32,16 @@ jobs:
           max_tokens: 8000
           model: claude-sonnet-4-5-20250929
           prompt: |
+            I need you to fix this GitHub issue:
+            
+            **Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}**
+            
+            Description:
+            ${{ github.event.issue.body }}
+            
+            Repository: ${{ github.repository }}
+            Issue URL: ${{ github.event.issue.html_url }}
+
             Please analyze this issue and create a fix:
             - Read the issue description carefully
             - Identify relevant code files
