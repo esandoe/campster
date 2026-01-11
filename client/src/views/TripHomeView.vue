@@ -21,26 +21,23 @@
         <div class="grid grid-cols-1">
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-xl font-semibold text-gray-900">Turdetaljer</h3>
-            <button
+            <SecondaryButton
               v-if="!isEditing"
               @click="startEditing"
-              class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
             >
               ✏️ Rediger
-            </button>
+            </SecondaryButton>
             <div v-else class="flex gap-2">
-              <button
+              <PrimaryButton
                 @click="saveAllChanges"
-                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
               >
                 💾 Lagre
-              </button>
-              <button
+              </PrimaryButton>
+              <SecondaryButton
                 @click="cancelEditing"
-                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition-colors"
               >
                 ✕ Avbryt
-              </button>
+              </SecondaryButton>
             </div>
           </div>
           <div class="flex flex-col items-left">
@@ -166,6 +163,7 @@ import { useRoute } from 'vue-router'
 import ImageUploadIcon from '@/components/icons/ImageUploadIcon.vue'
 import CloseIcon from '@/components/icons/CloseIcon.vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
+import SecondaryButton from '@/components/ui/SecondaryButton.vue'
 import TextInput from '@/components/ui/TextInput.vue'
 
 const { currentUser } = useAuth()
