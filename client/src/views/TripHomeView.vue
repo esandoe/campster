@@ -19,43 +19,63 @@
       </div>
       <dl class="grid grid-cols-2 gap-3 p-4 mx-auto">
         <div class="grid grid-cols-1">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xl font-semibold text-gray-900">Turdetaljer</h3>
+            <button
+              v-if="!isEditing"
+              @click="startEditing"
+              class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+            >
+              ✏️ Rediger
+            </button>
+            <div v-else class="flex gap-2">
+              <button
+                @click="saveAllChanges"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+              >
+                💾 Lagre
+              </button>
+              <button
+                @click="cancelEditing"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none transition-colors"
+              >
+                ✕ Avbryt
+              </button>
+            </div>
+          </div>
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Start-dato</dt>
-            <dd v-if="!editingStartDate" class="mb-2 text-normal">
-              {{ startDate }} <button @click="editingStartDate = true">🧨juster</button>
+            <dd v-if="!isEditing" class="mb-2 text-normal">
+              {{ startDate }}
             </dd>
             <dd v-else class="mb-2 text-normal">
               <input
                 type="date"
-                v-model="trip.start_date"
+                v-model="editedTrip.start_date"
                 class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
               />
-              <button @click="updateTrip('start_date', trip.start_date)">🗡lagre</button>
             </dd>
           </div>
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Slutt-dato</dt>
-            <dd v-if="!editingEndDate" class="mb-2 text-normal">
-              {{ endDate }} <button @click="editingEndDate = true">🧨juster</button>
+            <dd v-if="!isEditing" class="mb-2 text-normal">
+              {{ endDate }}
             </dd>
             <dd v-else>
               <input
                 type="date"
-                v-model="trip.end_date"
+                v-model="editedTrip.end_date"
                 class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
               />
-              <button @click="updateTrip('end_date', trip.end_date)">🗡lagre</button>
             </dd>
           </div>
           <div class="flex flex-col items-left">
-            <dt class="text-lg font-semibold text-gray-900">Lokasjon:</dt>
-            <dd v-if="!editingLocation" class="mb-2 text-normal">
-              <a :href="`https://maps.google.com/?q=${trip?.location}`">🧭{{ trip?.location }}</a>
-              <button @click="editingLocation = true">🧨juster</button>
+            <dt class="text-lg font-semibold text-gray-900">Lokasjon</dt>
+            <dd v-if="!isEditing" class="mb-2 text-normal">
+              <a :href="`https://maps.google.com/?q=${trip?.location}`" class="text-blue-600 hover:text-blue-800">🧭{{ trip?.location }}</a>
             </dd>
             <dd v-else>
-              <TextInput v-model="trip.location" />
-              <button @click="updateTrip('location', trip.location)">🗡lagre</button>
+              <TextInput v-model="editedTrip.location" />
             </dd>
           </div>
         </div>
@@ -165,9 +185,12 @@ const attachment = ref({
   filename: ''
 })
 
-const editingStartDate = ref(false)
-const editingEndDate = ref(false)
-const editingLocation = ref(false)
+const isEditing = ref(false)
+const editedTrip = ref({
+  start_date: '',
+  end_date: '',
+  location: ''
+})
 
 const isParticipant = computed(() =>
   participants.value?.some((p) => p.user_id == currentUser.value?.id)
@@ -229,28 +252,34 @@ const endDate = computed(() => {
   return no_format_date(trip.value?.end_date, true)
 })
 
-const updateTrip = async (attributeName, attributeValue) => {
+const startEditing = () => {
+  isEditing.value = true
+  editedTrip.value = {
+    start_date: trip.value.start_date,
+    end_date: trip.value.end_date,
+    location: trip.value.location
+  }
+}
+
+const cancelEditing = () => {
+  isEditing.value = false
+  editedTrip.value = {
+    start_date: '',
+    end_date: '',
+    location: ''
+  }
+}
+
+const saveAllChanges = async () => {
   const response = await fetch(`/api/trips/${tripId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      [attributeName]: attributeValue
-    })
+    body: JSON.stringify(editedTrip.value)
   })
   trip.value = await response.json()
-  switch (attributeName) {
-    case 'start_date':
-      editingStartDate.value = false
-      break
-    case 'end_date':
-      editingEndDate.value = false
-      break
-    case 'location':
-      editingLocation.value = false
-      break
-  }
+  isEditing.value = false
 }
 
 const joinTrip = async () => {
