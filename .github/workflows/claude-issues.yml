@@ -35,29 +35,24 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: --model claude-haiku-4-5-20251001 --max_tokens 8000
-          show_full_output: true
-          additional_permissions: |
-            write:**/*
-          prompt: |
-            I need you to fix this GitHub issue:
-            
-            **Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}**
-            
-            Description:
-            ${{ github.event.issue.body }}
-            
-            Repository: ${{ github.repository }}
-            Issue URL: ${{ github.event.issue.html_url }}
 
-            Please analyze this issue and create a fix:
-            - Read the issue description carefully
-            - Identify relevant code files
-            - Run existing tests to understand current behavior
-            - Implement a fix
-            - Run tests to verify the fix works
-            - Create a pull request with your changes
+          # Optional: Customize the trigger phrase (default: @claude)
+          # trigger_phrase: "/claude"
 
-            Important guidelines:
-            - Run all relevant tests before submitting
-            - Keep changes minimal and focused on the issue
+          # Optional: Trigger when specific user is assigned to an issue
+          assignee_trigger: "claude-bot"
+
+          # Optional: Configure Claude's behavior with CLI arguments
+          claude_args: |
+            --model claude-haiku-4-5-20251001
+            --max-turns 10
+          #   --allowedTools "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
+          #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
+
+          # Optional: Advanced settings configuration
+          # settings: |
+          #   {
+          #     "env": {
+          #       "NODE_ENV": "test"
+          #     }
+          #   }
