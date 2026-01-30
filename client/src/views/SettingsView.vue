@@ -56,6 +56,17 @@
     <div v-if="currentUser != null" class="w-1/2 p-4 rounded-lg shadow-sm md:flex-row bg-gray-50">
       <h2>Bytt passord</h2>
       <hr class="my-3" />
+      <div
+        v-if="currentUser.is_pending"
+        class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 border border-yellow-300"
+        role="alert"
+      >
+        <strong class="font-bold">Viktig!</strong>
+        <p class="mt-1">
+          Du må sette et nytt passord før du kan fortsette. Dette er et midlertidig passord som må
+          endres.
+        </p>
+      </div>
       <form id="change-password-form" @submit.prevent="changePassword">
         <div>
           <TextInput name="Gammelt passord" type="password" v-model="oldPassword" required />
@@ -225,8 +236,9 @@ async function changePassword() {
     })
   })
     .then((response) => response.json())
-    .then((data) => {
+    .then(async (data) => {
       if (data.success) {
+        await updateUser()
         alert('Du byttet passord, flott!')
         oldPassword.value = ''
         newPassword.value = ''

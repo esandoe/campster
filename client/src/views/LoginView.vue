@@ -93,8 +93,13 @@ async function login() {
 
   const result = await response.json()
   if (result.Success) {
-    updateUser()
-    router.go(-1)
+    await updateUser()
+    if (currentUser.value?.is_pending) {
+      router.push({ name: 'settings', query: { pendingPassword: 'true' } })
+    } else {
+      router.go(-1)
+    }
+    return
   }
 
   error.value = result.Error
