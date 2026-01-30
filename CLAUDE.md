@@ -1,62 +1,62 @@
-# Campster - Prosjektoversikt for AI-assistenter
+# Campster - Project Overview for AI Assistants
 
-Dette dokumentet gir en oversikt over Campster-prosjektet for å hjelpe AI-assistenter med å raskt forstå kodebasen og bidra effektivt.
+This document provides an overview of the Campster project to help AI assistants quickly understand the codebase and contribute effectively.
 
-## Prosjektbeskrivelse
+## Project Description
 
-Campster er et samarbeidsverktøy for planlegging av camping- og fjelltursturer, med hovedfokus på å gjøre pakkelister enkle å lage og dele. Nøkkelfunksjonen er **delte forsyningsmål** (supply targets) hvor deltakere kan bidra med utstyr og holde oversikt over hva som trengs.
+Campster is a collaborative tool for planning camping and hiking trips, with a primary focus on making packing lists easy to create and share. The key feature is **shared supply targets** where participants can contribute equipment and keep track of what's needed.
 
-**Målgruppe**: Smågrupper som planlegger felles turer
-**Språk**: Norsk UI med noe engelsk kode
-**Utviklingsmetode**: Agil, evolusjonær utvikling basert på brukerbehov
+**Target Audience**: Small groups planning shared trips
+**Language**: Norwegian UI with some English code
+**Development Method**: Agile, evolutionary development based on user needs
 
-## Teknologistabel
+## Technology Stack
 
 ### Backend
 - **Framework**: Flask 3.1.1+ (Python 3.12.8+)
-- **Database**: SQLite med Flask-SQLAlchemy 3.1.1+
-- **Migrasjoner**: Flask-Migrate 4.1.0+ (Alembic)
-- **Autentisering**: Flask-Login 0.6.3+ (session-basert)
-- **Passord**: Werkzeug scrypt
-- **Server**: Waitress 3.0.0+ (produksjon)
-- **Pakkebehandler**: `uv` (anbefalt)
+- **Database**: SQLite with Flask-SQLAlchemy 3.1.1+
+- **Migrations**: Flask-Migrate 4.1.0+ (Alembic)
+- **Authentication**: Flask-Login 0.6.3+ (session-based)
+- **Password**: Werkzeug scrypt
+- **Server**: Waitress 3.0.0+ (production)
+- **Package Manager**: `uv` (recommended)
 
 ### Frontend
-- **Framework**: Vue 3.5.16 (Composition API med `<script setup>`)
+- **Framework**: Vue 3.5.16 (Composition API with `<script setup>`)
 - **Build**: Vite 6.3.5
 - **Routing**: Vue Router 4.5.1
 - **Styling**: Tailwind CSS 4.1.10+
-- **UI-komponenter**: Headless UI, Heroicons, Flowbite
+- **UI Components**: Headless UI, Heroicons, Flowbite
 - **Linting**: ESLint 9.29.0 + Prettier 3.5.3
 - **Node**: 22.0.0+, NPM 10.6.0+
 
-### Utviklingsverktøy
-- **VSCode anbefalt** med Volar, Tailwind CSS IntelliSense
-- **Docker**: docker-compose støtte
-- **GitHub Actions**: Claude Code integrasjon (`.github/workflows/claude.yml`)
+### Development Tools
+- **VSCode recommended** with Volar, Tailwind CSS IntelliSense
+- **Docker**: docker-compose support
+- **GitHub Actions**: Claude Code integration (`.github/workflows/claude.yml`)
 
-## Prosjektstruktur
+## Project Structure
 
 ```
 campster/
 ├── backend/                    # Flask backend
-│   ├── app.py                 # Hovedinngang, Flask app og API-ruter
-│   ├── auth.py                # Autentisering og autorisasjonsdekoratører
-│   ├── database.py            # SQLAlchemy-modeller
-│   ├── settings.py            # Settings blueprint (brukeradmin, avatarer)
-│   ├── pyproject.toml         # Python-avhengigheter
-│   ├── setup/                 # Database-initialisering
+│   ├── app.py                 # Main entry point, Flask app and API routes
+│   ├── auth.py                # Authentication and authorization decorators
+│   ├── database.py            # SQLAlchemy models
+│   ├── settings.py            # Settings blueprint (user admin, avatars)
+│   ├── pyproject.toml         # Python dependencies
+│   ├── setup/                 # Database initialization
 │   │   ├── initial_setup.py
 │   │   └── sample_data.py
-│   ├── migrations/            # Alembic-migrasjoner
-│   └── avatars/               # Brukeravatarbilder
+│   ├── migrations/            # Alembic migrations
+│   └── avatars/               # User avatar images
 │
 ├── client/                    # Vue 3 frontend
 │   ├── src/
 │   │   ├── main.js           # App entry point
-│   │   ├── App.vue           # Root-komponent med navbar
+│   │   ├── App.vue           # Root component with navbar
 │   │   ├── router/index.js   # Vue Router config
-│   │   ├── views/            # Sidekomponenter
+│   │   ├── views/            # Page components
 │   │   │   ├── HomeView.vue
 │   │   │   ├── TripView.vue
 │   │   │   ├── TripHomeView.vue
@@ -66,7 +66,7 @@ campster/
 │   │   │   ├── SignUpView.vue
 │   │   │   ├── SettingsView.vue
 │   │   │   └── AboutView.vue
-│   │   ├── components/       # Gjenbrukbare komponenter
+│   │   ├── components/       # Reusable components
 │   │   │   ├── icons/
 │   │   │   ├── ui/
 │   │   │   ├── TripCard.vue
@@ -76,72 +76,72 @@ campster/
 │   │   ├── composables/      # Vue composables
 │   │   │   └── auth.js       # useAuth()
 │   │   └── assets/
-│   ├── vite.config.js        # Vite config med API proxy
+│   ├── vite.config.js        # Vite config with API proxy
 │   ├── tailwind.config.js
 │   └── package.json
 │
-└── docs/                     # Dokumentasjon
-    ├── readme.md            # Oppsett og kom-i-gang
-    └── migrations.md        # Database-migrasjonsguide
+└── docs/                     # Documentation
+    ├── readme.md            # Setup and getting started
+    └── migrations.md        # Database migration guide
 ```
 
-## Kjernefunksjoner
+## Core Features
 
-### 1. Turbehandling (Trip Management)
-- Opprett, les, oppdater turer med navn, dato, lokasjon
-- Deltakerbehandling (join/leave trips)
-- Trip-vedlegg (filopplasting og notater)
+### 1. Trip Management
+- Create, read, update trips with name, date, location
+- Participant management (join/leave trips)
+- Trip attachments (file uploads and notes)
 
-### 2. Pakkelister (Primary Feature)
-- Personlige sjekklister per deltaker
-- Items har navn, antall, packed-status, og index (for rekkefølge)
-- Drag-and-drop omorganisering
-- Autoutfylling fra tidligere turer
+### 2. Packing Lists (Primary Feature)
+- Personal checklists per participant
+- Items have name, quantity, packed status, and index (for ordering)
+- Drag-and-drop reorganization
+- Auto-fill from previous trips
 
-### 3. Forsyningsmål (Supply Targets)
-- Grupperte pakkegjenstander etter kategori/mål
-- Target quantity goal med fremgangsindikator
-- Viser totalt antall items og progressprosent
+### 3. Supply Targets
+- Grouped packing items by category/goal
+- Target quantity goal with progress indicator
+- Shows total item count and progress percentage
 
-### 4. Brukeradministrasjon
-- Registrering og innlogging
-- Avatarvalg (20+ forhåndsdefinerte)
-- Admin-brukere kan administrere andre brukere
-- Passordbytte og reset-funksjonalitet
+### 4. User Administration
+- Registration and login
+- Avatar selection (20+ predefined)
+- Admin users can manage other users
+- Password change and reset functionality
 
-## Database-modeller
+## Database Models
 
 ```python
-User              # Brukere (autentisering, profiler)
-Trip              # Turer (camping/hiking trips)
-TripParticipant   # Forhold mellom brukere og turer
-ParticipantItem   # Individuelle pakkegjenstander
-SupplyTarget      # Delte forsyningsmål
-TripAttachment    # Filer/notater for turer
+User              # Users (authentication, profiles)
+Trip              # Trips (camping/hiking trips)
+TripParticipant   # Relationship between users and trips
+ParticipantItem   # Individual packing items
+SupplyTarget      # Shared supply targets
+TripAttachment    # Files/notes for trips
 ```
 
-## Utviklingsarbeidsflyt
+## Development Workflow
 
-### Backend-oppsett
+### Backend Setup
 ```bash
 cd backend
-uv run                          # Installer avhengigheter
-uv run flask run --reload       # Kjør med hot reload
-uv run flask db migrate -m "beskrivelse"  # Opprett migrasjon
-uv run flask db upgrade         # Kjør migrasjoner
+uv run                          # Install dependencies
+uv run flask run --reload       # Run with hot reload
+uv run flask db migrate -m "description"  # Create migration
+uv run flask db upgrade         # Run migrations
 ```
 
-### Frontend-oppsett
+### Frontend Setup
 ```bash
 cd client
 npm install
-npm run dev                    # Vite dev server (proxier til Flask)
-npm run build                  # Produksjonsbygg
-npm run lint --fix            # Rett linting-feil
-npm run format                # Formater med Prettier
+npm run dev                    # Vite dev server (proxies to Flask)
+npm run build                  # Production build
+npm run lint --fix            # Fix linting errors
+npm run format                # Format with Prettier
 ```
 
-### Full-stack produksjonskjøring
+### Full-Stack Production Run
 ```bash
 cd client && npm install && npm run build
 cd backend && uv run flask run
@@ -152,147 +152,147 @@ cd backend && uv run flask run
 docker compose up --build
 ```
 
-## API-oversikt
+## API Overview
 
-Alle endepunkter er under `/api`:
+All endpoints are under `/api`:
 
-### Autentisering
-- `POST /api/login` - Logg inn
-- `POST /api/signup` - Registrer bruker
-- `POST /api/logout` - Logg ut
-- `GET /api/profile` - Hent nåværende brukerprofil
+### Authentication
+- `POST /api/login` - Log in
+- `POST /api/signup` - Register user
+- `POST /api/logout` - Log out
+- `GET /api/profile` - Get current user profile
 
-### Turer
-- `GET /api/trips` - List alle turer
-- `POST /api/trips` - Opprett ny tur
-- `GET /api/trips/<trip_id>` - Hent turdetaljer
-- `PUT /api/trips/<trip_id>` - Oppdater tur
+### Trips
+- `GET /api/trips` - List all trips
+- `POST /api/trips` - Create new trip
+- `GET /api/trips/<trip_id>` - Get trip details
+- `PUT /api/trips/<trip_id>` - Update trip
 
-### Deltakere
-- `GET /api/trip/<trip_id>/participants` - List deltakere
-- `POST /api/trips/<trip_id>/join` - Bli med på tur
+### Participants
+- `GET /api/trip/<trip_id>/participants` - List participants
+- `POST /api/trips/<trip_id>/join` - Join trip
 
-### Forsyningsmål (Supply Targets)
-- `GET /api/trip/<trip_id>/supply-targets` - List mål
-- `POST /api/trip/<trip_id>/supply-targets` - Opprett mål
-- `PUT /api/trip/<trip_id>/supply-targets/<id>` - Oppdater mål
-- `DELETE /api/trip/<trip_id>/supply-targets/<id>` - Slett mål
+### Supply Targets
+- `GET /api/trip/<trip_id>/supply-targets` - List targets
+- `POST /api/trip/<trip_id>/supply-targets` - Create target
+- `PUT /api/trip/<trip_id>/supply-targets/<id>` - Update target
+- `DELETE /api/trip/<trip_id>/supply-targets/<id>` - Delete target
 
-### Pakkegjenstander (Participant Items)
-- `GET /api/trip/<trip_id>/participant/<participant_id>/items` - Hent items
-- `POST /api/participant/<participant_id>/items` - Legg til item
-- `PUT /api/participant/<participant_id>/items/<item_id>` - Oppdater item
-- `DELETE /api/participant/<participant_id>/items/<item_id>` - Slett item
-- `POST /api/trip/<trip_id>/participant/<participant_id>/autofill` - Autoutfyll fra tidligere turer
-- `GET /api/items` - Hent alle distinkte item-navn
+### Participant Items
+- `GET /api/trip/<trip_id>/participant/<participant_id>/items` - Get items
+- `POST /api/participant/<participant_id>/items` - Add item
+- `PUT /api/participant/<participant_id>/items/<item_id>` - Update item
+- `DELETE /api/participant/<participant_id>/items/<item_id>` - Delete item
+- `POST /api/trip/<trip_id>/participant/<participant_id>/autofill` - Auto-fill from previous trips
+- `GET /api/items` - Get all distinct item names
 
-### Vedlegg
-- `GET /api/trips/<trip_id>/attachments/` - List vedlegg
-- `POST /api/trips/<trip_id>/attachments/` - Legg til vedlegg (tekst)
-- `POST /api/trips/<trip_id>/attachments/upload-file/` - Last opp fil
-- `DELETE /api/trips/<trip_id>/attachments/<attachment_id>` - Slett vedlegg
+### Attachments
+- `GET /api/trips/<trip_id>/attachments/` - List attachments
+- `POST /api/trips/<trip_id>/attachments/` - Add attachment (text)
+- `POST /api/trips/<trip_id>/attachments/upload-file/` - Upload file
+- `DELETE /api/trips/<trip_id>/attachments/<attachment_id>` - Delete attachment
 
-### Innstillinger
-- `POST /api/profile/avatar` - Oppdater avatar
-- `GET /api/list-avatars` - List tilgjengelige avatarer
-- `POST /api/settings/user/change-password` - Bytt passord
-- `GET /api/settings/users` - List brukere (admin)
-- `POST /api/settings/users` - Opprett bruker (admin)
-- `DELETE /api/settings/users/<user_id>` - Slett bruker (admin)
-- `PUT /api/settings/users/<user_id>` - Oppdater bruker (admin)
-- `PUT /api/settings/users/<user_id>/password-reset` - Reset passord (admin)
-- `POST /api/settings/server/update` - Oppdater server (admin)
+### Settings
+- `POST /api/profile/avatar` - Update avatar
+- `GET /api/list-avatars` - List available avatars
+- `POST /api/settings/user/change-password` - Change password
+- `GET /api/settings/users` - List users (admin)
+- `POST /api/settings/users` - Create user (admin)
+- `DELETE /api/settings/users/<user_id>` - Delete user (admin)
+- `PUT /api/settings/users/<user_id>` - Update user (admin)
+- `PUT /api/settings/users/<user_id>/password-reset` - Reset password (admin)
+- `POST /api/settings/server/update` - Update server (admin)
 
-## Kode-konvensjoner og mønstre
+## Code Conventions and Patterns
 
 ### Backend
-1. **Autorisasjonsdekoratører** (definert i `auth.py`):
-   - `@admin_required` - Kun admin
-   - `@participant_of_trip_required` - Må være deltaker i turen
-   - `@participant_self_required` - Må være egen deltaker
-   - `@item_owner_required` - Må eie gjenstanden
+1. **Authorization Decorators** (defined in `auth.py`):
+   - `@admin_required` - Admin only
+   - `@participant_of_trip_required` - Must be participant in trip
+   - `@participant_self_required` - Must be own participant
+   - `@item_owner_required` - Must own the item
 
-2. **Database**: SQLAlchemy med dataclass-dekoratører og type hints
-3. **Routing**: Flask blueprints for organiserte endepunkter
-4. **Feilhåndtering**: JSON-responser med standardiserte feilmeldinger
+2. **Database**: SQLAlchemy with dataclass decorators and type hints
+3. **Routing**: Flask blueprints for organized endpoints
+4. **Error Handling**: JSON responses with standardized error messages
 
 ### Frontend
-1. **Vue 3 Composition API** med `<script setup>`
-2. **State management**: Component-level refs og composables (ingen Vuex/Pinia)
-3. **Styling**: Utility-first med Tailwind CSS
-4. **API-kall**: Fetch API med JSON payloads
-5. **Path aliases**: `@/` for `src/`-katalogen
+1. **Vue 3 Composition API** with `<script setup>`
+2. **State Management**: Component-level refs and composables (no Vuex/Pinia)
+3. **Styling**: Utility-first with Tailwind CSS
+4. **API Calls**: Fetch API with JSON payloads
+5. **Path Aliases**: `@/` for `src/` directory
 
-## Testing og kvalitet
+## Testing and Quality
 
-- **Linting**: `npm run lint` i client-katalogen
+- **Linting**: `npm run lint` in client directory
 - **Formatting**: `npm run format` (Prettier)
-- **Type checking**: jsconfig.json for path resolution
+- **Type Checking**: jsconfig.json for path resolution
 
-## Viktige tekniske beslutninger
+## Important Technical Decisions
 
-1. **SQLite for enkelhet** - Godt for små team-samarbeidsverktøy
-2. **Session-basert autentisering** - Via Flask-Login
-3. **Ingen dedikert state management** - Composables og komponent-state er tilstrekkelig
-4. **Admin-funksjoner innebygd** - Brukerbehandling, server-oppdateringer
-5. **Filopplastingsstøtte** - For tur-vedlegg og avatarer
+1. **SQLite for simplicity** - Good for small team collaboration tools
+2. **Session-based authentication** - Via Flask-Login
+3. **No dedicated state management** - Composables and component state are sufficient
+4. **Built-in admin functions** - User management, server updates
+5. **File upload support** - For trip attachments and avatars
 
-## Vanlige oppgaver
+## Common Tasks
 
-### Legge til ny databasemodell
-1. Definer modellen i `backend/database.py`
-2. Kjør `uv run flask db migrate -m "beskrivelse"`
-3. Gjennomgå migrasjonen i `backend/migrations/versions/`
-4. Kjør `uv run flask db upgrade`
+### Adding a New Database Model
+1. Define the model in `backend/database.py`
+2. Run `uv run flask db migrate -m "description"`
+3. Review the migration in `backend/migrations/versions/`
+4. Run `uv run flask db upgrade`
 
-### Legge til ny API-endepunkt
-1. Legg til rute i `backend/app.py` (eller relevant blueprint)
-2. Legg til autorisasjonsdekoratør hvis nødvendig
-3. Test med curl eller Postman
+### Adding a New API Endpoint
+1. Add route in `backend/app.py` (or relevant blueprint)
+2. Add authorization decorator if necessary
+3. Test with curl or Postman
 
-### Legge til ny Vue-side
-1. Opprett komponent i `client/src/views/`
-2. Legg til rute i `client/src/router/index.js`
-3. Legg til navigasjonslenke i `Navbar.vue` hvis nødvendig
+### Adding a New Vue Page
+1. Create component in `client/src/views/`
+2. Add route in `client/src/router/index.js`
+3. Add navigation link in `Navbar.vue` if necessary
 
-### Kjøre databasemigrasjoner
-Se `docs/migrations.md` for detaljert guide.
+### Running Database Migrations
+See `docs/migrations.md` for detailed guide.
 
-## Feilsøking
+## Troubleshooting
 
-### Backend starter ikke
-- Sjekk at `uv` er installert
-- Sjekk at Python 3.12.8+ er installert
-- Sjekk at `instance/campster.db` eksisterer (kjør `uv run flask run` første gang)
+### Backend Won't Start
+- Check that `uv` is installed
+- Check that Python 3.12.8+ is installed
+- Check that `instance/campster.db` exists (run `uv run flask run` first time)
 
-### Frontend bygger ikke
-- Kjør `npm install` i `client/`
-- Sjekk Node-versjonen (22.0.0+)
-- Sjekk at Tailwind CSS er konfigurert riktig
+### Frontend Won't Build
+- Run `npm install` in `client/`
+- Check Node version (22.0.0+)
+- Check that Tailwind CSS is configured correctly
 
-### API-kall feiler
-- Sjekk at backend kjører på riktig port (standard: 5000)
-- Sjekk CORS-konfigurasjonen i `backend/app.py`
-- Sjekk at Vite proxy er konfigurert riktig i `client/vite.config.js`
+### API Calls Fail
+- Check that backend is running on correct port (default: 5000)
+- Check CORS configuration in `backend/app.py`
+- Check that Vite proxy is configured correctly in `client/vite.config.js`
 
-## Ytterligere dokumentasjon
+## Additional Documentation
 
-- `docs/readme.md` - Detaljert oppsett og kom-i-gang-guide
-- `docs/migrations.md` - Database-migrasjonsguide
-- GitHub Issues - For pågående utviklingsoppgaver
+- `docs/readme.md` - Detailed setup and getting started guide
+- `docs/migrations.md` - Database migration guide
+- GitHub Issues - For ongoing development tasks
 
-## Kontakt og bidrag
+## Contact and Contributions
 
 - **Repository**: github.com/esandoe/campster
-- **Issues**: Bruk GitHub Issues for bug-rapporter og feature-forespørsler
-- **Pull Requests**: Velkomne! Følg eksisterende kode-stil
+- **Issues**: Use GitHub Issues for bug reports and feature requests
+- **Pull Requests**: Welcome! Follow existing code style
 
-## Claude Code-integrasjon
+## Claude Code Integration
 
-Prosjektet har GitHub Actions-integrasjon for Claude Code:
-- Trigger: `@claude` i issue-kommentarer
+The project has GitHub Actions integration for Claude Code:
+- Trigger: `@claude` in issue comments
 - Workflow: `.github/workflows/claude.yml`
-- Modell: claude-sonnet-4-5-20250929
+- Model: claude-sonnet-4-5-20250929
 - Max turns: 30
 
-AI-assistenter kan tagges i issues og PRs for automatisk hjelp med kodingsoppgaver.
+AI assistants can be tagged in issues and PRs for automatic help with coding tasks.
