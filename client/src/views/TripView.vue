@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, provide, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import TextInput from '@/components/ui/TextInput.vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
@@ -113,6 +113,8 @@ async function saveName() {
   }
   editingName.value = false
 }
+
+provide('tripParticipants', participants)
 
 onMounted(async () => {
   const tripResponse = await fetch(`/api/trips/${tripId}`)
