@@ -158,7 +158,7 @@
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon.vue'
 import ParticipantList from '@/components/ParticipantList.vue'
 import { useAuth } from '@/composables/auth'
-import { computed, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ImageUploadIcon from '@/components/icons/ImageUploadIcon.vue'
 import CloseIcon from '@/components/icons/CloseIcon.vue'
@@ -170,7 +170,7 @@ const { currentUser } = useAuth()
 
 const tripId = useRoute().params.tripId
 
-const participants = ref(null)
+const participants = inject('tripParticipants', ref(null))
 const trip = ref(null)
 const attachments = ref([])
 const sortedAttachments = computed(() => {
@@ -293,10 +293,8 @@ const joinTrip = async () => {
 onMounted(async () => {
   const tripResponse = await fetch(`/api/trips/${tripId}`)
   trip.value = await tripResponse.json()
-  participants.value = trip.value.participants
   const attachmentsResponse = await fetch(`/api/trips/${tripId}/attachments/`)
   attachments.value = await attachmentsResponse.json()
-  console.log(attachments.value)
 })
 </script>
 
