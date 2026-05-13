@@ -157,6 +157,7 @@ def get_profile():
             "id": current_user.id,
             "username": current_user.username,
             "is_admin": current_user.is_admin,
+            "is_pending": current_user.is_pending,
             "avatar": current_user.avatar,
         }
     )

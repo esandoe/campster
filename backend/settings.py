@@ -50,6 +50,7 @@ def change_password():
         return jsonify(Error="Det gamle passordet er feil."), 400
 
     user.set_password(new_password)
+    user.is_pending = False
     db.session.commit()
 
     return jsonify(success=True), 200
