@@ -120,8 +120,6 @@ def signup():
     password = request.json.get("password")
     username = request.json.get("username")
 
-    print(password, username)
-
     if username is None or username == "":
         return jsonify(Error="Username is required")
 
