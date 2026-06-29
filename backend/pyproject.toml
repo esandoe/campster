@@ -13,4 +13,5 @@ dependencies = [
     "GitPython>=3.1.24",
     "Waitress>=3.0.0",
     "pynpm>=0.2.0",
+    "requests>=2.32.0",
 ]
