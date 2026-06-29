@@ -13,8 +13,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 settings = Blueprint("settings", __name__)
 
 
-@login_required
 @settings.route("/api/profile/avatar", methods=["POST"])
+@login_required
 def update_avatar():
     body = request.get_json()
 
@@ -24,8 +24,8 @@ def update_avatar():
     return jsonify(current_user.avatar)
 
 
-@login_required
 @settings.route("/api/list-avatars", methods=["GET"])
+@login_required
 def list_avatars():
     return jsonify([avatar for avatar in avatar_path])
 
@@ -56,8 +56,9 @@ def change_password():
     return jsonify(success=True), 200
 
 
-@admin_required
 @settings.route("/api/settings/users", methods=["GET"])
+@login_required
+@admin_required
 def get_users():
     users = User.query.all()
     return jsonify(
@@ -68,8 +69,9 @@ def get_users():
     )
 
 
-@admin_required
 @settings.route("/api/settings/users", methods=["POST"])
+@login_required
+@admin_required
 def add_user():
     body = request.get_json()
     username = body["username"]
@@ -104,8 +106,9 @@ def add_user():
     return jsonify(Success="User created")
 
 
-@admin_required
 @settings.route("/api/settings/users/<int:user_id>", methods=["DELETE"])
+@login_required
+@admin_required
 def delete_user(user_id):
     if user_id == current_user.id:
         abort(400, "Cannot delete yourself")
@@ -116,8 +119,9 @@ def delete_user(user_id):
     return jsonify(Success="User deleted")
 
 
-@admin_required
 @settings.route("/api/settings/users/<int:user_id>", methods=["PUT"])
+@login_required
+@admin_required
 def update_user(user_id):
     user = User.query.get_or_404(user_id)
     body = request.get_json()
@@ -131,8 +135,9 @@ def update_user(user_id):
     return jsonify(Success="User updated")
 
 
-@admin_required
 @settings.route("/api/settings/users/<int:user_id>/password-reset", methods=["PUT"])
+@login_required
+@admin_required
 def reset_password(user_id):
     user = User.query.get_or_404(user_id)
 
@@ -151,8 +156,9 @@ def reset_password(user_id):
     return jsonify(Success="Password reset", TemporaryPassword=password)
 
 
-@admin_required
 @settings.route("/api/settings/server/update", methods=["POST"])
+@login_required
+@admin_required
 def update_server():
     from git import Repo
 
