@@ -3,6 +3,8 @@ from logging.config import dictConfig
 from os import makedirs, path, remove
 import os
 import requests
+import secrets
+
 
 from auth import (
     item_owner_required,
@@ -54,7 +56,14 @@ def create_app():
 
     app.config.from_object(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///campster.db"
-    app.config["SECRET_KEY"] = "super-secret-key"
+    secret_key = os.environ.get("SECRET_KEY")
+    if not secret_key:
+        secret_key = secrets.token_hex(32)
+        app.logger.warning(
+            "SECRET_KEY not set; generated a random ephemeral key. "
+            "Sessions will not survive a restart. Set SECRET_KEY in production."
+        )
+    app.config["SECRET_KEY"] = secret_key
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -430,7 +439,12 @@ def autofill_participant_items(trip_id, participant_id):
     )
 
     items = [
-        ParticipantItem(participant_id=participant_id, name=item.name, index=item.index)
+        ParticipantItem(
+            participant_id=participant_id,
+            name=item.name,
+            index=item.index,
+            quantity=item.quantity,
+        )
         for item in previous_trip.items
     ]
 
