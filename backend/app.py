@@ -1,7 +1,8 @@
-from datetime import date
+from datetime import date, datetime
 from logging.config import dictConfig
 from os import makedirs, path, remove
 import os
+import requests
 
 from auth import (
     item_owner_required,
@@ -508,6 +509,97 @@ def delete_participant_item(participant_id, item_id):
     db.session.delete(item)
     db.session.commit()
     return jsonify(success=True)
+
+
+@app.route("/api/trips/<trip_id>/weather", methods=["GET"])
+@login_required
+def get_weather(trip_id):
+    trip = Trip.query.filter_by(id=trip_id).first_or_404()
+
+    if not trip.location:
+        return jsonify({"error": "No location set for this trip"}), 404
+
+    parts = [s.strip() for s in trip.location.split(",")]
+    try:
+        lat, lon = float(parts[0]), float(parts[1])
+    except (ValueError, IndexError):
+        return jsonify({"error": "Location is not in coordinate format (lat, lon)"}), 400
+
+    yr_url = f"https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={lat:.4f}&lon={lon:.4f}"
+    try:
+        resp = requests.get(
+            yr_url,
+            headers={"User-Agent": "Campster/1.0"},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        forecast_data = resp.json()
+    except Exception as e:
+        app.logger.error(f"YR.no fetch failed: {e}")
+        return jsonify({"error": "Weather forecast fetch failed"}), 502
+
+    # Aggregate hourly timeseries into daily summaries
+    timeseries = forecast_data["properties"]["timeseries"]
+    daily = {}
+
+    for entry in timeseries:
+        dt = datetime.fromisoformat(entry["time"].replace("Z", "+00:00"))
+        day_key = dt.date().isoformat()
+        hour = dt.hour
+
+        temp = entry["data"]["instant"]["details"].get("air_temperature")
+        symbol = None
+        precip = 0
+
+        if "next_6_hours" in entry["data"]:
+            symbol = entry["data"]["next_6_hours"]["summary"].get("symbol_code")
+            precip = entry["data"]["next_6_hours"]["details"].get("precipitation_amount", 0)
+        elif "next_1_hours" in entry["data"]:
+            symbol = entry["data"]["next_1_hours"]["summary"].get("symbol_code")
+            precip = entry["data"]["next_1_hours"]["details"].get("precipitation_amount", 0)
+
+        if day_key not in daily:
+            daily[day_key] = {"temps": [], "symbols": {}, "precip": 0, "noon_symbol": None}
+
+        if temp is not None:
+            daily[day_key]["temps"].append(temp)
+        if symbol:
+            daily[day_key]["symbols"][hour] = symbol
+            if 11 <= hour <= 14:
+                daily[day_key]["noon_symbol"] = symbol
+        daily[day_key]["precip"] += precip
+
+    all_days = sorted(daily.keys())
+    if trip.start_date and trip.end_date:
+        start = trip.start_date.isoformat()
+        end = trip.end_date.isoformat()
+        # YR.no provides ~10 days ahead; only return days that are both in the trip
+        # period AND actually present in the forecast data
+        days = [d for d in all_days if start <= d <= end]
+    else:
+        days = all_days[:10]
+
+    result = []
+    for day_key in days:
+        d = daily[day_key]
+        temps = d["temps"]
+        symbol = d["noon_symbol"] or (list(d["symbols"].values())[0] if d["symbols"] else "cloudy")
+        result.append(
+            {
+                "date": day_key,
+                "temp_min": round(min(temps)) if temps else None,
+                "temp_max": round(max(temps)) if temps else None,
+                "symbol": symbol,
+                "precipitation": round(d["precip"], 1),
+            }
+        )
+
+    return jsonify(
+        {
+            "location": {"name": trip.location, "lat": lat, "lon": lon},
+            "forecast": result,
+        }
+    )
 
 
 @app.route("/avatars/<filename>", methods=["GET"])

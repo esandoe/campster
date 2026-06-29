@@ -72,7 +72,10 @@
               <a :href="`https://maps.google.com/?q=${trip?.location}`" class="text-blue-600 hover:text-blue-800">🧭{{ trip?.location }}</a>
             </dd>
             <dd v-else>
-              <TextInput v-model="editedTrip.location" />
+              <TextInput
+                v-model="editedTrip.location"
+                placeholder="Stedsnavn eller koordinater (f.eks. 60.601625, 7.503549)"
+              />
             </dd>
           </div>
         </div>
@@ -80,6 +83,46 @@
           <ParticipantList :participants="participants" />
         </div>
       </dl>
+    </div>
+
+    <!-- Weather forecast widget -->
+    <div v-if="isCoords(trip?.location)" class="mt-4">
+      <h2 class="py-3 text-lg font-semibold text-gray-900">Værmelding</h2>
+      <div v-if="weatherLoading" class="text-sm text-gray-400">Henter værmelding…</div>
+      <div v-else-if="weatherError" class="text-sm text-gray-400">{{ weatherError }}</div>
+      <div v-else-if="weather" class="overflow-x-auto">
+        <p class="text-xs text-gray-400 mb-2">
+          📍 {{ weather.location.name }} · Kilde:
+          <a
+            href="https://www.yr.no"
+            target="_blank"
+            rel="noopener"
+            class="underline hover:text-gray-600"
+            >YR.no</a
+          >
+          · Viser kun dager YR.no har prediksjon for (vanligvis maks ~10 dager frem i tid)
+        </p>
+        <p v-if="weather.forecast.length === 0" class="text-sm text-gray-400 italic">
+          YR.no har ingen værmelding for denne perioden ennå.
+        </p>
+        <div class="flex gap-2 pb-2">
+          <div
+            v-for="day in filteredForecast"
+            :key="day.date"
+            class="flex flex-col items-center min-w-[72px] rounded-lg bg-gray-50 border border-gray-200 p-2"
+            :class="{ 'border-blue-400 bg-blue-50': isTripDay(day.date) }"
+          >
+            <span class="text-xs text-gray-500">{{ shortDay(day.date) }}</span>
+            <span class="text-2xl my-1">{{ weatherEmoji(day.symbol) }}</span>
+            <span class="text-xs font-semibold text-gray-800"
+              >{{ day.temp_max }}° / {{ day.temp_min }}°</span
+            >
+            <span v-if="day.precipitation > 0" class="text-xs text-blue-500"
+              >{{ day.precipitation }} mm</span
+            >
+          </div>
+        </div>
+      </div>
     </div>
 
     <h2 class="py-5 text-lg font-semibold text-gray-900">Innlegg</h2>
@@ -183,12 +226,75 @@ const attachment = ref({
   filename: ''
 })
 
-const isEditing = ref(false)
-const editedTrip = ref({
-  start_date: '',
-  end_date: '',
-  location: ''
+const weather = ref(null)
+const weatherLoading = ref(false)
+const weatherError = ref(null)
+
+const SYMBOL_EMOJI = {
+  clearsky: '☀️',
+  fair: '🌤️',
+  partlycloudy: '⛅',
+  cloudy: '☁️',
+  fog: '🌫️',
+  lightrain: '🌦️',
+  rain: '🌧️',
+  heavyrain: '🌧️',
+  lightrainshowers: '🌦️',
+  rainshowers: '🌧️',
+  heavyrainshowers: '🌧️',
+  lightsleet: '🌨️',
+  sleet: '🌨️',
+  heavysleet: '🌨️',
+  lightsleetshowers: '🌨️',
+  sleetshowers: '🌨️',
+  heavysleetshowers: '🌨️',
+  lightsnow: '❄️',
+  snow: '❄️',
+  heavysnow: '❄️',
+  lightsnowshowers: '❄️',
+  snowshowers: '❄️',
+  heavysnowshowers: '❄️',
+  thunder: '⛈️',
+  lightrainandthunder: '⛈️',
+  rainandthunder: '⛈️',
+  heavyrainandthunder: '⛈️',
+  lightssleetandthunder: '⛈️',
+  sleetandthunder: '⛈️',
+  lightsnowandthunder: '⛈️',
+  snowandthunder: '⛈️',
+}
+
+const weatherEmoji = (symbol) => {
+  // Strip day/night suffix: "partlycloudy_day" → "partlycloudy"
+  const base = symbol?.replace(/_(day|night|polartwilight)$/, '') ?? ''
+  return SYMBOL_EMOJI[base] ?? '🌡️'
+}
+
+const shortDay = (dateStr) => {
+  return new Date(dateStr).toLocaleDateString('NO-no', { weekday: 'short', day: 'numeric', month: 'numeric' })
+}
+
+const isTripDay = (dateStr) => {
+  if (!trip.value?.start_date || !trip.value?.end_date) return false
+  return dateStr >= trip.value.start_date && dateStr <= trip.value.end_date
+}
+
+const filteredForecast = computed(() => {
+  if (!weather.value?.forecast) return []
+  if (!trip.value?.start_date) return weather.value.forecast
+  // Show up to 3 days before trip start for context, through end date (or 9 days max)
+  return weather.value.forecast
 })
+
+const isEditing = ref(false)
+const editedTrip = ref({ start_date: '', end_date: '', location: '' })
+
+const isCoords = (location) => {
+  if (!location) return false
+  const parts = location.split(',')
+  if (parts.length < 2) return false
+  return !isNaN(parseFloat(parts[0])) && !isNaN(parseFloat(parts[1]))
+}
 
 const isParticipant = computed(() =>
   participants.value?.some((p) => p.user_id == currentUser.value?.id)
@@ -255,29 +361,43 @@ const startEditing = () => {
   editedTrip.value = {
     start_date: trip.value.start_date,
     end_date: trip.value.end_date,
-    location: trip.value.location
+    location: trip.value.location,
   }
 }
 
 const cancelEditing = () => {
   isEditing.value = false
-  editedTrip.value = {
-    start_date: '',
-    end_date: '',
-    location: ''
+  editedTrip.value = { start_date: '', end_date: '', location: '' }
+}
+
+const fetchWeather = async () => {
+  if (!isCoords(trip.value?.location)) return
+  weatherLoading.value = true
+  weatherError.value = null
+  try {
+    const weatherResponse = await fetch(`/api/trips/${tripId}/weather`)
+    if (weatherResponse.ok) {
+      weather.value = await weatherResponse.json()
+    } else {
+      const err = await weatherResponse.json()
+      weatherError.value = err.error ?? 'Kunne ikke hente værmelding'
+    }
+  } catch {
+    weatherError.value = 'Kunne ikke hente værmelding'
+  } finally {
+    weatherLoading.value = false
   }
 }
 
 const saveAllChanges = async () => {
   const response = await fetch(`/api/trips/${tripId}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(editedTrip.value)
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(editedTrip.value),
   })
   trip.value = await response.json()
   isEditing.value = false
+  await fetchWeather()
 }
 
 const joinTrip = async () => {
@@ -295,6 +415,8 @@ onMounted(async () => {
   trip.value = await tripResponse.json()
   const attachmentsResponse = await fetch(`/api/trips/${tripId}/attachments/`)
   attachments.value = await attachmentsResponse.json()
+
+  await fetchWeather()
 })
 </script>
 
