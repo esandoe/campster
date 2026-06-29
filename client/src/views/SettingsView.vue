@@ -53,7 +53,7 @@
       </div>
     </div>
 
-    <div v-if="currentUser != null" class="w-1/2 p-4 rounded-lg shadow-sm md:flex-row bg-gray-50">
+    <div v-if="currentUser != null" class="w-full p-4 rounded-lg shadow-sm md:flex-row bg-gray-50">
       <h2>Bytt passord</h2>
       <hr class="my-3" />
       <div
@@ -67,7 +67,7 @@
           endres.
         </p>
       </div>
-      <form id="change-password-form" @submit.prevent="changePassword">
+      <form class="md:w-80" id="change-password-form" @submit.prevent="changePassword">
         <div>
           <TextInput name="Gammelt passord" type="password" v-model="oldPassword" required />
         </div>
