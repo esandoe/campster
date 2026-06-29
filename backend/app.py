@@ -429,7 +429,12 @@ def autofill_participant_items(trip_id, participant_id):
     )
 
     items = [
-        ParticipantItem(participant_id=participant_id, name=item.name, index=item.index)
+        ParticipantItem(
+            participant_id=participant_id,
+            name=item.name,
+            index=item.index,
+            quantity=item.quantity,
+        )
         for item in previous_trip.items
     ]
 
