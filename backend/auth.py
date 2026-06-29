@@ -11,6 +11,8 @@ auth = Blueprint("auth", __name__)
 def admin_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return jsonify(Error="Unauthorized"), 401
         if not current_user.is_admin:
             return jsonify(Error="Unauthorized"), 403
         return func(*args, **kwargs)
