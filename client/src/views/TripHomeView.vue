@@ -103,7 +103,11 @@
           · Viser kun dager YR.no har prediksjon for (vanligvis maks ~10 dager frem i tid)
         </p>
         <p v-if="weather.forecast.length === 0" class="text-sm text-gray-400 italic">
-          YR.no har ingen værmelding for denne perioden ennå.
+          {{
+            tripInPast
+              ? 'Turen er allerede over — YR.no gir ikke værmelding for datoer som har vært.'
+              : 'YR.no har ingen værmelding for denne perioden ennå.'
+          }}
         </p>
         <div class="flex gap-2 pb-2">
           <div
@@ -278,6 +282,17 @@ const isTripDay = (dateStr) => {
   if (!trip.value?.start_date || !trip.value?.end_date) return false
   return dateStr >= trip.value.start_date && dateStr <= trip.value.end_date
 }
+
+// Local YYYY-MM-DD (not UTC) so the comparison matches end_date's calendar day in Norway
+const localToday = () => {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+const tripInPast = computed(() => {
+  if (!trip.value?.end_date) return false
+  return trip.value.end_date < localToday()
+})
 
 const filteredForecast = computed(() => {
   if (!weather.value?.forecast) return []
