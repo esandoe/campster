@@ -134,6 +134,7 @@ Full route reference: `docs/api.md`. All endpoints are under `/api`, defined in 
    - `@participant_of_trip_required` - Must be participant in trip
    - `@participant_self_required` - Must be own participant
    - `@item_owner_required` - Must own the item
+   - **Order matters**: `@<blueprint>.route(...)` must be the topmost/outermost decorator, auth decorators below it. If `route()` sits below an auth decorator, Flask registers the undecorated view and auth silently never runs (see PR #54).
 
 2. **Database**: SQLAlchemy with dataclass decorators and type hints
 3. **Routing**: Flask blueprints for organized endpoints
