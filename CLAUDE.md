@@ -1,6 +1,12 @@
 # Campster
 
-Collaborative camping/hiking trip planner. Primary feature: shared packing lists and **supply targets** (participants contribute equipment toward a shared quantity goal). Norwegian UI, English code.
+Collaborative camping/hiking trip planner. Primary feature: shared packing lists and **supply targets** (participants contribute equipment toward a shared quantity goal).
+
+## Real-world context
+
+- **Users**: small groups of friends/family planning a shared trip together — not a scaled multi-tenant product. Favor simple, direct solutions over configurability or scale.
+- **Users are Norwegian** — UI text and copy is Norwegian; code, comments, commits stay English.
+- **Built evolutionarily**: features get added as real trips surface a need (e.g. the weather forecast), not designed upfront. Don't over-build for hypothetical future requirements.
 
 ## Stack
 
@@ -21,7 +27,7 @@ client/src/
   views/            # pages (Trip*, Login, SignUp, Settings, ...)
   components/       # TripCard, TripChecklist, ParticipantList, ui/, icons/
   composables/auth.js  # useAuth()
-docs/               # readme.md (setup), migrations.md
+docs/               # readme.md (setup), migrations.md, api.md
 ```
 
 ## Models
@@ -58,15 +64,9 @@ cd client && npm run docker-build
 
 Migration details: `docs/migrations.md`.
 
-## API (`/api`)
+## API
 
-- Auth: `POST /login`, `POST /signup`, `POST /logout`, `GET /profile`
-- Trips: `GET|POST /trips`, `GET|PUT /trips/<id>`
-- Participants: `GET /trip/<id>/participants`, `POST /trips/<id>/join`
-- Supply targets: `GET|POST /trip/<id>/supply-targets`, `PUT|DELETE .../<id>`
-- Items: `GET /trip/<id>/participant/<pid>/items`, `POST /participant/<pid>/items`, `PUT|DELETE .../items/<id>`, `POST /trip/<id>/participant/<pid>/autofill`, `GET /items`
-- Attachments: `GET|POST /trips/<id>/attachments/`, `POST .../upload-file/`, `DELETE .../<id>`
-- Settings: `POST /profile/avatar`, `GET /list-avatars`, `POST /settings/user/change-password`, `GET|POST /settings/users`, `DELETE|PUT /settings/users/<id>`, `PUT /settings/users/<id>/password-reset`, `POST /settings/server/update`
+Full route reference: `docs/api.md`. All endpoints under `/api`, defined in `backend/app.py` and `backend/settings.py`.
 
 ## Conventions
 
