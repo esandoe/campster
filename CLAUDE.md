@@ -107,7 +107,8 @@ cd client
 npm install
 npm run dev                    # Vite dev server (proxies to Flask)
 npm run build                  # Production build
-npm run lint                   # Lint (also fixes)
+npm run lint                   # Check (no mutation)
+npm run lint:fix               # Check and autofix
 npm run format                # Format with Prettier
 ```
 
