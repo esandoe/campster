@@ -21,23 +21,10 @@
         <div class="grid grid-cols-1">
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-xl font-semibold text-gray-900">Turdetaljer</h3>
-            <SecondaryButton
-              v-if="!isEditing"
-              @click="startEditing"
-            >
-              ✏️ Rediger
-            </SecondaryButton>
+            <SecondaryButton v-if="!isEditing" @click="startEditing"> ✏️ Rediger </SecondaryButton>
             <div v-else class="flex gap-2">
-              <PrimaryButton
-                @click="saveAllChanges"
-              >
-                💾 Lagre
-              </PrimaryButton>
-              <SecondaryButton
-                @click="cancelEditing"
-              >
-                ✕ Avbryt
-              </SecondaryButton>
+              <PrimaryButton @click="saveAllChanges"> 💾 Lagre </PrimaryButton>
+              <SecondaryButton @click="cancelEditing"> ✕ Avbryt </SecondaryButton>
             </div>
           </div>
           <div class="flex flex-col items-left">
@@ -69,7 +56,11 @@
           <div class="flex flex-col items-left">
             <dt class="text-lg font-semibold text-gray-900">Lokasjon</dt>
             <dd v-if="!isEditing" class="mb-2 text-normal">
-              <a :href="`https://maps.google.com/?q=${trip?.location}`" class="text-blue-600 hover:text-blue-800">🧭{{ trip?.location }}</a>
+              <a
+                :href="`https://maps.google.com/?q=${trip?.location}`"
+                class="text-blue-600 hover:text-blue-800"
+                >🧭{{ trip?.location }}</a
+              >
             </dd>
             <dd v-else>
               <TextInput
@@ -261,7 +252,7 @@ const SYMBOL_EMOJI = {
   lightssleetandthunder: '⛈️',
   sleetandthunder: '⛈️',
   lightsnowandthunder: '⛈️',
-  snowandthunder: '⛈️',
+  snowandthunder: '⛈️'
 }
 
 const weatherEmoji = (symbol) => {
@@ -271,7 +262,11 @@ const weatherEmoji = (symbol) => {
 }
 
 const shortDay = (dateStr) => {
-  return new Date(dateStr).toLocaleDateString('NO-no', { weekday: 'short', day: 'numeric', month: 'numeric' })
+  return new Date(dateStr).toLocaleDateString('NO-no', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'numeric'
+  })
 }
 
 const isTripDay = (dateStr) => {
@@ -361,7 +356,7 @@ const startEditing = () => {
   editedTrip.value = {
     start_date: trip.value.start_date,
     end_date: trip.value.end_date,
-    location: trip.value.location,
+    location: trip.value.location
   }
 }
 
@@ -393,7 +388,7 @@ const saveAllChanges = async () => {
   const response = await fetch(`/api/trips/${tripId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(editedTrip.value),
+    body: JSON.stringify(editedTrip.value)
   })
   trip.value = await response.json()
   isEditing.value = false

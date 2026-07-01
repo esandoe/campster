@@ -47,7 +47,6 @@ import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import UserGroupIcon from '@/components/icons/UserGroupIcon.vue'
 import { pluralize } from '@/components/utils'
 import { RouterLink } from 'vue-router'
-import SecondaryButton from './ui/SecondaryButton.vue'
 
 interface TripParticipant {
   id: number

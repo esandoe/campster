@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write src/",
     "docker-build": "docker compose up --build"
   },
@@ -19,9 +20,9 @@
     "vue-router": "4.5.1"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "1.11.0",
     "@tailwindcss/postcss": "^4.1.10",
     "@tailwindcss/vite": "^4.1.10",
+    "@typescript-eslint/parser": "^8.62.1",
     "@vitejs/plugin-vue": "5.2.4",
     "@vue/eslint-config-prettier": "10.2.0",
     "autoprefixer": "10.4.21",
@@ -30,6 +31,7 @@
     "postcss": "8.5.5",
     "prettier": "3.5.3",
     "tailwindcss": "4.1.10",
+    "typescript": "~6.0.3",
     "vite": "6.3.5",
     "vue-eslint-parser": "10.1.3"
   }
