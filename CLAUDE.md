@@ -73,6 +73,7 @@ Migration details: `docs/migrations.md`.
 - No Vuex/Pinia — component refs + composables only
 - Fetch API with JSON payloads, `@/` path alias for `client/src`
 - Flask blueprints per feature area
+- PRs are squash-merged — never branch off a branch that might merge before it; branch from `main`
 
 ## Claude Code GitHub integration
 
