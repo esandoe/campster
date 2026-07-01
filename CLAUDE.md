@@ -149,13 +149,3 @@ Full route reference: `docs/api.md`. All endpoints are under `/api`, defined in 
 
 ### Git
 - PRs are squash-merged — branch off `main`, not off another branch that might merge first
-
-## Claude Code Integration
-
-The project has GitHub Actions integration for Claude Code:
-- Trigger: `@claude` in issue comments
-- Workflow: `.github/workflows/claude.yml`
-- Model: claude-sonnet-4-5-20250929
-- Max turns: 30
-
-Repository: github.com/esandoe/campster
