@@ -26,7 +26,7 @@ Campster is a collaborative tool for planning camping and hiking trips, with a p
 - **Styling**: Tailwind CSS 4.1.10+
 - **UI Components**: Headless UI, Heroicons, Flowbite
 - **Linting**: ESLint 9.29.0 + Prettier 3.5.3
-- **Node**: 22.0.0+, NPM 10.6.0+
+- **Node**: 22.0.0+, NPM 11.10.0+ (required for `min-release-age` in `client/.npmrc`)
 
 ## Project Structure
 
