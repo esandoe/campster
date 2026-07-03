@@ -28,11 +28,11 @@
     "autoprefixer": "10.4.21",
     "eslint": "9.29.0",
     "eslint-plugin-vue": "10.2.0",
-    "postcss": "8.5.5",
+    "postcss": "8.5.15",
     "prettier": "3.5.3",
     "tailwindcss": "4.1.10",
     "typescript": "~6.0.3",
-    "vite": "6.3.5",
+    "vite": "6.4.3",
     "vue-eslint-parser": "10.1.3"
   }
 }
