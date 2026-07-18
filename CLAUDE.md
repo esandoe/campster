@@ -110,6 +110,7 @@ npm run build                  # Production build
 npm run lint                   # Check (no mutation)
 npm run lint:fix               # Check and autofix
 npm run format                # Format with Prettier
+npm run format:check          # Check formatting (no mutation)
 ```
 
 ### Full-Stack Production Run
