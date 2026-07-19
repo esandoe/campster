@@ -47,7 +47,7 @@
             <RouterLink to="/">
               <a
                 class="block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
-                >Home</a
+                >Hjem</a
               >
             </RouterLink>
           </li>
@@ -55,7 +55,7 @@
             <RouterLink to="/about">
               <a
                 class="block py-2 px-3 rounded md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
-                >About</a
+                >Om Campster</a
               >
             </RouterLink>
           </li>
