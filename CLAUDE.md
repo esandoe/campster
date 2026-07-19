@@ -107,10 +107,15 @@ cd client
 npm install
 npm run dev                    # Vite dev server (proxies to Flask)
 npm run build                  # Production build
-npm run lint                   # Check (no mutation)
-npm run lint:fix               # Check and autofix
-npm run format                # Format with Prettier
+npm run quality                # Format + lint autofix (preferred one-shot after edits)
+npm run quality:check          # Format + lint check, no mutation (CI/pre-commit)
+npm run lint                   # ESLint autofix
+npm run lint:check             # ESLint check (no mutation)
+npm run format                 # Prettier write (src/)
+npm run format:check           # Prettier check (no mutation)
 ```
+
+**Prefer these porcelain scripts and `uv run …` over calling `eslint`/`prettier`/`python`/`flask` directly** — a single `npm run quality` formats and autofixes in one pass; don't chain `lint` + per-file `prettier --check` for that.
 
 ### Full-Stack Production Run
 ```bash
