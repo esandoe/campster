@@ -139,6 +139,7 @@ def get_trip(trip_id):
             "start_date": trip.start_date.isoformat() if trip.start_date else None,
             "end_date": trip.end_date.isoformat() if trip.end_date else None,
             "location": trip.location,
+            "meeting_point": trip.meeting_point,
             "participants": [
                 {
                     "id": participant.id,
@@ -168,6 +169,8 @@ def update_trip(trip_id):
         trip.end_date = date.fromisoformat(data["end_date"])
     if "location" in data:
         trip.location = data["location"]
+    if "meeting_point" in data:
+        trip.meeting_point = data["meeting_point"]
     db.session.commit()
     return jsonify(
         {
@@ -176,6 +179,7 @@ def update_trip(trip_id):
             "start_date": trip.start_date,
             "end_date": trip.end_date,
             "location": trip.location,
+            "meeting_point": trip.meeting_point,
         }
     )
 
