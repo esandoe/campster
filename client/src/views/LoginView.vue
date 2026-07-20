@@ -12,8 +12,9 @@
           <form class="space-y-4 md:space-y-6" action="#">
             <div>
               <TextInput
-                nae="Ditt brukernavn"
+                name="Ditt brukernavn"
                 v-model="username"
+                autocomplete="username"
                 placeholder="Nadeshiko Kagamihara"
                 required
               />
@@ -23,6 +24,7 @@
                 name="Passord"
                 type="password"
                 v-model="password"
+                autocomplete="current-password"
                 placeholder="••••••••"
                 required
               />
