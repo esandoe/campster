@@ -393,7 +393,10 @@ const ActionStrip = {
           disabled: opts.disabled,
           onClick
         },
-        [h(icon, { class: 'w-5 h-5' }), h('span', { class: 'text-[10px] font-semibold text-gray-500' }, label)]
+        [
+          h(icon, { class: 'w-5 h-5' }),
+          h('span', { class: 'text-[10px] font-semibold text-gray-500' }, label)
+        ]
       )
     const children = [btn(DraggableItemIcon, 'Dra', undefined, { grip: true, hideOnMobile: true })]
     children.push(btn(ArrowUpIcon, 'Opp', () => this.$emit('up'), { disabled: this.isFirst }))

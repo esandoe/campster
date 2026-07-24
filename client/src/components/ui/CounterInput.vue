@@ -3,7 +3,10 @@
     <label for="counter-input" class="block mb-1 text-sm font-medium text-gray-900 sr-only"
       >Antall:</label
     >
-    <div v-if="props.editable" class="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full p-[3px]">
+    <div
+      v-if="props.editable"
+      class="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full p-[3px]"
+    >
       <button
         type="button"
         class="flex-shrink-0 w-[22px] h-[22px] rounded-full bg-white text-gray-900 text-sm font-bold inline-flex items-center justify-center hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
