@@ -197,6 +197,10 @@ class SupplyTarget(db.Model):
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     name: Mapped[str] = mapped_column(nullable=False)
     target_quantity: Mapped[int] = mapped_column(default=0)
+    index: Mapped[int] = mapped_column(
+        default=lambda: random.randint(1, 1_000_000) * 1000, nullable=False
+    )
+    unit: Mapped[str] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now
