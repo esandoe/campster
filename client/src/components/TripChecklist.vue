@@ -1,14 +1,67 @@
 <template>
-  <div class="relative" ref="rootEl">
+  <div
+    class="relative"
+    :class="{ 'pb-16': editingItemId || movingItemId || movingSectionId }"
+    ref="rootEl"
+  >
     <ListSkeleton v-if="!items" />
 
     <template v-else>
-      <p class="text-center text-xs text-gray-400 px-6 py-2 md:hidden">
+      <p
+        v-if="!editingItemId && !movingItemId && !movingSectionId"
+        class="text-center text-xs text-gray-400 px-6 py-2 md:hidden"
+      >
         Trykk og hold en vare eller seksjon for å åpne menyen
       </p>
-      <p class="text-center text-xs text-gray-400 px-6 py-2 max-md:hidden">
+      <p
+        v-if="!editingItemId && !movingItemId && !movingSectionId"
+        class="text-center text-xs text-gray-400 px-6 py-2 max-md:hidden"
+      >
         Klikk <DotsVerticalIcon class="inline w-3 h-3 align-middle" /> for å åpne menyen
       </p>
+      <div
+        v-if="editingItemId || movingItemId || movingSectionId"
+        class="session-bar fixed bottom-0 inset-x-0 z-40 px-4 py-2.5 bg-blue-50 border-t border-blue-200 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]"
+      >
+        <p class="text-center text-[11px] text-blue-700 font-medium mb-2">
+          {{
+            editingItemId
+              ? 'Du redigerer — trykk en annen vare for å fortsette der, eller avslutt når du er ferdig.'
+              : 'Du sorterer — trykk en annen vare eller seksjon for å flytte den i stedet, eller dra i ⠿.'
+          }}
+        </p>
+        <div class="flex items-center justify-center gap-3">
+          <div class="flex items-center bg-white border border-blue-200 rounded-full p-0.5 gap-0.5">
+            <button
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+              :class="editingItemId ? 'bg-blue-600 text-white' : 'text-blue-700 hover:bg-blue-50'"
+              :disabled="movingSectionId !== null"
+              @click="setSessionMode('edit')"
+            >
+              <EditIcon class="w-3.5 h-3.5" />
+              Redigering
+            </button>
+            <button
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+              :class="
+                movingItemId || movingSectionId
+                  ? 'bg-blue-600 text-white'
+                  : 'text-blue-700 hover:bg-blue-50'
+              "
+              @click="setSessionMode('sort')"
+            >
+              <HamburgerMenuIcon class="w-3.5 h-3.5" />
+              Sortering
+            </button>
+          </div>
+          <button
+            class="text-xs font-bold text-blue-700 hover:text-blue-900"
+            @click="closeSession()"
+          >
+            Ferdig
+          </button>
+        </div>
+      </div>
 
       <div v-if="items.length === 0" class="text-left w-full px-5 py-2">
         <p class="text-md">
@@ -35,6 +88,7 @@
             <input
               class="flex-1 min-w-0 text-xl font-bold text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-0.5"
               :value="group.marker.name.replace('section:', '')"
+              @mousedown="onSectionTitleMouseDown($event, group.marker)"
               @keydown.enter="(e) => renameSection(group.marker, e.target.value)"
               @blur="(e) => renameSection(group.marker, e.target.value)"
             />
@@ -68,13 +122,16 @@
             class="relative border-t border-gray-100 row-wrap"
             :data-wrap="item.id"
           >
-            <div v-if="editingItemId === item.id" class="flex items-start gap-2 px-4 py-2.5 bg-gray-50">
+            <div
+              v-if="editingItemId === item.id"
+              class="flex items-start gap-2 px-4 py-2.5 bg-gray-50"
+            >
               <div class="flex-1 min-w-0 flex flex-col gap-1.5">
                 <div class="flex items-center gap-2">
                   <input
                     class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-white focus:bg-white outline-none rounded-md px-1 py-0.5"
                     :value="item.name"
-                    :ref="(el) => el && editingItemId === item.id && el.focus()"
+                    :ref="(el) => el && editingItemId === item.id && focusSoon(el)"
                     @keydown.enter="(e) => e.target.blur()"
                     @blur="(e) => editItemName(item, e.target.value)"
                   />
@@ -100,7 +157,7 @@
                   </button>
                   <div
                     v-if="targetPickerItemId === item.id"
-                    class="absolute left-0 top-7 z-30 bg-white border-2 border-gray-300 rounded-xl shadow-2xl p-1 min-w-[190px] flex flex-col gap-0.5"
+                    class="absolute left-0 top-7 z-50 bg-white border-2 border-gray-300 rounded-xl shadow-2xl p-1 min-w-[190px] flex flex-col gap-0.5 max-h-[50vh] overflow-y-auto"
                   >
                     <button
                       class="px-2.5 py-2 rounded-md hover:bg-gray-100 w-full text-left text-sm text-gray-500"
@@ -121,23 +178,41 @@
               </div>
             </div>
 
-            <div v-else class="flex items-center gap-2.5 px-4 py-2.5" :class="{ 'opacity-35': movingItemId === item.id }">
+            <div
+              v-else
+              class="flex items-center gap-2.5 px-4 py-2.5"
+              :class="[
+                { 'opacity-35': movingItemId === item.id },
+                editingItemId !== null || movingItemId !== null
+                  ? 'cursor-pointer hover:bg-gray-50'
+                  : ''
+              ]"
+              @click="onRowClick(item)"
+            >
               <div class="flex-1 min-w-0">
                 <div
                   class="text-sm font-medium truncate"
                   :class="item.packed ? 'text-gray-400 line-through' : 'text-gray-900'"
                 >
-                  <span v-if="item.quantity > 1" class="text-gray-500 font-semibold">×{{ item.quantity }}&nbsp;</span
+                  <span v-if="item.quantity > 1" class="text-gray-500 font-semibold"
+                    >×{{ item.quantity }}&nbsp;</span
                   >{{ item.name }}
                 </div>
                 <div v-if="targetOf(item)" class="text-xs font-semibold text-blue-600 mt-0.5">
                   🎯 {{ targetOf(item).name }}
                 </div>
               </div>
-              <div class="flex items-center gap-1.5 flex-shrink-0">
+              <div class="flex items-center gap-1.5 flex-shrink-0" @click.stop>
                 <CheckBox v-model="item.packed" @input="updateItem(item, 'packed', !item.packed)" />
                 <button
-                  v-if="isDesktop"
+                  v-if="isDesktop && editingItemId"
+                  class="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 flex-shrink-0"
+                  @click.stop="openEdit(item.id)"
+                >
+                  <EditIcon />
+                </button>
+                <button
+                  v-else-if="isDesktop"
                   class="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 flex-shrink-0"
                   @click.stop="toggleItemOverlay(item.id)"
                 >
@@ -148,7 +223,7 @@
 
             <div
               v-if="movingItemId === item.id"
-              class="move-overlay absolute inset-0 flex items-center justify-center bg-gray-900/45 rounded-md z-20"
+              class="move-overlay absolute inset-0 flex items-center justify-center bg-gray-900/45 rounded-md z-50"
               :data-move-overlay="'item:' + item.id"
               @click.self="closeItemOverlay()"
             >
@@ -156,7 +231,9 @@
                 v-if="sectionPickerItemId === item.id"
                 class="bg-white border-2 border-gray-300 rounded-2xl shadow-2xl p-2 min-w-[200px] max-w-[260px]"
               >
-                <div class="px-2 pt-1 pb-1 text-xs font-semibold text-gray-500">Flytt til seksjon</div>
+                <div class="px-2 pt-1 pb-1 text-xs font-semibold text-gray-500">
+                  Flytt til seksjon
+                </div>
                 <button
                   v-for="g in otherSections(item)"
                   :key="g.marker.id"
@@ -165,7 +242,10 @@
                 >
                   {{ g.marker.name.replace('section:', '') }}
                 </button>
-                <button class="px-2.5 py-2 rounded-md hover:bg-gray-100 w-full text-left text-sm text-gray-500" @click="sectionPickerItemId = null">
+                <button
+                  class="px-2.5 py-2 rounded-md hover:bg-gray-100 w-full text-left text-sm text-gray-500"
+                  @click="sectionPickerItemId = null"
+                >
                   Avbryt
                 </button>
               </div>
@@ -174,6 +254,7 @@
                 :is-first="group.items[0]?.id === item.id"
                 :is-last="group.items[group.items.length - 1]?.id === item.id"
                 :show-edit="true"
+                :label="item.name"
                 @up="moveItem(group, item, -1)"
                 @down="moveItem(group, item, 1)"
                 @edit="openEdit(item.id)"
@@ -184,18 +265,26 @@
           </div>
 
           <template v-if="group.marker">
-            <div v-if="addingItemSectionId === group.marker.id" class="flex items-center gap-2 px-4 py-2">
-              <TextInput
-                class="!p-2 flex-1"
-                placeholder="Navn på vare"
-                v-model="newItemName"
-                :error="errorMsg"
-                @keydown.enter="addItemToGroup(group, newItemName)"
-                @keydown.esc="addingItemSectionId = null"
-              />
-              <PrimaryButton @click="addItemToGroup(group, newItemName)" class="!rounded-full !p-2">
-                <PlusIcon class="h-4 w-4" />
-              </PrimaryButton>
+            <div v-if="addingItemSectionId === group.marker.id">
+              <div
+                class="flex items-center gap-2 px-4 py-2.5 border-t border-dashed border-gray-200"
+              >
+                <input
+                  class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-0.5"
+                  placeholder="Navn på vare"
+                  v-model="newItemName"
+                  :ref="(el) => el && addingItemSectionId === group.marker.id && focusSoon(el)"
+                  @keydown.enter="addItemToGroup(group, newItemName)"
+                  @keydown.esc="addingItemSectionId = null"
+                />
+                <button
+                  class="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 flex-shrink-0"
+                  @click="addItemToGroup(group, newItemName)"
+                >
+                  <PlusIcon class="h-4 w-4" />
+                </button>
+              </div>
+              <p v-if="errorMsg" class="text-xs text-red-600 px-4 pb-1.5">{{ errorMsg }}</p>
             </div>
             <button
               v-else
@@ -209,7 +298,7 @@
 
         <div
           v-if="group.marker && movingSectionId === group.marker.id"
-          class="move-overlay absolute inset-0 flex items-center justify-center bg-gray-900/45 rounded-md z-20"
+          class="move-overlay absolute inset-0 flex items-center justify-center bg-gray-900/45 rounded-md z-50"
           :data-move-overlay="'section:' + group.marker.id"
           @click.self="movingSectionId = null"
         >
@@ -217,6 +306,7 @@
             :is-first="isFirstSection(group.marker)"
             :is-last="isLastSection(group.marker)"
             :show-edit="false"
+            :label="group.marker.name.replace('section:', '')"
             @up="moveSection(group.marker, -1)"
             @down="moveSection(group.marker, 1)"
             @delete="deleteSection(group.marker)"
@@ -225,17 +315,24 @@
       </div>
 
       <div class="px-4 py-3 flex flex-col gap-2">
-        <div v-if="addingSection" class="flex items-center gap-2 mt-2">
-          <TextInput
-            class="!p-2 flex-1"
+        <div
+          v-if="addingSection"
+          class="flex items-center gap-2 px-2 py-1 border border-dashed border-gray-300 rounded-lg mt-2"
+        >
+          <input
+            class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-1.5"
             placeholder="Navn på seksjon"
             v-model="newSectionName"
+            :ref="(el) => el && addingSection && focusSoon(el)"
             @keydown.enter="confirmAddSection()"
             @keydown.esc="addingSection = false"
           />
-          <PrimaryButton @click="confirmAddSection()" class="!rounded-full !p-2">
+          <button
+            class="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 flex-shrink-0"
+            @click="confirmAddSection()"
+          >
             <PlusIcon class="h-4 w-4" />
-          </PrimaryButton>
+          </button>
         </div>
         <button
           v-else
@@ -254,13 +351,12 @@ import ListSkeleton from '@/components/ListSkeleton.vue'
 import DraggableItemIcon from '@/components/icons/DraggableItemIcon.vue'
 import PlusIcon from '@/components/icons/PlusIcon.vue'
 import DotsVerticalIcon from '@/components/icons/DotsVerticalIcon.vue'
+import HamburgerMenuIcon from '@/components/icons/HamburgerMenuIcon.vue'
 import CheckIcon from '@/components/icons/CheckIcon.vue'
-import { computed, h, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, h, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import SecondaryButton from './ui/SecondaryButton.vue'
 import CheckBox from './ui/CheckBox.vue'
-import TextInput from './ui/TextInput.vue'
 import EditIcon from './icons/EditIcon.vue'
 import TrashIcon from './icons/TrashIcon.vue'
 import ArrowUpIcon from './icons/ArrowUpIcon.vue'
@@ -273,7 +369,8 @@ function menuButtonProps() {
   return {
     isFirst: { type: Boolean, default: false },
     isLast: { type: Boolean, default: false },
-    showEdit: { type: Boolean, default: false }
+    showEdit: { type: Boolean, default: false },
+    label: { type: String, default: '' }
   }
 }
 
@@ -287,14 +384,18 @@ const ActionStrip = {
         {
           class: [
             'flex flex-col items-center justify-center gap-0.5 w-14 py-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent',
-            opts.danger ? 'text-red-600' : 'text-gray-700'
+            opts.danger ? 'text-red-600' : 'text-gray-700',
+            opts.grip ? 'cursor-grab grip' : '',
+            // Dragging works poorly on touch anyway, so hide it on narrow screens to save space
+            // — it stays available from sm (~tablet/desktop) up, where mouse dragging is natural.
+            opts.hideOnMobile ? 'hidden sm:flex' : ''
           ],
           disabled: opts.disabled,
           onClick
         },
-        [h(icon, { class: 'w-5 h-5' + (opts.grip ? ' cursor-grab grip' : '') }), h('span', { class: 'text-[10px] font-semibold text-gray-500' }, label)]
+        [h(icon, { class: 'w-5 h-5' }), h('span', { class: 'text-[10px] font-semibold text-gray-500' }, label)]
       )
-    const children = [btn(DraggableItemIcon, 'Dra', undefined, { grip: true })]
+    const children = [btn(DraggableItemIcon, 'Dra', undefined, { grip: true, hideOnMobile: true })]
     children.push(btn(ArrowUpIcon, 'Opp', () => this.$emit('up'), { disabled: this.isFirst }))
     children.push(btn(ArrowDownIcon, 'Ned', () => this.$emit('down'), { disabled: this.isLast }))
     if (this.showEdit) {
@@ -302,10 +403,21 @@ const ActionStrip = {
       children.push(btn(EditIcon, 'Rediger', () => this.$emit('edit')))
     }
     children.push(btn(TrashIcon, 'Slett', () => this.$emit('delete'), { danger: true }))
+    const buttonRow = h('div', { class: 'flex gap-0.5' }, children)
+    const nameLabel = this.label
+      ? h(
+          'div',
+          {
+            class:
+              'text-center text-[11px] font-semibold text-gray-700 truncate max-w-[240px] px-2 pb-1'
+          },
+          this.label
+        )
+      : null
     return h(
       'div',
-      { class: 'flex bg-white rounded-2xl shadow-xl p-1 gap-0.5' },
-      children
+      { class: 'bg-white rounded-2xl shadow-xl p-1.5 flex flex-col items-center' },
+      nameLabel ? [nameLabel, buttonRow] : [buttonRow]
     )
   }
 }
@@ -332,6 +444,15 @@ function onMqlChange(e) {
 }
 
 const params = useRoute().params
+
+// Focusing an input right as it's mounted can lose to the browser resetting focus
+// to <body> when the element it replaces (e.g. an "add" button) is removed in the
+// same patch, so wait for Vue's DOM update to fully settle first.
+function focusSoon(el) {
+  nextTick(() => {
+    requestAnimationFrame(() => el.focus())
+  })
+}
 
 const groupedItems = computed(() => {
   const groups = []
@@ -386,9 +507,60 @@ function openEdit(id) {
   editingItemId.value = id
 }
 
+function openSort(id) {
+  editingItemId.value = null
+  targetPickerItemId.value = null
+  movingItemId.value = id
+  movingSectionId.value = null
+  sectionPickerItemId.value = null
+}
+
+function openSortSection(id) {
+  editingItemId.value = null
+  targetPickerItemId.value = null
+  movingItemId.value = null
+  sectionPickerItemId.value = null
+  movingSectionId.value = id
+}
+
 function closeEdit() {
   editingItemId.value = null
   targetPickerItemId.value = null
+}
+
+function closeSession() {
+  editingItemId.value = null
+  movingItemId.value = null
+  movingSectionId.value = null
+  sectionPickerItemId.value = null
+  targetPickerItemId.value = null
+}
+
+function setSessionMode(mode) {
+  const currentId = editingItemId.value ?? movingItemId.value
+  if (currentId === null) return
+  if (mode === 'edit') openEdit(currentId)
+  else openSort(currentId)
+}
+
+function onRowClick(item) {
+  if (editingItemId.value !== null) {
+    if (editingItemId.value !== item.id) openEdit(item.id)
+  } else if (movingItemId.value !== null || movingSectionId.value !== null) {
+    if (movingItemId.value !== item.id) openSort(item.id)
+  }
+}
+
+function onSectionTitleMouseDown(e, marker) {
+  if (
+    editingItemId.value === null &&
+    (movingItemId.value !== null || movingSectionId.value !== null)
+  ) {
+    if (movingSectionId.value !== marker.id) {
+      e.preventDefault()
+      openSortSection(marker.id)
+    }
+  }
 }
 
 function toggleTargetPicker(id) {
@@ -507,7 +679,7 @@ async function addItemToGroup(group, itemName) {
   }
   await renumberAndPersist()
   newItemName.value = ''
-  addingItemSectionId.value = null
+  // Keep the input open so the user can add several items in a row without touching the mouse.
 }
 
 function startAddSection() {
@@ -553,6 +725,12 @@ function renameSection(marker, newTitle) {
 }
 
 async function updateItem(item, attr, val) {
+  // The backend replaces the whole row on every PUT (no partial updates), so the request
+  // body is built from the current local item. Apply the change locally *before* awaiting
+  // the request: otherwise, firing a second change (e.g. quantity) while the first one
+  // (e.g. name) is still in flight would build its payload from a stale snapshot and
+  // silently revert whatever the first change touched once both responses land.
+  item[attr] = val
   try {
     const response = await fetch(`/api/participant/${params.listId}/items/${item.id}`, {
       method: 'PUT',
@@ -589,7 +767,15 @@ const EXCLUDE_SEL = 'select, input, button, .move-overlay, .grip'
 const LONG_PRESS_MS = 480
 const MOVE_CANCEL_PX = 10
 
-const press = { kind: null, itemId: null, sectionId: null, startX: 0, startY: 0, moved: false, timer: null }
+const press = {
+  kind: null,
+  itemId: null,
+  sectionId: null,
+  startX: 0,
+  startY: 0,
+  moved: false,
+  timer: null
+}
 
 function clearLongPress() {
   if (press.timer) {
@@ -599,17 +785,31 @@ function clearLongPress() {
 }
 
 function dismissMenus(target) {
-  if (targetPickerItemId.value && !target.closest(`[data-target-picker-owner="${targetPickerItemId.value}"]`)) {
+  if (target.closest('.session-bar')) return false
+  if (
+    targetPickerItemId.value &&
+    !target.closest(`[data-target-picker-owner="${targetPickerItemId.value}"]`)
+  ) {
     targetPickerItemId.value = null
     return true
   }
   if (movingItemId.value && !target.closest(`[data-move-overlay="item:${movingItemId.value}"]`)) {
-    movingItemId.value = null
-    sectionPickerItemId.value = null
+    // Clicking a different row or section header is handled by onRowClick /
+    // onSectionTitleMouseDown (switches the session there instead of dismissing) —
+    // only actually close here when the click is truly outside any row or section.
+    if (!target.closest('[data-wrap]') && !target.closest('.section-header')) {
+      movingItemId.value = null
+      sectionPickerItemId.value = null
+    }
     return true
   }
-  if (movingSectionId.value && !target.closest(`[data-move-overlay="section:${movingSectionId.value}"]`)) {
-    movingSectionId.value = null
+  if (
+    movingSectionId.value &&
+    !target.closest(`[data-move-overlay="section:${movingSectionId.value}"]`)
+  ) {
+    if (!target.closest('[data-wrap]') && !target.closest('.section-header')) {
+      movingSectionId.value = null
+    }
     return true
   }
   return false
@@ -649,7 +849,10 @@ function pressDown(x, y, target) {
 
 function pressMove(x, y) {
   if (press.timer && !press.moved) {
-    if (Math.abs(x - press.startX) > MOVE_CANCEL_PX || Math.abs(y - press.startY) > MOVE_CANCEL_PX) {
+    if (
+      Math.abs(x - press.startX) > MOVE_CANCEL_PX ||
+      Math.abs(y - press.startY) > MOVE_CANCEL_PX
+    ) {
       press.moved = true
       clearLongPress()
     }
@@ -707,7 +910,9 @@ function startXDragVisuals(x, y) {
   xdrag.started = true
   const rect = xdrag.sourceEl.getBoundingClientRect()
   const label =
-    xdrag.kind === 'item' ? findItemById(xdrag.id)?.name : findItemById(xdrag.id)?.name.replace('section:', '')
+    xdrag.kind === 'item'
+      ? findItemById(xdrag.id)?.name
+      : findItemById(xdrag.id)?.name.replace('section:', '')
 
   const ghost = document.createElement('div')
   ghost.className =
@@ -763,7 +968,9 @@ function positionIndicatorForItem(y) {
 
 function positionIndicatorForSection(y) {
   const root = rootEl.value
-  const cards = Array.from(root.querySelectorAll('[data-section-wrap]')).filter((c) => c !== xdrag.sourceEl)
+  const cards = Array.from(root.querySelectorAll('[data-section-wrap]')).filter(
+    (c) => c !== xdrag.sourceEl
+  )
   let best = null,
     bestDist = Infinity,
     before = true
@@ -835,13 +1042,19 @@ function gripUp() {
     // can keep acting on it (drag again, edit, etc.) without reopening the menu.
   } else {
     const root = rootEl.value
-    const sectionWraps = Array.from(root.querySelectorAll('[data-section-wrap]')).filter((w) => w !== xdrag.sourceEl)
+    const sectionWraps = Array.from(root.querySelectorAll('[data-section-wrap]')).filter(
+      (w) => w !== xdrag.sourceEl
+    )
     // compute index among the *other* section groups by DOM order relative to the drop indicator
     let targetPos = sectionWraps.length
     for (let i = 0; i < sectionWraps.length; i++) {
       if (
-        xdrag.indicatorEl.compareDocumentPosition(sectionWraps[i]) & Node.DOCUMENT_POSITION_FOLLOWING &&
-        !(xdrag.indicatorEl.compareDocumentPosition(sectionWraps[i]) & Node.DOCUMENT_POSITION_CONTAINED_BY)
+        xdrag.indicatorEl.compareDocumentPosition(sectionWraps[i]) &
+          Node.DOCUMENT_POSITION_FOLLOWING &&
+        !(
+          xdrag.indicatorEl.compareDocumentPosition(sectionWraps[i]) &
+          Node.DOCUMENT_POSITION_CONTAINED_BY
+        )
       ) {
         targetPos = i
         break
