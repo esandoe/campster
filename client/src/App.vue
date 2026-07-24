@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import Navbar from './components/Navbar.vue'
+import TheNavbar from './components/TheNavbar.vue'
 import { useAuth } from './composables/auth'
 import { onMounted } from 'vue'
 
@@ -14,7 +14,7 @@ onMounted(async () => {
 <template>
   <div>
     <header>
-      <Navbar></Navbar>
+      <TheNavbar></TheNavbar>
     </header>
     <div class="bg-[#d6f0f8] min-h-screen">
       <RouterView />

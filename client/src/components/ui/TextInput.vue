@@ -1,12 +1,9 @@
 <template>
-  <label
-    v-if="name"
-    :id="labelId"
-    for="email"
-    class="block mb-2 text-sm font-medium text-gray-900"
-    >{{ name }}</label
-  >
+  <label v-if="name" :for="inputId" class="block mb-2 text-sm font-medium text-gray-900">{{
+    name
+  }}</label>
   <input
+    :id="inputId"
     type="text"
     v-model="model"
     v-bind="$attrs"
@@ -41,5 +38,5 @@ const model = defineModel()
 
 const randomId = self.crypto.getRandomValues(new Uint32Array(1))[0]
 const helperTextId = 'helper-text-' + randomId
-const labelId = 'input-label-' + randomId
+const inputId = 'input-' + randomId
 </script>

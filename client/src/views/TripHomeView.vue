@@ -17,72 +17,78 @@
           </PrimaryButton>
         </div>
       </div>
-      <dl class="grid grid-cols-2 gap-3 p-4 mx-auto">
-        <div class="grid grid-cols-1">
-          <div class="flex justify-between items-center mb-3">
+      <div class="grid gap-6 p-4 md:grid-cols-2">
+        <div>
+          <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-semibold text-gray-900">Turdetaljer</h3>
-            <SecondaryButton
-              v-if="!isEditing"
-              @click="startEditing"
-            >
-              ✏️ Rediger
-            </SecondaryButton>
+            <SecondaryButton v-if="!isEditing" @click="startEditing"> ✏️ Rediger </SecondaryButton>
             <div v-else class="flex gap-2">
-              <PrimaryButton
-                @click="saveAllChanges"
-              >
-                💾 Lagre
-              </PrimaryButton>
-              <SecondaryButton
-                @click="cancelEditing"
-              >
-                ✕ Avbryt
-              </SecondaryButton>
+              <PrimaryButton @click="saveAllChanges"> 💾 Lagre </PrimaryButton>
+              <SecondaryButton @click="cancelEditing"> ✕ Avbryt </SecondaryButton>
             </div>
           </div>
-          <div class="flex flex-col items-left">
-            <dt class="text-lg font-semibold text-gray-900">Start-dato</dt>
-            <dd v-if="!isEditing" class="mb-2 text-normal">
-              {{ startDate }}
-            </dd>
-            <dd v-else class="mb-2 text-normal">
-              <input
-                type="date"
-                v-model="editedTrip.start_date"
-                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
-              />
-            </dd>
-          </div>
-          <div class="flex flex-col items-left">
-            <dt class="text-lg font-semibold text-gray-900">Slutt-dato</dt>
-            <dd v-if="!isEditing" class="mb-2 text-normal">
-              {{ endDate }}
-            </dd>
-            <dd v-else>
-              <input
-                type="date"
-                v-model="editedTrip.end_date"
-                class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
-              />
-            </dd>
-          </div>
-          <div class="flex flex-col items-left">
-            <dt class="text-lg font-semibold text-gray-900">Lokasjon</dt>
-            <dd v-if="!isEditing" class="mb-2 text-normal">
-              <a :href="`https://maps.google.com/?q=${trip?.location}`" class="text-blue-600 hover:text-blue-800">🧭{{ trip?.location }}</a>
-            </dd>
-            <dd v-else>
-              <TextInput
-                v-model="editedTrip.location"
-                placeholder="Stedsnavn eller koordinater (f.eks. 60.601625, 7.503549)"
-              />
-            </dd>
-          </div>
+
+          <dl class="flex flex-col gap-4">
+            <div>
+              <dt class="text-sm font-semibold text-gray-500">Start-dato</dt>
+              <dd v-if="!isEditing" class="text-gray-900">{{ startDate }}</dd>
+              <dd v-else>
+                <input type="date" v-model="editedTrip.start_date" :class="dateInputClass" />
+              </dd>
+            </div>
+
+            <div>
+              <dt class="text-sm font-semibold text-gray-500">Slutt-dato</dt>
+              <dd v-if="!isEditing" class="text-gray-900">{{ endDate }}</dd>
+              <dd v-else>
+                <input type="date" v-model="editedTrip.end_date" :class="dateInputClass" />
+              </dd>
+            </div>
+
+            <div>
+              <dt class="text-sm font-semibold text-gray-500">Mål</dt>
+              <dd v-if="!isEditing" class="text-gray-900">
+                <a
+                  v-if="trip?.location"
+                  :href="mapsUrl(trip.location)"
+                  class="text-blue-600 hover:text-blue-800"
+                  >🧭 {{ trip.location }}</a
+                >
+                <span v-else class="text-gray-400">Ikke satt</span>
+              </dd>
+              <dd v-else>
+                <TextInput
+                  v-model="editedTrip.location"
+                  placeholder="Stedsnavn eller koordinater (f.eks. 60.601625, 7.503549)"
+                />
+              </dd>
+            </div>
+
+            <div>
+              <dt class="text-sm font-semibold text-gray-500">Oppmøtested</dt>
+              <dd v-if="!isEditing" class="text-gray-900">
+                <a
+                  v-if="trip?.meeting_point"
+                  :href="mapsUrl(trip.meeting_point)"
+                  class="text-blue-600 hover:text-blue-800"
+                  >🧭 {{ trip.meeting_point }}</a
+                >
+                <span v-else class="text-gray-400">Ikke satt</span>
+              </dd>
+              <dd v-else>
+                <TextInput
+                  v-model="editedTrip.meeting_point"
+                  placeholder="Hvor møtes dere? (f.eks. Oslo S)"
+                />
+              </dd>
+            </div>
+          </dl>
         </div>
-        <div class="space-y-1 text-gray-500">
+
+        <div class="text-gray-500">
           <ParticipantList :participants="participants" />
         </div>
-      </dl>
+      </div>
     </div>
 
     <!-- Weather forecast widget -->
@@ -265,7 +271,7 @@ const SYMBOL_EMOJI = {
   lightssleetandthunder: '⛈️',
   sleetandthunder: '⛈️',
   lightsnowandthunder: '⛈️',
-  snowandthunder: '⛈️',
+  snowandthunder: '⛈️'
 }
 
 const weatherEmoji = (symbol) => {
@@ -275,7 +281,11 @@ const weatherEmoji = (symbol) => {
 }
 
 const shortDay = (dateStr) => {
-  return new Date(dateStr).toLocaleDateString('NO-no', { weekday: 'short', day: 'numeric', month: 'numeric' })
+  return new Date(dateStr).toLocaleDateString('NO-no', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'numeric'
+  })
 }
 
 const isTripDay = (dateStr) => {
@@ -302,7 +312,12 @@ const filteredForecast = computed(() => {
 })
 
 const isEditing = ref(false)
-const editedTrip = ref({ start_date: '', end_date: '', location: '' })
+const editedTrip = ref({ start_date: '', end_date: '', location: '', meeting_point: '' })
+
+const dateInputClass =
+  'px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900'
+
+const mapsUrl = (place) => `https://maps.google.com/?q=${encodeURIComponent(place)}`
 
 const isCoords = (location) => {
   if (!location) return false
@@ -377,12 +392,13 @@ const startEditing = () => {
     start_date: trip.value.start_date,
     end_date: trip.value.end_date,
     location: trip.value.location,
+    meeting_point: trip.value.meeting_point
   }
 }
 
 const cancelEditing = () => {
   isEditing.value = false
-  editedTrip.value = { start_date: '', end_date: '', location: '' }
+  editedTrip.value = { start_date: '', end_date: '', location: '', meeting_point: '' }
 }
 
 const fetchWeather = async () => {
@@ -408,7 +424,7 @@ const saveAllChanges = async () => {
   const response = await fetch(`/api/trips/${tripId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(editedTrip.value),
+    body: JSON.stringify(editedTrip.value)
   })
   trip.value = await response.json()
   isEditing.value = false

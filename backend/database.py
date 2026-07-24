@@ -183,6 +183,7 @@ class Trip(db.Model):
     start_date: Mapped[date] = mapped_column(nullable=True)
     end_date: Mapped[date] = mapped_column(nullable=True)
     location: Mapped[str] = mapped_column(nullable=True)
+    meeting_point: Mapped[str] = mapped_column(nullable=True)
     attachments: Mapped[list[TripAttachment]] = relationship("TripAttachment")
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(
