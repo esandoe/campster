@@ -88,7 +88,7 @@
                   v-if="editingSectionId === group.marker.id"
                   class="flex-1 min-w-0 text-xl font-bold text-gray-900 bg-transparent hover:bg-white focus:bg-white outline-none rounded-md px-1 py-0.5 border border-gray-200"
                   :value="group.marker.name.replace('section:', '')"
-                  :ref="(el) => el && editingSectionId === group.marker.id && focusSoon(el)"
+                  :ref="(el) => el && (editSectionNameEl = el)"
                   @keydown.enter="(e) => e.target.blur()"
                   @blur="(e) => renameSection(group.marker, e.target.value)"
                 />
@@ -156,7 +156,7 @@
                     <input
                       class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-white focus:bg-white outline-none rounded-md px-1 py-0.5"
                       :value="item.name"
-                      :ref="(el) => el && editingItemId === item.id && focusSoon(el)"
+                      :ref="(el) => el && (editItemNameEl = el)"
                       @keydown.enter="(e) => e.target.blur()"
                       @blur="(e) => editItemName(item, e.target.value)"
                     />
@@ -304,15 +304,22 @@
                     class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-0.5"
                     placeholder="Navn på vare"
                     v-model="newItemName"
-                    :ref="(el) => el && addingItemSectionId === group.marker.id && focusSoon(el)"
+                    :ref="(el) => el && (addItemNameEl = el)"
                     @keydown.enter="addItemToGroup(group, newItemName)"
                     @keydown.esc="addingItemSectionId = null"
                   />
                   <button
-                    class="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 flex-shrink-0"
+                    class="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 flex-shrink-0"
                     @click="addItemToGroup(group, newItemName)"
                   >
                     <PlusIcon class="h-4 w-4" />
+                  </button>
+                  <div class="w-px self-stretch bg-gray-200 ml-1"></div>
+                  <button
+                    class="p-1.5 pl-2.5 rounded-md border-0 shadow-none bg-transparent text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus:outline-none flex-shrink-0"
+                    @click="addingItemSectionId = null"
+                  >
+                    <CloseIcon class="h-4 w-4" />
                   </button>
                 </div>
                 <p v-if="errorMsg" class="text-xs text-red-600 px-4 pb-1.5">{{ errorMsg }}</p>
@@ -367,7 +374,7 @@
                     <input
                       class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-white focus:bg-white outline-none rounded-md px-1 py-0.5"
                       :value="item.name"
-                      :ref="(el) => el && editingItemId === item.id && focusSoon(el)"
+                      :ref="(el) => el && (editItemNameEl = el)"
                       @keydown.enter="(e) => e.target.blur()"
                       @blur="(e) => editItemName(item, e.target.value)"
                     />
@@ -518,15 +525,22 @@
             class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-1.5"
             placeholder="Navn på seksjon"
             v-model="newSectionName"
-            :ref="(el) => el && addingSection && focusSoon(el)"
+            :ref="(el) => el && (addSectionNameEl = el)"
             @keydown.enter="confirmAddSection()"
             @keydown.esc="addingSection = false"
           />
           <button
-            class="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 flex-shrink-0"
+            class="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 flex-shrink-0"
             @click="confirmAddSection()"
           >
             <PlusIcon class="h-4 w-4" />
+          </button>
+          <div class="w-px self-stretch bg-gray-200 ml-1"></div>
+          <button
+            class="p-1.5 pl-2.5 rounded-md border-0 shadow-none bg-transparent text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus:outline-none flex-shrink-0"
+            @click="addingSection = false"
+          >
+            <CloseIcon class="h-4 w-4" />
           </button>
         </div>
         <button
@@ -547,6 +561,7 @@ import PlusIcon from '@/components/icons/PlusIcon.vue'
 import DotsVerticalIcon from '@/components/icons/DotsVerticalIcon.vue'
 import HamburgerMenuIcon from '@/components/icons/HamburgerMenuIcon.vue'
 import CheckIcon from '@/components/icons/CheckIcon.vue'
+import CloseIcon from '@/components/icons/CloseIcon.vue'
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import SecondaryButton from './ui/SecondaryButton.vue'
@@ -582,9 +597,18 @@ const params = useRoute().params
 // same patch, so wait for Vue's DOM update to fully settle first.
 function focusSoon(el) {
   nextTick(() => {
-    requestAnimationFrame(() => el.focus())
+    requestAnimationFrame(() => el && el.focus())
   })
 }
+
+// These template refs are re-assigned by Vue on every re-render of the row (e.g. when
+// quantity changes while editing), but we only want to steal focus once, when the mode
+// is *entered* — otherwise every unrelated update (like tapping the quantity stepper)
+// yanks focus back to the name field and pops the mobile keyboard back up.
+const editItemNameEl = ref(null)
+const editSectionNameEl = ref(null)
+const addItemNameEl = ref(null)
+const addSectionNameEl = ref(null)
 
 function targetOf(item) {
   return supplyTargets.value?.find((t) => t.id === item.supply_target_id) || null
@@ -760,8 +784,18 @@ const {
   }
 })
 
-watch(editingItemId, () => {
+watch(editingItemId, (val) => {
   targetPickerItemId.value = null
+  if (val !== null) focusSoon(editItemNameEl.value)
+})
+watch(editingSectionId, (val) => {
+  if (val !== null) focusSoon(editSectionNameEl.value)
+})
+watch(addingItemSectionId, (val) => {
+  if (val !== null) focusSoon(addItemNameEl.value)
+})
+watch(addingSection, (val) => {
+  if (val) focusSoon(addSectionNameEl.value)
 })
 
 async function copyItemsFromOtherTrip() {
