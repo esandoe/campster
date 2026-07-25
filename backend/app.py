@@ -326,7 +326,11 @@ def delete_attachment(trip_id, attachment_id):
 @app.route("/api/trip/<trip_id>/supply-targets", methods=["GET"])
 @login_required
 def get_supply_targets(trip_id):
-    targets = SupplyTarget.query.filter_by(trip_id=trip_id).all()
+    targets = (
+        SupplyTarget.query.filter_by(trip_id=trip_id)
+        .order_by(SupplyTarget.index)
+        .all()
+    )
 
     def get_item_owner(item):
         participant = TripParticipant.query.filter_by(id=item.participant_id).one()
@@ -342,6 +346,8 @@ def get_supply_targets(trip_id):
                 "id": target.id,
                 "name": target.name,
                 "target_quantity": target.target_quantity,
+                "index": target.index,
+                "unit": target.unit,
                 "items": [
                     {
                         "id": item.id,
@@ -377,13 +383,18 @@ def delete_supply_target(trip_id, supply_target_id):
 @participant_of_trip_required
 def add_supply_target(trip_id):
     data = request.get_json()
-    if not data or "name" not in data or "target_quantity" not in data:
-        return jsonify({"error": "Missing required fields: name, target_quantity"}), 400
-    target = SupplyTarget(
-        trip_id=trip_id,
-        name=data["name"],
-        target_quantity=data["target_quantity"],
-    )
+    if not data or "name" not in data:
+        return jsonify({"error": "Missing required fields: name"}), 400
+    target_kwargs = {
+        "trip_id": trip_id,
+        "name": data["name"],
+        "target_quantity": data.get("target_quantity", 0),
+    }
+    if "index" in data:
+        target_kwargs["index"] = data["index"]
+    if "unit" in data:
+        target_kwargs["unit"] = data["unit"]
+    target = SupplyTarget(**target_kwargs)
     db.session.add(target)
     db.session.commit()
     return jsonify(target)
@@ -402,6 +413,10 @@ def update_supply_target(trip_id, supply_target_id):
         target.name = data["name"]
     if "target_quantity" in data:
         target.target_quantity = data["target_quantity"]
+    if "index" in data:
+        target.index = data["index"]
+    if "unit" in data:
+        target.unit = data["unit"]
 
     db.session.commit()
     return jsonify(target)
