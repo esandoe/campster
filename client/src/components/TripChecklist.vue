@@ -11,7 +11,7 @@
         v-if="!editingItemId && !editingSectionId && !movingItemId && !movingSectionId"
         class="text-center text-xs text-gray-400 px-6 py-2 md:hidden"
       >
-        Trykk og hold en vare eller seksjon for å åpne menyen
+        Dobbelttrykk en vare eller seksjon for å åpne menyen
       </p>
       <p
         v-if="!editingItemId && !editingSectionId && !movingItemId && !movingSectionId"

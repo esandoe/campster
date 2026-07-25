@@ -1,8 +1,8 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-/* ---------- long-press (mobile) opens the same menu as the desktop ⋮ ---------- */
+/* ---------- double-tap (mobile) opens the same menu as the desktop ⋮ ---------- */
 const EXCLUDE_SEL = 'select, input, button, .move-overlay, .grip'
-const LONG_PRESS_MS = 480
+const DOUBLE_TAP_MS = 350
 const MOVE_CANCEL_PX = 10
 
 export function useListSession({
@@ -217,19 +217,18 @@ export function useListSession({
 
   const press = {
     kind: null,
-    itemId: null,
-    sectionId: null,
+    id: null,
     startX: 0,
     startY: 0,
-    moved: false,
-    timer: null
+    moved: false
   }
 
-  function clearLongPress() {
-    if (press.timer) {
-      clearTimeout(press.timer)
-      press.timer = null
-    }
+  const lastTap = {
+    kind: null,
+    id: null,
+    time: 0,
+    x: 0,
+    y: 0
   }
 
   function dismissMenus(target) {
@@ -269,40 +268,58 @@ export function useListSession({
     press.startX = x
     press.startY = y
     press.moved = false
-    clearLongPress()
 
     if (wrap) {
       press.kind = 'item'
-      press.itemId = Number(wrap.getAttribute('data-wrap'))
+      press.id = Number(wrap.getAttribute('data-wrap'))
     } else {
       const sectionWrap = sectionHeader.closest('[data-section-wrap]')
       if (!sectionWrap) return
       press.kind = 'section'
-      press.sectionId = Number(sectionWrap.getAttribute('data-section-wrap'))
+      press.id = Number(sectionWrap.getAttribute('data-section-wrap'))
     }
-
-    press.timer = setTimeout(() => {
-      press.timer = null
-      if (press.moved) return
-      if (press.kind === 'item') movingItemId.value = press.itemId
-      else movingSectionId.value = press.sectionId
-    }, LONG_PRESS_MS)
   }
 
   function pressMove(x, y) {
-    if (press.timer && !press.moved) {
+    if (press.kind && !press.moved) {
       if (
         Math.abs(x - press.startX) > MOVE_CANCEL_PX ||
         Math.abs(y - press.startY) > MOVE_CANCEL_PX
       ) {
         press.moved = true
-        clearLongPress()
       }
     }
   }
 
   function pressUp() {
-    clearLongPress()
+    // A tap is a press that didn't turn into a drag/scroll/text-selection gesture.
+    // Two of those on the same row within DOUBLE_TAP_MS and roughly the same spot
+    // open the menu — this avoids the old long-press accidentally firing when the
+    // user was just trying to select text.
+    if (!press.kind || press.moved) {
+      press.kind = null
+      return
+    }
+    const now = Date.now()
+    const isSecondTap =
+      lastTap.kind === press.kind &&
+      lastTap.id === press.id &&
+      now - lastTap.time < DOUBLE_TAP_MS &&
+      Math.abs(press.startX - lastTap.x) <= MOVE_CANCEL_PX &&
+      Math.abs(press.startY - lastTap.y) <= MOVE_CANCEL_PX
+
+    if (isSecondTap) {
+      if (press.kind === 'item') movingItemId.value = press.id
+      else movingSectionId.value = press.id
+      lastTap.kind = null
+    } else {
+      lastTap.kind = press.kind
+      lastTap.id = press.id
+      lastTap.time = now
+      lastTap.x = press.startX
+      lastTap.y = press.startY
+    }
+    press.kind = null
   }
 
   /* ---------- grip drag: reorder + move item across sections ---------- */
