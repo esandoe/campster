@@ -635,7 +635,12 @@ function onMqlChange(e) {
 // Focusing an input right as it's mounted can lose to the browser resetting focus
 // to <body> when the element it replaces (e.g. an "add" button) is removed in the
 // same patch, so wait for Vue's DOM update to fully settle first.
+// WeakSet guards against the inline `:ref` arrow function re-invoking this (and
+// stealing focus back) on every re-render, not just on mount.
+const autoFocusedEls = new WeakSet()
 function focusSoon(el) {
+  if (autoFocusedEls.has(el)) return
+  autoFocusedEls.add(el)
   nextTick(() => {
     requestAnimationFrame(() => el.focus())
   })
