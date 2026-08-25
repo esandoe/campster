@@ -94,7 +94,7 @@
                         v-if="editingSectionId === group.marker.id"
                         class="flex-1 min-w-0 font-bold text-gray-900 bg-transparent hover:bg-white focus:bg-white outline-none rounded-md px-1 py-0.5 border border-gray-200 truncate"
                         :value="markerLabel(group.marker)"
-                        :ref="(el) => el && editingSectionId === group.marker.id && focusSoon(el)"
+                        :ref="(el) => el && (editSectionNameEl = el)"
                         @keydown.enter="(e) => e.target.blur()"
                         @blur="(e) => renameSection(group.marker, e.target.value)"
                       />
@@ -172,7 +172,7 @@
                     <input
                       class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-white focus:bg-white outline-none rounded-md px-1 py-0.5"
                       :value="t.name"
-                      :ref="(el) => el && editingItemId === t.id && focusSoon(el)"
+                      :ref="(el) => el && (editItemNameEl = el)"
                       @keydown.enter="(e) => e.target.blur()"
                       @blur="(e) => editTargetName(t, e.target.value)"
                     />
@@ -316,7 +316,7 @@
                     class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-1"
                     placeholder="Navn på mål"
                     v-model="newTargetName"
-                    :ref="(el) => el && addingTargetGroupKey === groupKey(group) && focusSoon(el)"
+                    :ref="(el) => el && (addTargetNameEl = el)"
                     @keydown.enter="confirmAddTargetToGroup(group)"
                     @keydown.esc="cancelAddTarget()"
                   />
@@ -384,7 +384,7 @@
                     <input
                       class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-white focus:bg-white outline-none rounded-md px-1 py-0.5"
                       :value="t.name"
-                      :ref="(el) => el && editingItemId === t.id && focusSoon(el)"
+                      :ref="(el) => el && (editItemNameEl = el)"
                       @keydown.enter="(e) => e.target.blur()"
                       @blur="(e) => editTargetName(t, e.target.value)"
                     />
@@ -530,7 +530,7 @@
                 class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-1"
                 placeholder="Navn på mål"
                 v-model="newBottomTargetName"
-                :ref="(el) => el && addingBottomTarget && focusSoon(el)"
+                :ref="(el) => el && (addBottomTargetNameEl = el)"
                 @keydown.enter="confirmAddUngroupedTarget()"
                 @keydown.esc="addingBottomTarget = false"
               />
@@ -566,7 +566,7 @@
                 class="flex-1 min-w-0 text-sm font-medium text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-gray-50 outline-none rounded-md px-1 py-1"
                 placeholder="Navn på gruppe"
                 v-model="newBottomGroupName"
-                :ref="(el) => el && addingBottomGroup && focusSoon(el)"
+                :ref="(el) => el && (addBottomGroupNameEl = el)"
                 @keydown.enter="confirmAddGroup()"
                 @keydown.esc="addingBottomGroup = false"
               />
@@ -606,7 +606,7 @@ import EditIcon from '@/components/icons/EditIcon.vue'
 import HamburgerMenuIcon from '@/components/icons/HamburgerMenuIcon.vue'
 import PlusIcon from '@/components/icons/PlusIcon.vue'
 import { useListSession } from '@/composables/useListSession.js'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const SOVE = 'section:Soveplasser'
@@ -637,9 +637,19 @@ function onMqlChange(e) {
 // same patch, so wait for Vue's DOM update to fully settle first.
 function focusSoon(el) {
   nextTick(() => {
-    requestAnimationFrame(() => el.focus())
+    requestAnimationFrame(() => el && el.focus())
   })
 }
+
+// These template refs are re-assigned by Vue on every re-render of the row (e.g. when
+// quantity changes while editing), but we only want to steal focus once, when the mode
+// is *entered* — otherwise every unrelated update (like tapping the quantity stepper)
+// yanks focus back to the name field and pops the mobile keyboard back up.
+const editSectionNameEl = ref(null)
+const editItemNameEl = ref(null)
+const addTargetNameEl = ref(null)
+const addBottomTargetNameEl = ref(null)
+const addBottomGroupNameEl = ref(null)
 
 const markerLabel = (t) => t.name.replace(/^section:/, '')
 const sumOf = (t) => t.items.reduce((s, i) => s + i.quantity, 0)
@@ -734,6 +744,22 @@ const {
   isDesktop,
   persistReorder: (t, idx) => updateTarget(t, 'index', idx),
   isSectionLocked: (marker) => marker.name === SOVE
+})
+
+watch(editingItemId, (val) => {
+  if (val !== null) focusSoon(editItemNameEl.value)
+})
+watch(editingSectionId, (val) => {
+  if (val !== null) focusSoon(editSectionNameEl.value)
+})
+watch(addingTargetGroupKey, (val) => {
+  if (val !== null) focusSoon(addTargetNameEl.value)
+})
+watch(addingBottomTarget, (val) => {
+  if (val) focusSoon(addBottomTargetNameEl.value)
+})
+watch(addingBottomGroup, (val) => {
+  if (val) focusSoon(addBottomGroupNameEl.value)
 })
 
 const orderedGroups = computed(() => {
