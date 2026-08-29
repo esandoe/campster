@@ -17,7 +17,7 @@
             v-if="!editingItemId && !editingSectionId && !movingItemId && !movingSectionId"
             class="text-center text-xs text-gray-400 px-6 py-2 md:hidden"
           >
-            Trykk og hold en rad eller gruppe for å åpne menyen
+            Dobbelttrykk en rad eller gruppe for å åpne menyen
           </p>
           <p
             v-if="!editingItemId && !editingSectionId && !movingItemId && !movingSectionId"
@@ -778,7 +778,10 @@ function groupKey(group) {
   return group.marker?.id ?? 'ungrouped'
 }
 
-const groupSum = (g) => g.items.reduce((s, t) => s + sumOf(t), 0)
+// Each target's contribution to the group sum is capped at its own target_quantity,
+// so over-delivering on one target (e.g. 10/9) can't push the group past 100% while
+// other targets in the group are still short.
+const groupSum = (g) => g.items.reduce((s, t) => s + Math.min(sumOf(t), t.target_quantity), 0)
 const groupTargetSum = (g) => g.items.reduce((s, t) => s + t.target_quantity, 0)
 const groupPercent = (g) => (groupTargetSum(g) > 0 ? (groupSum(g) / groupTargetSum(g)) * 100 : 0)
 
